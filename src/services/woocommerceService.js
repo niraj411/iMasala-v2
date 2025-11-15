@@ -83,7 +83,13 @@ class WooCommerceService {
 
   async getProducts() {
     try {
-      const response = await this.api.get('/products');
+      const response = await this.api.get('/products', {
+        params: {
+          per_page: 100,  // Get 100 products per page (max is 100)
+          status: 'publish',
+          stock_status: 'instock'
+        }
+      });
       return response.data;
     } catch (error) {
       console.error('Error fetching products:', error);

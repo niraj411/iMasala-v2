@@ -86,10 +86,11 @@ function App() {
         <MenuProvider>
           <CartProvider>
             <OrderProvider>
-              <div className="App">
-                <AppRoutes />
-                <Toaster position="top-right" />
-              </div>
+            <div className="App">
+  <SimpleNav />  {/* ADD THIS LINE! */}
+  <AppRoutes />
+  <Toaster position="top-right" />
+</div>
             </OrderProvider>
           </CartProvider>
         </MenuProvider>
