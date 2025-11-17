@@ -7,6 +7,7 @@ import ProductCard from '../components/menu/ProductCard';
 import CategoryFilter from '../components/menu/CategoryFilter';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import CartSidebar from '../components/cart/CartSidebar';
+import OrderTypeToggle from '../components/ui/OrderTypeToggle';
 
 export default function Shop() {
   const { categories, products, loading } = useMenu();
@@ -77,6 +78,7 @@ export default function Shop() {
       <div className="bg-white border-b border-masala-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          <OrderTypeToggle /> 
             {/* Search */}
             <div className="relative flex-1 w-full max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-masala-400 w-5 h-5" />

@@ -2,7 +2,6 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, ShoppingBag, ExternalLink } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
-import { cartSyncService } from '../../services/cartSyncService';
 
 export default function CartSidebar({ isOpen, onClose }) {
   const { 
@@ -10,7 +9,8 @@ export default function CartSidebar({ isOpen, onClose }) {
     updateQuantity, 
     removeFromCart, 
     getCartTotal, 
-    clearCart 
+    clearCart,
+    orderType  // Added orderType
   } = useCart();
 
   const handleQuantityChange = (productId, newQuantity) => {
@@ -21,20 +21,11 @@ export default function CartSidebar({ isOpen, onClose }) {
     }
   };
 
-  const proceedToCheckout = async () => {
+  const proceedToCheckout = () => {
     if (cartItems.length === 0) return;
     
-    try {
-      console.log('Starting checkout process with items:', cartItems);
-      
-      // Use AJAX method for better reliability with variations
-      await cartSyncService.addToCartViaAJAXThenCheckout(cartItems);
-      
-    } catch (error) {
-      console.error('Checkout error:', error);
-      // Ultimate fallback - redirect to check-out page
-      window.location.href = 'https://tandoorikitchenco.com/check-out/';
-    }
+    // Navigate to YOUR custom checkout page
+    window.location.href = '/checkout';
   };
 
   return (
@@ -137,6 +128,18 @@ export default function CartSidebar({ isOpen, onClose }) {
                   <span>Total:</span>
                   <span>${getCartTotal().toFixed(2)}</span>
                 </div>
+                
+                {/* Catering order warning */}
+                {orderType === 'catering' && getCartTotal() < 250 && (
+                  <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Catering Order:</strong> $250 minimum required
+                      <br />
+                      Current total: ${getCartTotal().toFixed(2)}
+                    </p>
+                  </div>
+                )}
+                
                 <div className="space-y-2">
                   <button
                     onClick={proceedToCheckout}
@@ -153,7 +156,10 @@ export default function CartSidebar({ isOpen, onClose }) {
                   </button>
                 </div>
                 <p className="text-xs text-masala-500 text-center">
-                  You'll complete your order on our secure checkout page
+                  {orderType === 'catering' 
+                    ? "You'll configure delivery details at checkout"
+                    : "You'll complete your order on our secure checkout page"
+                  }
                 </p>
               </div>
             )}

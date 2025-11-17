@@ -48,6 +48,12 @@ export default function ProductCard({ product, onAddToCart, index }) {
     };
     
     onAddToCart(productToAdd, quantity);
+    toast.success(
+      <div className="flex items-center gap-2">
+        <Check className="w-4 h-4" />
+        <span>{quantity}x {product.name} added to cart</span>
+      </div>
+    );
     setQuantity(1);
     setSelectedAttributes({});
     setSelectedVariation(null);
