@@ -1,7 +1,9 @@
+// src/pages/CustomerDashboard.jsx (Updated tax tab section)
 import React, { useState } from 'react';
 import { useOrders } from '../contexts/OrderContext';
 import { useAuth } from '../contexts/AuthContext';
 import OrderCard from '../components/orders/OrderCard';
+import TaxExemptionManager from '../components/customer/TaxExemptionManager'; // Add this import
 
 export default function CustomerDashboard() {
   const { orders, loading } = useOrders();
@@ -76,12 +78,7 @@ export default function CustomerDashboard() {
 
           {activeTab === 'tax' && (
             <div>
-              <h2 className="text-lg font-semibold mb-4">Tax Exemption</h2>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-yellow-800">
-                  Tax exemption feature coming soon. You'll be able to upload your tax exemption certificate here.
-                </p>
-              </div>
+              <TaxExemptionManager /> {/* Replace the placeholder with the actual component */}
             </div>
           )}
 

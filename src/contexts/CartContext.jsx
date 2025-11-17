@@ -1,3 +1,4 @@
+// src/contexts/CartContext.jsx (Updated version)
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const CartContext = createContext();
@@ -5,14 +6,19 @@ const CartContext = createContext();
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [orderType, setOrderType] = useState('regular'); // 'regular' or 'catering'
 
   // Load cart from localStorage on mount
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem('imasala_cart');
+      const savedOrderType = localStorage.getItem('imasala_order_type');
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart);
         setCartItems(Array.isArray(parsedCart) ? parsedCart : []);
+      }
+      if (savedOrderType) {
+        setOrderType(savedOrderType);
       }
     } catch (error) {
       console.error('Error loading cart from localStorage:', error);
@@ -27,11 +33,12 @@ export function CartProvider({ children }) {
     if (isInitialized) {
       try {
         localStorage.setItem('imasala_cart', JSON.stringify(cartItems));
+        localStorage.setItem('imasala_order_type', orderType);
       } catch (error) {
         console.error('Error saving cart to localStorage:', error);
       }
     }
-  }, [cartItems, isInitialized]);
+  }, [cartItems, orderType, isInitialized]);
 
   const addToCart = (product, quantity = 1) => {
     setCartItems(prev => {
@@ -46,11 +53,13 @@ export function CartProvider({ children }) {
       }
       
       return [...prev, { 
-        id: product.id,
+        id: product.id,  // Make sure this is the WooCommerce product ID
         name: product.name,
         price: product.price,
         image: product.images?.[0]?.src,
-        quantity: quantity
+        quantity: quantity,
+        variation_id: product.variation_id,
+        attributes: product.attributes
       }];
     });
   };
@@ -73,6 +82,7 @@ export function CartProvider({ children }) {
 
   const clearCart = () => {
     setCartItems([]);
+    setOrderType('regular');
   };
 
   const getCartItemCount = () => {
@@ -87,9 +97,17 @@ export function CartProvider({ children }) {
     return cartItems;
   };
 
+  const toggleOrderType = () => {
+    const newType = orderType === 'regular' ? 'catering' : 'regular';
+    setOrderType(newType);
+  };
+
   return (
     <CartContext.Provider value={{
       cartItems,
+      orderType,
+      setOrderType,
+      toggleOrderType,
       addToCart,
       removeFromCart,
       updateQuantity,

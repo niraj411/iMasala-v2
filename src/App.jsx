@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { OrderProvider } from './contexts/OrderContext';
 import { MenuProvider } from './contexts/MenuContext';
 import { CartProvider } from './contexts/CartContext';
+import { CateringProvider } from './contexts/CateringContext'; 
 import { Toaster } from 'react-hot-toast';
 
 // Pages
@@ -13,9 +14,9 @@ import CustomerDashboard from './pages/CustomerDashboard';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import OrderTracking from './pages/OrderTracking';
+import OrderSuccess from './pages/OrderSuccess';
 import SimpleNav from './components/ui/SimpleNav';
 import Shop from './pages/Shop';
-
 // Components
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
@@ -27,11 +28,13 @@ function AppRoutes() {
     if (loading) {
       return <LoadingSpinner />;
     }
-  
-    if (!isAuthenticated) {
-      return <Login />;
-    }
-  
+ // Allow access to order-success without authentication
+ const publicPaths = ['/order-success', '/order-cancelled'];
+ const currentPath = window.location.pathname;
+ 
+ if (!isAuthenticated && !publicPaths.includes(currentPath)) {
+   return <Login />;
+ }
     // Debug: Check user roles
     console.log('=== USER DEBUG INFO ===');
     console.log('User:', user);
@@ -67,6 +70,17 @@ function AppRoutes() {
           path="/shop" 
           element={<Shop />} 
         />
+          <Route 
+          path="/checkout"           
+          element={<Checkout />} 
+        />
+        <Route 
+          path="/cart"                
+          element={<Cart />} 
+        />
+
+
+
         <Route 
           path="/" 
           element={
@@ -75,6 +89,27 @@ function AppRoutes() {
               : <Navigate to="/my-account" />
           } 
         />
+          <Route 
+        path="/order-success" 
+        element={<OrderSuccess />} 
+      />
+      <Route 
+        path="/order-cancelled" 
+        element={
+          <div className="min-h-screen bg-masala-50 flex items-center justify-center">
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold text-masala-900 mb-4">Order Cancelled</h2>
+              <p className="text-masala-600 mb-4">Your order was cancelled.</p>
+              <button 
+                onClick={() => window.location.href = '/shop'}
+                className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg"
+              >
+                Return to Shop
+              </button>
+            </div>
+          </div>
+        } 
+      />
       </Routes>
     );
   }
@@ -85,6 +120,7 @@ function App() {
       <AuthProvider>
         <MenuProvider>
           <CartProvider>
+          <CateringProvider> {/* Add CateringProvider here */}
             <OrderProvider>
             <div className="App">
   <SimpleNav />  {/* ADD THIS LINE! */}
@@ -92,6 +128,7 @@ function App() {
   <Toaster position="top-right" />
 </div>
             </OrderProvider>
+            </CateringProvider>
           </CartProvider>
         </MenuProvider>
       </AuthProvider>

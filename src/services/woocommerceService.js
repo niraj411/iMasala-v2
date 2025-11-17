@@ -15,6 +15,8 @@ class WooCommerceService {
       timeout: 10000
     });
   }
+
+  
   async syncCartToCheckout(cartItems) {
     // This would redirect to WooCommerce checkout with cart items
     // For now, we'll use a simple redirect
@@ -153,36 +155,142 @@ class WooCommerceService {
     }
   }
   
-  async getProductsWithVariations() {
-    try {
-      // First get all products
-      const products = await this.getProducts();
-      
-      // Then fetch variations for variable products
-      const productsWithVariations = await Promise.all(
-        products.map(async (product) => {
-          if (product.type === 'variable') {
-            try {
-              const variations = await this.getProductVariations(product.id);
-              return {
-                ...product,
-                variations: variations
-              };
-            } catch (error) {
-              console.error(`Error fetching variations for product ${product.id}:`, error);
-              return product;
-            }
+// src/services/woocommerceService.js - Update getProductsWithVariations:
+
+async getProductsWithVariations() {
+  try {
+    const products = await this.getProducts();
+    
+    const productsWithVariations = await Promise.all(
+      products.map(async (product) => {
+        // Ensure images are properly formatted
+        const formattedProduct = {
+          ...product,
+          images: product.images?.map(img => ({
+            ...img,
+            src: img.src?.replace('http://', 'https://') // Force HTTPS
+          }))
+        };
+        
+        if (product.type === 'variable') {
+          try {
+            const variations = await this.getProductVariations(product.id);
+            return {
+              ...formattedProduct,
+              variations: variations.map(v => ({
+                ...v,
+                image: v.image?.src?.replace('http://', 'https://') || formattedProduct.images?.[0]?.src
+              }))
+            };
+          } catch (error) {
+            console.error(`Error fetching variations for product ${product.id}:`, error);
+            return formattedProduct;
           }
-          return product;
-        })
-      );
-      
-      return productsWithVariations;
-    } catch (error) {
-      console.error('Error fetching products with variations:', error);
-      throw error;
-    }
+        }
+        return formattedProduct;
+      })
+    );
+    
+    return productsWithVariations;
+  } catch (error) {
+    console.error('Error fetching products with variations:', error);
+    throw error;
   }
+}
+  
+
+
+
+
+async createOrderWithMetadata(orderData) {
+  try {
+    // Prepare the order object with metadata
+    const order = {
+      payment_method: orderData.payment_method,
+      payment_method_title: orderData.payment_method_title,
+      set_paid: false,
+      billing: orderData.billing,
+      shipping: orderData.shipping || orderData.billing,
+      line_items: orderData.line_items,
+      shipping_lines: orderData.shipping_lines || [],
+      meta_data: [
+        {
+          key: 'order_type',
+          value: orderData.order_type
+        }
+      ]
+    };
+
+    // Add catering specific metadata
+    if (orderData.order_type === 'catering') {
+      order.status = 'on-hold'; // Set status to on-hold for catering
+      order.meta_data.push(
+        {
+          key: 'catering_delivery_date',
+          value: orderData.catering_details.delivery_date
+        },
+        {
+          key: 'catering_delivery_time',
+          value: orderData.catering_details.delivery_time
+        },
+        {
+          key: 'catering_delivery_address',
+          value: JSON.stringify(orderData.catering_details.delivery_address)
+        },
+        {
+          key: 'catering_guests',
+          value: orderData.catering_details.number_of_guests
+        },
+        {
+          key: 'catering_need_setup',
+          value: orderData.catering_details.need_setup
+        },
+        {
+          key: 'catering_need_utensils',
+          value: orderData.catering_details.need_utensils
+        },
+        {
+          key: 'catering_instructions',
+          value: orderData.catering_details.special_instructions
+        }
+      );
+    }
+
+    // Add tax exemption metadata
+    if (orderData.tax_exempt) {
+      order.meta_data.push(
+        {
+          key: 'tax_exempt',
+          value: 'yes'
+        },
+        {
+          key: 'tax_exempt_number',
+          value: orderData.tax_exempt_number
+        }
+      );
+      // Set tax to 0 for exempt customers
+      order.fee_lines = [{
+        name: 'Tax Exemption Applied',
+        total: '0',
+        tax_status: 'none'
+      }];
+    }
+
+    const response = await this.api.post('/orders', order);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating order:', error);
+    throw error;
+  }
+}
+
+async validateDeliveryAddress(address) {
+  // This is a placeholder - you'd integrate with Google Maps API
+  // For now, just validate ZIP codes within your delivery area
+  const validZipCodes = ['80229', '80233', '80234', '80235']; // Example ZIP codes
+  return validZipCodes.includes(address.zipCode);
+}
+
 }
 
 export const woocommerceService = new WooCommerceService();
