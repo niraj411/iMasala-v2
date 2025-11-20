@@ -1,4 +1,4 @@
-// src/contexts/CartContext.jsx (Updated version)
+// src/contexts/CartContext.jsx (Fixed to preserve modifiers)
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const CartContext = createContext();
@@ -42,40 +42,67 @@ export function CartProvider({ children }) {
 
   const addToCart = (product, quantity = 1) => {
     setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      // For items with modifiers, we need to check if it's the exact same configuration
+      // Items with different modifiers should be separate line items
+      const existingIndex = prev.findIndex(item => {
+        // Same product ID
+        if (item.id !== product.id) return false;
+        
+        // If either has modifiers, they need to match exactly
+        const itemModifiers = JSON.stringify(item.modifiers || {});
+        const productModifiers = JSON.stringify(product.modifiers || {});
+        
+        return itemModifiers === productModifiers;
+      });
       
-      if (existing) {
-        return prev.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
+      if (existingIndex !== -1) {
+        // Update quantity of existing item with same modifiers
+        return prev.map((item, index) =>
+          index === existingIndex
+            ? { ...item, quantity: item.quantity + (product.quantity || quantity) }
             : item
         );
       }
       
+      // Add as new item - preserve ALL properties passed in
       return [...prev, { 
-        id: product.id,  // Make sure this is the WooCommerce product ID
+        id: product.id,
         name: product.name,
         price: product.price,
-        image: product.images?.[0]?.src,
-        quantity: quantity,
+        basePrice: product.basePrice,
+        image: product.image || product.images?.[0]?.src,
+        quantity: product.quantity || quantity,
         variation_id: product.variation_id,
-        attributes: product.attributes
+        attributes: product.attributes,
+        // Preserve modifiers!
+        modifiers: product.modifiers,
+        modifierTotal: product.modifierTotal
       }];
     });
   };
 
-  const removeFromCart = (productId) => {
-    setCartItems(prev => prev.filter(item => item.id !== productId));
+  const removeFromCart = (productId, index) => {
+    // If index is provided, remove that specific item (for items with different modifiers)
+    if (typeof index === 'number') {
+      setCartItems(prev => prev.filter((_, i) => i !== index));
+    } else {
+      // Legacy behavior - remove first matching product
+      setCartItems(prev => prev.filter(item => item.id !== productId));
+    }
   };
 
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantity = (productId, quantity, index) => {
     if (quantity === 0) {
-      removeFromCart(productId);
+      removeFromCart(productId, index);
     } else {
       setCartItems(prev =>
-        prev.map(item =>
-          item.id === productId ? { ...item, quantity } : item
-        )
+        prev.map((item, i) => {
+          // If index provided, use that; otherwise match by ID
+          if (typeof index === 'number') {
+            return i === index ? { ...item, quantity } : item;
+          }
+          return item.id === productId ? { ...item, quantity } : item;
+        })
       );
     }
   };

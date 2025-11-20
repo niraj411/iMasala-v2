@@ -202,8 +202,8 @@ export default function MainLayout({ children }) {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {cartItems.map((item) => (
-                      <div key={item.id} className="flex gap-3 p-3 bg-masala-50 rounded-xl">
+                    {cartItems.map((item, index) => (
+                      <div key={`${item.id}-${index}`} className="flex gap-3 p-3 bg-masala-50 rounded-xl">
                         {item.image && (
                           <img 
                             src={item.image} 
@@ -215,6 +215,15 @@ export default function MainLayout({ children }) {
                           <h3 className="font-medium text-masala-900 text-sm truncate">
                             {item.name}
                           </h3>
+                          {/* Show selected modifiers */}
+                          {item.modifiers && Object.keys(item.modifiers).length > 0 && (
+                            <p className="text-xs text-masala-500 mt-0.5">
+                              {Object.values(item.modifiers)
+                                .map(mod => mod.name || (Array.isArray(mod) ? mod.map(m => m.name).join(', ') : ''))
+                                .filter(Boolean)
+                                .join(' • ')}
+                            </p>
+                          )}
                           <p className="text-primary-600 font-semibold text-sm">
                             ${(item.price * item.quantity).toFixed(2)}
                           </p>

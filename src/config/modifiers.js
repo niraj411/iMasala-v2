@@ -83,6 +83,7 @@ export const modifierGroups = {
    */
   export const categoryModifiers = {
     // Full modifiers (protein + spice + rice)
+    'traditional-entrees': ['protein', 'spiceLevel', 'riceSubstitute'],
     'curry': ['protein', 'spiceLevel', 'riceSubstitute'],
     'curries': ['protein', 'spiceLevel', 'riceSubstitute'],
     'rice-bowls': ['protein', 'spiceLevel', 'riceSubstitute'],

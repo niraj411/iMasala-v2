@@ -7,36 +7,35 @@ export function MenuProvider({ children }) {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [cart, setCart] = useState([]);
-
-  const fetchCategories = async () => {
-    try {
-      const categoriesData = await woocommerceService.getCategories();
-      setCategories(categoriesData);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
-
-  const fetchProducts = async () => {
-    try {
-      // Use the new method that includes variations
-      const productsData = await woocommerceService.getProductsWithVariations();
-      setProducts(productsData);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      // Fallback to basic products
-      const basicProducts = await woocommerceService.getProducts();
-      setProducts(basicProducts);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     const loadData = async () => {
-      await Promise.all([fetchCategories(), fetchProducts()]);
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Fetch categories first
+        const categoriesData = await woocommerceService.getCategories();
+        setCategories(categoriesData);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+        // Continue even if categories fail
+      }
+
+      try {
+        // Fetch products (with variations if available)
+        const productsData = await woocommerceService.getProductsWithVariations();
+        setProducts(productsData);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load menu. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     };
+
     loadData();
   }, []);
 
@@ -58,14 +57,35 @@ export function MenuProvider({ children }) {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const [categoriesData, productsData] = await Promise.all([
+        woocommerceService.getCategories(),
+        woocommerceService.getProductsWithVariations()
+      ]);
+      setCategories(categoriesData);
+      setProducts(productsData);
+    } catch (err) {
+      console.error('Error refetching data:', err);
+      setError('Failed to load menu. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <MenuContext.Provider value={{
       categories,
       products,
       loading,
+      error,
       cart,
       addToCart,
-      getCartItemCount
+      getCartItemCount,
+      refetch
     }}>
       {children}
     </MenuContext.Provider>
