@@ -36,13 +36,15 @@ export default function Checkout() {
   
   // Other states
   const [taxExemptStatus, setTaxExemptStatus] = useState(null);
+  const [applyTaxExempt, setApplyTaxExempt] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
 
   // Calculate totals
   const cartTotal = getCartTotal();
   const deliveryFee = selectedOrderType === 'catering' ? 20 : 0;
-  const taxRate = taxExemptStatus?.verified ? 0 : 0.0825;
+  // Only apply tax exemption if user has it AND chooses to use it
+  const taxRate = (taxExemptStatus?.verified && applyTaxExempt) ? 0 : 0.0825;
   const taxAmount = cartTotal * taxRate;
   const finalTotal = cartTotal + deliveryFee + taxAmount;
 
@@ -145,7 +147,7 @@ export default function Checkout() {
         order_type: selectedOrderType,
         customer_id: user?.id,
         customer_email: user?.email,
-        tax_exempt: taxExemptStatus?.verified || false,
+        tax_exempt: (taxExemptStatus?.verified && applyTaxExempt) || false,
         tax_exempt_number: taxExemptStatus?.licenseNumber || '',
       };
 
@@ -472,13 +474,24 @@ export default function Checkout() {
 
               {/* Cart Items */}
               <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="flex justify-between items-start gap-3">
+                {cartItems.map((item, index) => (
+                  <div key={`${item.id}-${index}`} className="flex justify-between items-start gap-3">
                     <div className="flex items-start gap-2 flex-1 min-w-0">
-                      <span className="text-sm font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded">
+                      <span className="text-sm font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded flex-shrink-0">
                         {item.quantity}x
                       </span>
-                      <span className="text-sm text-masala-700 truncate">{item.name}</span>
+                      <div className="min-w-0">
+                        <span className="text-sm text-masala-700 block truncate">{item.name}</span>
+                        {/* Show selected modifiers */}
+                        {item.modifiers && Object.keys(item.modifiers).length > 0 && (
+                          <span className="text-xs text-masala-500 block">
+                            {Object.values(item.modifiers)
+                              .map(mod => mod.name || (Array.isArray(mod) ? mod.map(m => m.name).join(', ') : ''))
+                              .filter(Boolean)
+                              .join(' • ')}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <span className="text-sm font-medium text-masala-900 whitespace-nowrap">
                       ${(item.price * item.quantity).toFixed(2)}
@@ -501,7 +514,7 @@ export default function Checkout() {
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-masala-600">
-                    Tax {taxExemptStatus?.verified && (
+                    Tax {(taxExemptStatus?.verified && applyTaxExempt) && (
                       <span className="text-green-600">(Exempt)</span>
                     )}
                   </span>
@@ -513,18 +526,44 @@ export default function Checkout() {
                 </div>
               </div>
 
-              {/* Tax Exempt Badge */}
-              {taxExemptStatus?.verified && (
-                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex items-center gap-2 text-sm text-green-800">
-                    <Check className="w-4 h-4" />
-                    <span>Tax exempt applied</span>
+              {/* Tax Exempt Toggle */}
+              <div className="mt-4">
+                {taxExemptStatus?.verified ? (
+                  <label className="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-lg cursor-pointer hover:bg-green-100 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={applyTaxExempt}
+                      onChange={(e) => setApplyTaxExempt(e.target.checked)}
+                      className="mt-0.5 w-4 h-4 text-green-600 border-green-300 rounded focus:ring-green-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 text-sm font-medium text-green-800">
+                        <Check className="w-4 h-4" />
+                        <span>Apply tax exemption</span>
+                      </div>
+                      <p className="text-xs text-green-600 mt-1">
+                        License: {taxExemptStatus.licenseNumber}
+                      </p>
+                    </div>
+                  </label>
+                ) : (
+                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg opacity-60">
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        disabled
+                        className="mt-0.5 w-4 h-4 text-gray-400 border-gray-300 rounded cursor-not-allowed"
+                      />
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-500">Tax Exemption</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Please update in My Account to use
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-xs text-green-600 mt-1">
-                    License: {taxExemptStatus.licenseNumber}
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
 
               {/* Action Buttons */}
               <div className="mt-6 space-y-3">

@@ -12,7 +12,7 @@ class WooCommerceService {
         username: CONSUMER_KEY,
         password: CONSUMER_SECRET
       },
-      timeout: 10000
+      timeout: 30000
     });
   }
 
@@ -142,7 +142,7 @@ class WooCommerceService {
     try {
       const response = await this.api.get('/orders', {
         params: {
-          per_page: 100, // Get more orders
+          per_page: 10, // Get more orders
           orderby: 'date',
           order: 'desc',
           ...params

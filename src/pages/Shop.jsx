@@ -148,7 +148,8 @@ export default function Shop() {
     }
   };
 
-  if (loading) {
+  // Only show loading spinner if actually loading AND no products cached
+  if (loading && menuItems.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -354,7 +355,7 @@ export default function Shop() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           className="bg-white rounded-xl shadow-sm border border-masala-100 overflow-hidden hover:shadow-md transition-all cursor-pointer group"
-                          onClick={() => handleSelectItem(item)}
+                          onClick={() => setSelectedItem(item)}
                         >
                           {/* Image */}
                           <div className="relative aspect-[4/3] bg-masala-100 overflow-hidden">
@@ -427,10 +428,13 @@ export default function Shop() {
                             <h3 className="font-semibold text-masala-900 mb-1 line-clamp-1">
                               {item.name}
                             </h3>
-                            {item.description && (
-                              <p className="text-sm text-masala-500 line-clamp-2 mb-3">
-                                {item.description}
-                              </p>
+                            {(item.short_description || item.description) && (
+                              <p 
+                                className="text-sm text-masala-500 line-clamp-2 mb-3"
+                                dangerouslySetInnerHTML={{ 
+                                  __html: (item.short_description || item.description).replace(/<\/?p>/g, '') 
+                                }}
+                              />
                             )}
                             <div className="flex items-center justify-between">
                               <span className="text-lg font-bold text-primary-600">
@@ -601,22 +605,9 @@ export default function Shop() {
                   <h2 className="text-2xl font-bold text-masala-900">
                     {selectedItem.name}
                   </h2>
-                  <div className="text-right">
-                    {calculateModifierTotal(modifierSelections) > 0 ? (
-                      <>
-                        <span className="text-sm text-masala-400 line-through">
-                          ${parseFloat(selectedItem.price).toFixed(2)}
-                        </span>
-                        <span className="text-2xl font-bold text-primary-600 block">
-                          ${selectedItemTotalPrice.toFixed(2)}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-2xl font-bold text-primary-600">
-                        ${parseFloat(selectedItem.price).toFixed(2)}
-                      </span>
-                    )}
-                  </div>
+                  <span className="text-2xl font-bold text-primary-600">
+                    ${parseFloat(selectedItem.price).toFixed(2)}
+                  </span>
                 </div>
 
                 {/* Badges */}

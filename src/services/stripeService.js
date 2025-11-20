@@ -5,21 +5,54 @@ import axios from 'axios';
 // Use your Stripe publishable key
 const stripePromise = loadStripe('pk_test_51SUZUaDlQAsWuKRF2uiFmcK7cP5bYBFV28mJV2FjbzcIE73aAgwEhmhWARdP0aWx0oaoyKsI58cNrEkVczDgs8vE00SN6hvmWi');
 
+// Helper function to format modifiers for display
+const formatModifiersForDisplay = (modifiers) => {
+  if (!modifiers || Object.keys(modifiers).length === 0) return '';
+  
+  const parts = [];
+  for (const [key, value] of Object.entries(modifiers)) {
+    if (value) {
+      // Handle single selection
+      if (value.name) {
+        parts.push(value.name);
+      }
+      // Handle multiple selections (array)
+      else if (Array.isArray(value)) {
+        const names = value.map(v => v.name).filter(Boolean);
+        if (names.length) parts.push(names.join(', '));
+      }
+    }
+  }
+  
+  return parts.join(' • ');
+};
+
 export const stripeService = {
   async createCheckoutSession(cartItems, orderMetadata) {
     try {
-        const apiUrl = import.meta.env.DEV 
-        ? '/wp-json/imasala/v1/create-checkout'
-        : 'https://tandoorikitchenco.com/wp-json/imasala/v1/create-checkout';
       const response = await axios.post(
         'https://tandoorikitchenco.com/wp-json/imasala/v1/create-checkout',
         {
-          items: cartItems.map(item => ({
-            name: item.name,
-            price: parseFloat(item.price),
-            quantity: item.quantity,
-            image: item.image
-          })),
+          items: cartItems.map(item => {
+            const modifierString = formatModifiersForDisplay(item.modifiers);
+            
+            return {
+              name: item.name,
+              price: parseFloat(item.price),
+              quantity: item.quantity,
+              image: item.image,
+              // Include modifiers as formatted string for line item description
+              description: modifierString || undefined,
+              // Include raw modifiers for order meta
+              modifiers: item.modifiers || {},
+              // Include modifier breakdown for order details
+              modifier_details: item.modifiers ? Object.entries(item.modifiers).map(([key, value]) => ({
+                group: key,
+                selection: value?.name || (Array.isArray(value) ? value.map(v => v.name).join(', ') : ''),
+                price: value?.price || 0
+              })) : []
+            };
+          }),
           metadata: orderMetadata,
         },
         {
