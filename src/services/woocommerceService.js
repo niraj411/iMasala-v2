@@ -12,7 +12,7 @@ class WooCommerceService {
         username: CONSUMER_KEY,
         password: CONSUMER_SECRET
       },
-      timeout: 30000
+      timeout: 300000
     });
   }
 
