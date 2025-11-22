@@ -1,18 +1,16 @@
-// src/pages/CustomerDashboard.jsx (Updated tax tab section)
+// src/pages/CustomerDashboard.jsx (Updated)
 import React, { useState } from 'react';
 import { useOrders } from '../contexts/OrderContext';
 import { useAuth } from '../contexts/AuthContext';
 import OrderCard from '../components/orders/OrderCard';
-import TaxExemptionManager from '../components/customer/TaxExemptionManager'; // Add this import
+import TaxExemptionManager from '../components/customer/TaxExemptionManager';
 
 export default function CustomerDashboard() {
   const { orders, loading } = useOrders();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('orders');
 
-  // Filter orders for current customer
-  const customerOrders = orders.filter(order => order.customer_id === user?.id);
-
+  const customerOrders = orders
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Welcome Header */}
@@ -69,8 +67,14 @@ export default function CustomerDashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  No orders found
+                <div className="text-center py-8">
+                  <div className="text-gray-400 mb-2">
+                    <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500 font-medium">No orders found</p>
+                  <p className="text-gray-400 text-sm mt-1">Your orders will appear here once you place them</p>
                 </div>
               )}
             </div>
@@ -78,7 +82,7 @@ export default function CustomerDashboard() {
 
           {activeTab === 'tax' && (
             <div>
-              <TaxExemptionManager /> {/* Replace the placeholder with the actual component */}
+              <TaxExemptionManager />
             </div>
           )}
 

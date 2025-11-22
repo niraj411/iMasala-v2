@@ -12,10 +12,13 @@ export const authService = {
       });
 
       if (response.data.token) {
-        // Get user details
+        // Get user details with email
         const userResponse = await axios.get(`${WORDPRESS_API}/users/me`, {
           headers: {
             Authorization: `Bearer ${response.data.token}`
+          },
+          params: {
+            context: 'edit' // This returns email field
           }
         });
 
@@ -24,7 +27,6 @@ export const authService = {
           user: userResponse.data
         };
       }
-
       throw new Error('Authentication failed');
     } catch (error) {
       throw new Error('Login failed: ' + (error.response?.data?.message || error.message));
@@ -38,6 +40,9 @@ export const authService = {
     const response = await axios.get(`${WORDPRESS_API}/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`
+      },
+      params: {
+        context: 'edit' // This returns email field
       }
     });
 
