@@ -1,263 +1,351 @@
-// src/components/catering/CateringOrderForm.jsx
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Truck, Clock, MapPin, Users, Utensils, Package, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Utensils, Users, Clock, Calendar, Truck, Package, Check, AlertCircle } from 'lucide-react';
 import { useCatering } from '../../contexts/CateringContext';
-import { useCart } from '../../contexts/CartContext';
 
 export default function CateringOrderForm() {
-  const { 
-    cateringDetails, 
-    setCateringDetails, 
-    getMinimumDeliveryTime,
-    validateCateringOrder 
-  } = useCatering();
-  const { getCartTotal } = useCart();
-  const [errors, setErrors] = useState([]);
+  const { cateringDetails, updateCateringDetails } = useCatering();
+  
+  // Local state for form
+  const [deliveryMethod, setDeliveryMethod] = useState('pickup'); // 'pickup' or 'delivery'
+  const [deliveryDate, setDeliveryDate] = useState('');
+  const [deliveryTime, setDeliveryTime] = useState('');
+  const [numberOfGuests, setNumberOfGuests] = useState('');
+  const [needSetup, setNeedSetup] = useState(false);
+  const [needUtensils, setNeedUtensils] = useState(false);
+  const [specialInstructions, setSpecialInstructions] = useState('');
+  
+  // Delivery address fields
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('CO');
+  const [zipCode, setZipCode] = useState('');
 
-  const cartTotal = getCartTotal();
-  const deliveryFee = 20;
-  const totalWithDelivery = cartTotal + deliveryFee;
-
-  const handleInputChange = (field, value) => {
-    if (field.includes('.')) {
-      const [parent, child] = field.split('.');
-      setCateringDetails(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value
-        }
-      }));
-    } else {
-      setCateringDetails(prev => ({
-        ...prev,
-        [field]: value
-      }));
-    }
+  // Get minimum date (today + 4 hours for catering)
+  const getMinDate = () => {
+    const date = new Date();
+    date.setHours(date.getHours() + 4);
+    return date.toISOString().split('T')[0];
   };
 
-  const validateForm = () => {
-    const validationErrors = validateCateringOrder(cartTotal);
-    setErrors(validationErrors);
-    return validationErrors.length === 0;
+  const getMaxDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 30); // 30 days out
+    return date.toISOString().split('T')[0];
   };
+
+  // Time slots for catering (more flexible than regular pickup)
+  const timeSlots = [
+    '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
+    '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
+    '20:00', '20:30', '21:00'
+  ];
+
+  const formatTimeForDisplay = (timeStr) => {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHour = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
+    return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+
+  // Update context when form changes
+  useEffect(() => {
+    const details = {
+      deliveryMethod,
+      deliveryDate,
+      deliveryTime,
+      numberOfGuests: parseInt(numberOfGuests) || 0,
+      needSetup,
+      needUtensils,
+      specialInstructions,
+      deliveryAddress: deliveryMethod === 'delivery' ? {
+        address,
+        city,
+        state,
+        zipCode
+      } : null
+    };
+    
+    updateCateringDetails(details);
+  }, [
+    deliveryMethod, deliveryDate, deliveryTime, numberOfGuests, 
+    needSetup, needUtensils, specialInstructions,
+    address, city, state, zipCode
+  ]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-lg border border-masala-200 p-6"
-    >
-      <div className="flex items-center gap-3 mb-6">
-        <Truck className="w-6 h-6 text-primary-600" />
-        <h2 className="text-xl font-semibold text-masala-900">Catering Delivery Details</h2>
-      </div>
-
-      {/* Minimum Order Warning */}
-      {cartTotal < 250 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-          <div className="flex gap-3">
-            <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-yellow-800">Minimum Order Required</p>
-              <p className="text-sm text-yellow-700 mt-1">
-                Catering orders require a minimum of $250. Current total: ${cartTotal.toFixed(2)}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+    <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
+      <h2 className="text-lg font-semibold text-white mb-6 flex items-center gap-2 tracking-tight">
+        <Utensils className="w-5 h-5 text-white/60" strokeWidth={1.5} />
+        Catering Details
+      </h2>
 
       <div className="space-y-6">
-        {/* Delivery Date & Time */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-masala-700 mb-2">
-              <Clock className="w-4 h-4" />
-              Delivery Date
-            </label>
-            <input
-              type="date"
-              value={cateringDetails.deliveryDate}
-              onChange={(e) => handleInputChange('deliveryDate', e.target.value)}
-              min={new Date().toISOString().split('T')[0]}
-              className="w-full px-3 py-2 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
-            />
-          </div>
+        {/* Pickup vs Delivery Toggle */}
+        <div>
+          <label className="block text-sm font-semibold text-white/70 mb-3 uppercase tracking-wider">
+            Fulfillment Method
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setDeliveryMethod('pickup')}
+              className={`p-4 rounded-xl border-2 transition-all text-left ${
+                deliveryMethod === 'pickup'
+                  ? 'border-white bg-white/10'
+                  : 'border-white/10 bg-white/[0.02] hover:bg-white/5 hover:border-white/20'
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className={`p-2 rounded-xl ${
+                  deliveryMethod === 'pickup' ? 'bg-white/20' : 'bg-white/5'
+                }`}>
+                  <Package className="w-5 h-5 text-white" strokeWidth={1.5} />
+                </div>
+                <span className={`font-semibold ${
+                  deliveryMethod === 'pickup' ? 'text-white' : 'text-white/60'
+                }`}>
+                  Pickup
+                </span>
+              </div>
+              <p className="text-xs text-white/40 font-medium">
+                Pick up at restaurant
+              </p>
+            </button>
 
-          <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-masala-700 mb-2">
-              <Clock className="w-4 h-4" />
-              Delivery Time
-            </label>
-            <input
-              type="time"
-              value={cateringDetails.deliveryTime}
-              onChange={(e) => handleInputChange('deliveryTime', e.target.value)}
-              className="w-full px-3 py-2 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
-            />
+            <button
+              type="button"
+              onClick={() => setDeliveryMethod('delivery')}
+              className={`p-4 rounded-xl border-2 transition-all text-left ${
+                deliveryMethod === 'delivery'
+                  ? 'border-white bg-white/10'
+                  : 'border-white/10 bg-white/[0.02] hover:bg-white/5 hover:border-white/20'
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className={`p-2 rounded-xl ${
+                  deliveryMethod === 'delivery' ? 'bg-white/20' : 'bg-white/5'
+                }`}>
+                  <Truck className="w-5 h-5 text-white" strokeWidth={1.5} />
+                </div>
+                <span className={`font-semibold ${
+                  deliveryMethod === 'delivery' ? 'text-white' : 'text-white/60'
+                }`}>
+                  Delivery
+                </span>
+              </div>
+              <p className="text-xs text-white/40 font-medium">
+                $20 delivery fee • 25 mile radius
+              </p>
+            </button>
           </div>
         </div>
 
-        {/* Delivery Address */}
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-masala-700 mb-2">
-            <MapPin className="w-4 h-4" />
-            Delivery Address
-          </label>
-          <div className="space-y-3">
-            <input
-              type="text"
-              placeholder="Street Address"
-              value={cateringDetails.deliveryAddress.street}
-              onChange={(e) => handleInputChange('deliveryAddress.street', e.target.value)}
-              className="w-full px-3 py-2 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
-            />
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        {/* Date and Time */}
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-white/70 mb-2 uppercase tracking-wider">
+              Date
+            </label>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" strokeWidth={1.5} />
               <input
-                type="text"
-                placeholder="City"
-                value={cateringDetails.deliveryAddress.city}
-                onChange={(e) => handleInputChange('deliveryAddress.city', e.target.value)}
-                className="px-3 py-2 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                required
-              />
-              <input
-                type="text"
-                placeholder="State"
-                value={cateringDetails.deliveryAddress.state}
-                onChange={(e) => handleInputChange('deliveryAddress.state', e.target.value)}
-                className="px-3 py-2 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                maxLength="2"
-                required
-              />
-              <input
-                type="text"
-                placeholder="ZIP Code"
-                value={cateringDetails.deliveryAddress.zipCode}
-                onChange={(e) => handleInputChange('deliveryAddress.zipCode', e.target.value)}
-                className="px-3 py-2 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                type="date"
+                value={deliveryDate}
+                onChange={(e) => setDeliveryDate(e.target.value)}
+                min={getMinDate()}
+                max={getMaxDate()}
+                className="w-full pl-10 pr-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium"
                 required
               />
             </div>
-            <textarea
-              placeholder="Delivery Instructions (Optional)"
-              value={cateringDetails.deliveryAddress.instructions}
-              onChange={(e) => handleInputChange('deliveryAddress.instructions', e.target.value)}
-              className="w-full px-3 py-2 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              rows="2"
-            />
+            <p className="text-xs text-white/30 mt-1 font-medium">
+              Minimum 4 hours advance notice
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-white/70 mb-2 uppercase tracking-wider">
+              Time
+            </label>
+            <div className="relative">
+              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" strokeWidth={1.5} />
+              <select
+                value={deliveryTime}
+                onChange={(e) => setDeliveryTime(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium appearance-none"
+                required
+              >
+                <option value="" className="bg-black">Select time</option>
+                {timeSlots.map((time) => (
+                  <option key={time} value={time} className="bg-black">
+                    {formatTimeForDisplay(time)}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
-        {/* Additional Options */}
+        {/* Delivery Address (only shown for delivery) */}
+        <AnimatePresence>
+          {deliveryMethod === 'delivery' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-sm font-semibold text-white/70 mb-2 uppercase tracking-wider flex items-center gap-2">
+                  <MapPin className="w-4 h-4" strokeWidth={1.5} />
+                  Delivery Address
+                </label>
+                <input
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Street address"
+                  className="w-full px-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium"
+                  required={deliveryMethod === 'delivery'}
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="col-span-2">
+                  <input
+                    type="text"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="City"
+                    className="w-full px-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium"
+                    required={deliveryMethod === 'delivery'}
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                    placeholder="State"
+                    maxLength="2"
+                    className="w-full px-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium uppercase"
+                    required={deliveryMethod === 'delivery'}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <input
+                  type="text"
+                  value={zipCode}
+                  onChange={(e) => setZipCode(e.target.value)}
+                  placeholder="ZIP Code"
+                  maxLength="5"
+                  className="w-full px-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium"
+                  required={deliveryMethod === 'delivery'}
+                />
+              </div>
+
+              <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                <p className="text-xs text-blue-300 font-medium">
+                  Delivery available within 25 miles of Lafayette, CO
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Number of Guests */}
+        <div>
+          <label className="block text-sm font-semibold text-white/70 mb-2 uppercase tracking-wider flex items-center gap-2">
+            <Users className="w-4 h-4" strokeWidth={1.5} />
+            Number of Guests
+          </label>
+          <input
+            type="number"
+            value={numberOfGuests}
+            onChange={(e) => setNumberOfGuests(e.target.value)}
+            min="1"
+            placeholder="e.g., 50"
+            className="w-full px-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium"
+            required
+          />
+          <p className="text-xs text-white/30 mt-1 font-medium">
+            Helps us prepare the right amount
+          </p>
+        </div>
+
+        {/* Setup and Utensils Options */}
         <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <Users className="w-4 h-4 text-masala-600" />
-            <label className="text-sm font-medium text-masala-700">Number of Guests</label>
-            <input
-              type="number"
-              value={cateringDetails.numberOfGuests}
-              onChange={(e) => handleInputChange('numberOfGuests', e.target.value)}
-              className="w-24 px-3 py-1 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              min="1"
-              placeholder="0"
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
+          <label className="flex items-start gap-3 p-3 bg-white/[0.02] border border-white/10 rounded-xl cursor-pointer hover:bg-white/5 transition-all">
             <input
               type="checkbox"
-              id="needSetup"
-              checked={cateringDetails.needSetup}
-              onChange={(e) => handleInputChange('needSetup', e.target.checked)}
-              className="w-4 h-4 text-primary-600 border-masala-300 rounded focus:ring-primary-500"
+              checked={needSetup}
+              onChange={(e) => setNeedSetup(e.target.checked)}
+              className="mt-0.5 w-4 h-4 accent-white"
             />
-            <label htmlFor="needSetup" className="flex items-center gap-2 text-sm text-masala-700">
-              <Package className="w-4 h-4" />
-              Need setup service
-            </label>
-          </div>
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-white">
+                Need setup assistance
+              </div>
+              <p className="text-xs text-white/40 mt-0.5 font-medium">
+                We'll help set up buffet, chafing dishes, etc.
+              </p>
+            </div>
+          </label>
 
-          <div className="flex items-center gap-3">
+          <label className="flex items-start gap-3 p-3 bg-white/[0.02] border border-white/10 rounded-xl cursor-pointer hover:bg-white/5 transition-all">
             <input
               type="checkbox"
-              id="needUtensils"
-              checked={cateringDetails.needUtensils}
-              onChange={(e) => handleInputChange('needUtensils', e.target.checked)}
-              className="w-4 h-4 text-primary-600 border-masala-300 rounded focus:ring-primary-500"
+              checked={needUtensils}
+              onChange={(e) => setNeedUtensils(e.target.checked)}
+              className="mt-0.5 w-4 h-4 accent-white"
             />
-            <label htmlFor="needUtensils" className="flex items-center gap-2 text-sm text-masala-700">
-              <Utensils className="w-4 h-4" />
-              Need utensils and plates
-            </label>
-          </div>
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-white">
+                Include utensils & serving supplies
+              </div>
+              <p className="text-xs text-white/40 mt-0.5 font-medium">
+                Plates, napkins, serving spoons, etc.
+              </p>
+            </div>
+          </label>
         </div>
 
         {/* Special Instructions */}
         <div>
-          <label className="text-sm font-medium text-masala-700 mb-2 block">
+          <label className="block text-sm font-semibold text-white/70 mb-2 uppercase tracking-wider">
             Special Instructions
           </label>
           <textarea
-            value={cateringDetails.specialInstructions}
-            onChange={(e) => handleInputChange('specialInstructions', e.target.value)}
-            className="w-full px-3 py-2 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            value={specialInstructions}
+            onChange={(e) => setSpecialInstructions(e.target.value)}
             rows="3"
-            placeholder="Any special requests or dietary requirements..."
+            placeholder="Any dietary restrictions, preferences, or special requests..."
+            className="w-full px-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium resize-none"
           />
         </div>
 
-        {/* Pricing Summary */}
-        <div className="bg-masala-50 rounded-lg p-4">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-masala-600">Subtotal</span>
-              <span className="font-medium">${cartTotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-masala-600">Delivery Fee (25 mile radius)</span>
-              <span className="font-medium">${deliveryFee.toFixed(2)}</span>
-            </div>
-            <div className="pt-2 border-t border-masala-200">
-              <div className="flex justify-between">
-                <span className="font-semibold text-masala-900">Total</span>
-                <span className="font-bold text-lg text-primary-600">
-                  ${totalWithDelivery.toFixed(2)}
-                </span>
-              </div>
+        {/* Info Alert */}
+        <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+          <div className="flex gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0" strokeWidth={1.5} />
+            <div>
+              <p className="text-sm text-amber-300 font-semibold mb-1">
+                Catering Order Requirements
+              </p>
+              <ul className="text-xs text-amber-300/80 space-y-1 font-medium">
+                <li>• Minimum order: $250</li>
+                <li>• Advance notice: 4 hours minimum</li>
+                <li>• Delivery fee: $20 (within 25 miles)</li>
+                <li>• We'll call to confirm your order details</li>
+              </ul>
             </div>
           </div>
-        </div>
-
-        {/* Error Messages */}
-        {errors.length > 0 && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-red-800 mb-2">Please fix the following:</p>
-                <ul className="list-disc list-inside space-y-1">
-                  {errors.map((error, index) => (
-                    <li key={index} className="text-sm text-red-700">{error}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
-            <strong>Note:</strong> Catering orders will be placed on hold for restaurant confirmation. 
-            You will receive an SMS confirmation once your order is approved.
-          </p>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

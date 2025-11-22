@@ -1,4 +1,4 @@
-// src/App.jsx - Updated with MainLayout
+// src/App.jsx - Corrected Routes
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -20,6 +20,7 @@ import Checkout from './pages/Checkout';
 import OrderTracking from './pages/OrderTracking';
 import OrderSuccess from './pages/OrderSuccess';
 import Shop from './pages/Shop';
+import Home from './pages/Home';
 
 // Components
 import LoadingSpinner from './components/ui/LoadingSpinner';
@@ -31,17 +32,18 @@ function AppRoutes() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-masala-50">
+      <div className="min-h-screen flex items-center justify-center bg-black">
         <LoadingSpinner />
       </div>
     );
   }
 
-  // Allow access to certain routes without authentication
-  const publicPaths = ['/order-success', '/order-cancelled'];
+  // Public routes that don't require authentication
+  const publicPaths = ['/order-success', '/order-cancelled', '/'];
   const currentPath = window.location.pathname;
   
-  if (!isAuthenticated && !publicPaths.includes(currentPath)) {
+  // Only require auth for non-public paths
+  if (!isAuthenticated && !publicPaths.includes(currentPath) && !currentPath.startsWith('/order/')) {
     return <Login />;
   }
 
@@ -50,6 +52,9 @@ function AppRoutes() {
   return (
     <MainLayout>
       <Routes>
+        {/* Home / Landing Page - Public */}
+        <Route path="/" element={<Home />} />
+        
         {/* Admin Dashboard */}
         <Route 
           path="/admin" 
@@ -59,16 +64,16 @@ function AppRoutes() {
               : (
                 <div className="min-h-[60vh] flex items-center justify-center p-8">
                   <div className="text-center max-w-md">
-                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                       <span className="text-2xl">🔒</span>
                     </div>
-                    <h2 className="text-xl font-bold text-red-600 mb-2">Access Denied</h2>
-                    <p className="text-masala-600 mb-6">
+                    <h2 className="text-xl font-bold text-red-400 mb-2">Access Denied</h2>
+                    <p className="text-white/60 mb-6 font-medium">
                       You need administrator privileges to access this page.
                     </p>
                     <button 
                       onClick={() => window.location.href = '/my-account'}
-                      className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-xl font-medium"
+                      className="backdrop-blur-xl bg-white hover:bg-white/90 text-black px-6 py-3 rounded-2xl font-bold transition-all"
                     >
                       Go to My Account
                     </button>
@@ -83,7 +88,7 @@ function AppRoutes() {
         
         {/* Shop / Menu */}
         <Route path="/shop" element={<Shop />} />
-        
+
         {/* Checkout */}
         <Route path="/checkout" element={<Checkout />} />
         
@@ -99,16 +104,16 @@ function AppRoutes() {
           element={
             <div className="min-h-[60vh] flex items-center justify-center p-8">
               <div className="text-center max-w-md">
-                <div className="w-16 h-16 bg-masala-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">❌</span>
                 </div>
-                <h2 className="text-2xl font-semibold text-masala-900 mb-2">Order Cancelled</h2>
-                <p className="text-masala-600 mb-6">
+                <h2 className="text-2xl font-semibold text-white mb-2 tracking-tight">Order Cancelled</h2>
+                <p className="text-white/60 mb-6 font-medium">
                   Your order was cancelled. Your cart items are still saved.
                 </p>
                 <button 
                   onClick={() => window.location.href = '/shop'}
-                  className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-xl font-medium"
+                  className="backdrop-blur-xl bg-white hover:bg-white/90 text-black px-6 py-3 rounded-2xl font-bold transition-all"
                 >
                   Return to Menu
                 </button>
@@ -120,16 +125,6 @@ function AppRoutes() {
         {/* Order Tracking */}
         <Route path="/order/:orderId" element={<OrderTracking />} />
         
-        {/* Default Redirect */}
-        <Route 
-          path="/" 
-          element={
-            isAdmin 
-              ? <Navigate to="/admin" /> 
-              : <Navigate to="/shop" />
-          } 
-        />
-        
         {/* 404 Fallback */}
         <Route 
           path="*" 
@@ -137,13 +132,13 @@ function AppRoutes() {
             <div className="min-h-[60vh] flex items-center justify-center p-8">
               <div className="text-center max-w-md">
                 <div className="text-6xl mb-4">🍽️</div>
-                <h2 className="text-2xl font-semibold text-masala-900 mb-2">Page Not Found</h2>
-                <p className="text-masala-600 mb-6">
+                <h2 className="text-2xl font-semibold text-white mb-2 tracking-tight">Page Not Found</h2>
+                <p className="text-white/60 mb-6 font-medium">
                   The page you're looking for doesn't exist.
                 </p>
                 <button 
                   onClick={() => window.location.href = '/shop'}
-                  className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-xl font-medium"
+                  className="backdrop-blur-xl bg-white hover:bg-white/90 text-black px-6 py-3 rounded-2xl font-bold transition-all"
                 >
                   Go to Menu
                 </button>
