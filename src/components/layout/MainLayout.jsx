@@ -384,39 +384,105 @@ export default function MainLayout({ children }) {
       </AnimatePresence>
 
       {/* Footer */}
-      <footer className="bg-masala-900 text-white py-8 mt-auto">
+      <footer className="bg-masala-900 text-white py-12 mt-auto">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Brand Section */}
             <div>
-              <h3 className="font-bold text-lg mb-3">Tandoori Kitchen</h3>
-              <p className="text-masala-400 text-sm">
-                Authentic Indian cuisine made with love and traditional recipes.
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">TK</span>
+                </div>
+                <h3 className="font-bold text-lg">Tandoori Kitchen</h3>
+              </div>
+              <p className="text-masala-400 text-sm leading-relaxed">
+                Authentic Indian & Himalayan cuisine crafted with traditional recipes and the finest ingredients.
               </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-3">Contact</h4>
-              <div className="space-y-2 text-sm text-masala-400">
-                <p className="flex items-center gap-2">
-                  <Phone className="w-4 h-4" />
-                  (555) 123-4567
-                </p>
-                <p className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  123 Main Street, Your City
-                </p>
+              <div className="flex items-center gap-2 mt-4">
+                <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                <span className="text-xs text-masala-400 ml-1">Rated 5.0</span>
               </div>
             </div>
+
+            {/* Quick Links */}
             <div>
-              <h4 className="font-semibold mb-3">Hours</h4>
-              <div className="text-sm text-masala-400 space-y-1">
-                <p>Mon-Thu: 11AM - 9PM</p>
-                <p>Fri-Sat: 11AM - 10PM</p>
-                <p>Sun: 12PM - 8PM</p>
+              <h4 className="font-semibold mb-4 text-white">Quick Links</h4>
+              <div className="space-y-2 text-sm">
+                <Link to="/shop" className="block text-masala-400 hover:text-white transition-colors">
+                  Order Online
+                </Link>
+                <Link to="/my-account" className="block text-masala-400 hover:text-white transition-colors">
+                  My Orders
+                </Link>
+                <a href="https://tandoorikitchenco.com" target="_blank" rel="noopener noreferrer" className="block text-masala-400 hover:text-white transition-colors">
+                  About Us
+                </a>
+                <a href="https://tandoorikitchenco.com/contact" target="_blank" rel="noopener noreferrer" className="block text-masala-400 hover:text-white transition-colors">
+                  Contact
+                </a>
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            <div>
+              <h4 className="font-semibold mb-4 text-white">Contact Us</h4>
+              <div className="space-y-3 text-sm">
+                <a href="tel:3036658530" className="flex items-start gap-2 text-masala-400 hover:text-white transition-colors group">
+                  <Phone className="w-4 h-4 mt-0.5 flex-shrink-0 group-hover:text-primary-400" />
+                  <span>(303) 665-8530</span>
+                </a>
+                <a 
+                  href="https://www.google.com/maps/search/?api=1&query=199+W+South+Boulder+Rd+Lafayette+CO+80026" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-2 text-masala-400 hover:text-white transition-colors group"
+                >
+                  <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 group-hover:text-primary-400" />
+                  <span>199 W. South Boulder Rd.<br />Lafayette, CO 80026</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Hours */}
+            <div>
+              <h4 className="font-semibold mb-4 text-white">Hours of Operation</h4>
+              <div className="text-sm text-masala-400 space-y-2">
+                <div>
+                  <p className="text-white font-medium mb-1">Monday - Thursday</p>
+                  <p className="text-xs">11:00 AM - 2:30 PM</p>
+                  <p className="text-xs">4:30 PM - 9:00 PM</p>
+                </div>
+                <div>
+                  <p className="text-white font-medium mb-1">Friday - Saturday</p>
+                  <p className="text-xs">11:00 AM - 2:30 PM</p>
+                  <p className="text-xs">4:30 PM - 9:30 PM</p>
+                </div>
+                <div>
+                  <p className="text-white font-medium mb-1">Sunday</p>
+                  <p className="text-xs">11:00 AM - 2:30 PM</p>
+                  <p className="text-xs">4:30 PM - 9:00 PM</p>
+                </div>
               </div>
             </div>
           </div>
-          <div className="border-t border-masala-800 mt-8 pt-6 text-center text-sm text-masala-500">
-            © 2025 Tandoori Kitchen. All rights reserved.
+
+          {/* Bottom Bar */}
+          <div className="border-t border-masala-800 pt-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-masala-500">
+              <p>© {new Date().getFullYear()} Tandoori Kitchen. All rights reserved.</p>
+              <div className="flex items-center gap-4">
+                <a href="https://tandoorikitchenco.com/privacy-policy" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  Privacy Policy
+                </a>
+                <a href="https://tandoorikitchenco.com/terms" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  Terms of Service
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
