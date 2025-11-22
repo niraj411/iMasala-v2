@@ -1,31 +1,23 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { woocommerceService } from '../services/woocommerceService';
+import { useAuth } from './AuthContext';
 
 const OrderContext = createContext();
-const fetchOrders = async (params = {}) => {
-  setLoading(true);
-  try {
-    console.log('1. Starting fetch...');
-    const ordersData = await woocommerceService.getAllOrders(params);
-    console.log('2. Data received:', ordersData);
-    console.log('3. Data length:', ordersData?.length);
-    setOrders(ordersData);
-    console.log('4. Orders set successfully');
-  } catch (error) {
-    console.error('ERROR in fetchOrders:', error);
-  } finally {
-    setLoading(false);
-    console.log('5. Loading set to false');
-  }
-};
+
 export function OrderProvider({ children }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   const fetchOrders = async (params = {}) => {
     setLoading(true);
     try {
-      const ordersData = await woocommerceService.getAllOrders(params);
+      // For non-admin users, filter by email on the API level
+      const queryParams = user?.id === 1 
+        ? params  // Admin gets all orders
+        : { ...params, search: user?.email }; // Others get filtered by email
+      
+      const ordersData = await woocommerceService.getAllOrders(queryParams);
       setOrders(ordersData);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -48,8 +40,10 @@ export function OrderProvider({ children }) {
   };
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (user) {
+      fetchOrders();
+    }
+  }, [user]);
 
   return (
     <OrderContext.Provider value={{
