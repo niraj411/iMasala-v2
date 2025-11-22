@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, User, LogOut } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 
 export default function SimpleNav() {
@@ -12,76 +12,80 @@ export default function SimpleNav() {
   
   const isAdmin = user?.roles?.includes('administrator') || user?.roles?.includes('shop_manager');
 
+  const isActivePath = (path) => location.pathname === path;
+
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+    <nav className="sticky top-0 z-50 backdrop-blur-xl bg-black/80 border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <div className="flex items-center">
-            <span className="text-xl font-bold text-primary-600">🍛 Imasala</span>
-          </div>
-
-
+          <Link to="/" className="flex items-center group">
+            <span className="text-2xl font-semibold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent tracking-tight">
+              iMasala
+            </span>
+          </Link>
 
           {/* Navigation Links */}
-          
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-1">
             {isAdmin && (
               <Link
                 to="/admin"
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  location.pathname === '/admin'
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'text-gray-600 hover:text-gray-900'
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  isActivePath('/admin')
+                    ? 'bg-white/10 text-white backdrop-blur-sm'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
                 }`}
               >
-                Admin Dashboard
+                Admin
               </Link>
             )}
             
             <Link
-  to="/shop"
-  className={`px-3 py-2 rounded-md text-sm font-medium ${
-    location.pathname === '/shop'
-      ? 'bg-primary-100 text-primary-700'
-      : 'text-gray-600 hover:text-gray-900'
-  }`}
->
-  Shop
-</Link>
-<button
-  onClick={() => window.location.href = '/shop'}
-  className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
->
-  <ShoppingCart className="w-6 h-6" />
-  {cartItemCount > 0 && (
-    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-      {cartItemCount}
-    </span>
-  )}
-</button>
+              to="/shop"
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                isActivePath('/shop')
+                  ? 'bg-white/10 text-white backdrop-blur-sm'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              Shop
+            </Link>
+
+            {/* Cart Button */}
+            <button
+              onClick={() => window.location.href = '/shop'}
+              className="relative p-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all duration-200 ml-2"
+            >
+              <ShoppingCart className="w-5 h-5" strokeWidth={1.5} />
+              {cartItemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center shadow-lg shadow-red-500/30 ring-2 ring-black">
+                  {cartItemCount}
+                </span>
+              )}
+            </button>
             
             <Link
               to="/my-account"
-              className={`px-3 py-2 rounded-md text-sm font-medium ${
-                location.pathname === '/my-account'
-                  ? 'bg-primary-100 text-primary-700'
-                  : 'text-gray-600 hover:text-gray-900'
+              className={`p-2.5 rounded-xl transition-all duration-200 ${
+                isActivePath('/my-account')
+                  ? 'bg-white/10 text-white backdrop-blur-sm'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
               }`}
             >
-              My Account
+              <User className="w-5 h-5" strokeWidth={1.5} />
             </Link>
 
             {/* User Info & Logout */}
-            <div className="flex items-center space-x-3">
-              <span className="text-sm text-gray-700">
-                Hello, {user?.name}
+            <div className="flex items-center space-x-3 ml-4 pl-4 border-l border-white/10">
+              <span className="text-sm text-white/60 font-medium hidden sm:block">
+                {user?.name}
               </span>
               <button
                 onClick={logout}
-                className="bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white text-sm font-medium transition-all duration-200 border border-white/10 hover:border-white/20"
               >
-                Logout
+                <LogOut className="w-4 h-4" strokeWidth={1.5} />
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           </div>
