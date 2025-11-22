@@ -2,19 +2,24 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, Plus, Minus, Star, Clock, Flame, Leaf, 
+  Search, Truck, Store, Plus, Minus, Star, Clock, Flame, Leaf, 
   ChevronRight, Filter, X, Check, ShoppingBag,
   Sparkles, TrendingUp
 } from 'lucide-react';
+
 import { useCart } from '../contexts/CartContext';
 import { useMenu } from '../contexts/MenuContext';
+import { useCatering } from '../contexts/CateringContext';
 import ModifierModal from '../components/modifiers/ModifierModal';
 import { productHasModifiers } from '../config/modifiers';
 import toast from 'react-hot-toast';
 
+
+
 export default function Shop() {
   const { products: menuItems = [], categories = [], loading } = useMenu();
   const { addToCart, cartItems, updateQuantity } = useCart();
+  const { isCateringOrder, setIsCateringOrder } = useCatering();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
@@ -45,6 +50,13 @@ export default function Shop() {
   // Filter and search items
   const filteredItems = useMemo(() => {
     return menuItems.filter(item => {
+      if (isCateringOrder) {
+        const isCateringItem = item.categories?.some(cat => 
+          cat.slug === 'catering' || cat.name.toLowerCase().includes('catering')
+        );
+        if (!isCateringItem) return false;
+      }
+  
       // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
@@ -208,6 +220,53 @@ export default function Shop() {
         </div>
       </div>
 
+
+      {/* Order Type Toggle */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-center gap-4">
+            <button
+              onClick={() => setIsCateringOrder(false)}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+                !isCateringOrder
+                  ? 'bg-primary-500 text-white shadow-lg'
+                  : 'bg-masala-100 text-masala-600 hover:bg-masala-200'
+              }`}
+            >
+              <Store className="w-5 h-5" />
+              Regular Order
+            </button>
+            <button
+              onClick={() => setIsCateringOrder(true)}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+                isCateringOrder
+                  ? 'bg-primary-500 text-white shadow-lg'
+                  : 'bg-masala-100 text-masala-600 hover:bg-masala-200'
+              }`}
+            >
+              <Truck className="w-5 h-5" />
+              Catering Order
+              <span className="text-xs px-2 py-0.5 bg-white/20 rounded-full">
+                $250 min
+              </span>
+            </button>
+          </div>
+          
+          {/* Catering Info Banner */}
+          {isCateringOrder && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-3 p-3 bg-primary-50 border border-primary-200 rounded-lg"
+            >
+              <p className="text-sm text-primary-800 text-center">
+                🎉 Catering orders include free delivery within 25 miles • $20 delivery fee • Minimum 4 hours advance notice
+              </p>
+            </motion.div>
+          )}
+        </div>
+      </div>
       {/* Sticky Category Navigation */}
       <div 
         ref={navRef}
