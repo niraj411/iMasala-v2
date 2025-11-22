@@ -1,4 +1,4 @@
-// src/pages/Checkout.jsx - Improved with Smart Scheduling
+// src/pages/Checkout.jsx - Final Version with Catering Fix
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -19,14 +19,13 @@ import { useNavigate } from 'react-router-dom';
 
 // Restaurant hours configuration
 const RESTAURANT_HOURS = {
-  // 0 = Sunday, 1 = Monday, etc.
-  0: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } }, // Sunday
-  1: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } }, // Monday
-  2: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } }, // Tuesday
-  3: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } }, // Wednesday
-  4: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } }, // Thursday
-  5: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:30' } }, // Friday
-  6: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:30' } }, // Saturday
+  0: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } },
+  1: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } },
+  2: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } },
+  3: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } },
+  4: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } },
+  5: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:30' } },
+  6: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:30' } },
 };
 
 export default function Checkout() {
@@ -54,25 +53,24 @@ export default function Checkout() {
 
   // Calculate totals
   const cartTotal = getCartTotal();
-  const deliveryFee = selectedOrderType === 'catering' ? 20 : 0;
+  // Only charge delivery fee for catering orders with delivery method
+  const deliveryFee = (selectedOrderType === 'catering' && cateringDetails?.deliveryMethod === 'delivery') ? 20 : 0;
   const taxRate = (taxExemptStatus?.verified && applyTaxExempt) ? 0 : 0.0825;
   const taxAmount = cartTotal * taxRate;
   const finalTotal = cartTotal + deliveryFee + taxAmount;
 
-  // Helper function to parse time string to minutes
+  // Helper functions for time management
   const timeToMinutes = (timeStr) => {
     const [hours, minutes] = timeStr.split(':').map(Number);
     return hours * 60 + minutes;
   };
 
-  // Helper function to format minutes to time string
   const minutesToTime = (minutes) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
   };
 
-  // Helper function to format time for display
   const formatTimeForDisplay = (timeStr) => {
     const [hours, minutes] = timeStr.split(':').map(Number);
     const period = hours >= 12 ? 'PM' : 'AM';
@@ -80,10 +78,9 @@ export default function Checkout() {
     return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
-  // Get minimum schedulable datetime
   const getMinDateTime = () => {
     const now = new Date();
-    const minAdvanceMinutes = selectedOrderType === 'catering' ? 240 : 60; // 4 hours for catering, 1 hour for pickup
+    const minAdvanceMinutes = selectedOrderType === 'catering' ? 240 : 60;
     now.setMinutes(now.getMinutes() + minAdvanceMinutes);
     return now;
   };
@@ -102,20 +99,17 @@ export default function Checkout() {
     const minDateTime = getMinDateTime();
     const isToday = scheduledDate === new Date().toISOString().split('T')[0];
     
-    // Helper to generate slots for a period
     const generateSlotsForPeriod = (period) => {
       const startMinutes = timeToMinutes(period.start);
       const endMinutes = timeToMinutes(period.end);
       
-      // Generate slots every 15 minutes
       for (let minutes = startMinutes; minutes <= endMinutes; minutes += 15) {
         const timeStr = minutesToTime(minutes);
         
-        // If today, check if slot is in the future with required advance notice
         if (isToday) {
           const slotDateTime = new Date(scheduledDate + 'T' + timeStr);
           if (slotDateTime <= minDateTime) {
-            continue; // Skip past slots and slots too soon
+            continue;
           }
         }
         
@@ -127,16 +121,12 @@ export default function Checkout() {
       }
     };
 
-    // Generate slots for lunch period
     generateSlotsForPeriod(hours.lunch);
-    
-    // Generate slots for dinner period
     generateSlotsForPeriod(hours.dinner);
 
     return slots;
   }, [scheduledDate, selectedOrderType]);
 
-  // Group time slots by meal period
   const groupedTimeSlots = useMemo(() => {
     if (!scheduledDate || availableTimeSlots.length === 0) return { lunch: [], dinner: [] };
 
@@ -152,7 +142,6 @@ export default function Checkout() {
     };
   }, [availableTimeSlots, scheduledDate]);
 
-  // Get date constraints
   const minDate = useMemo(() => {
     return new Date().toISOString().split('T')[0];
   }, []);
@@ -187,11 +176,9 @@ export default function Checkout() {
       setOrderTiming('scheduled');
     }
     
-    // Reset scheduled time when switching order types
     setScheduledTime('');
   };
 
-  // Reset time when date changes
   useEffect(() => {
     setScheduledTime('');
   }, [scheduledDate]);
@@ -213,20 +200,55 @@ export default function Checkout() {
           validationErrors.push('Please select a pickup time');
         }
         
-        // Validate selected time is still valid
         if (scheduledDate && scheduledTime) {
           const selectedDateTime = new Date(scheduledDate + 'T' + scheduledTime);
           const minDateTime = getMinDateTime();
           
           if (selectedDateTime <= minDateTime) {
-            const requiredMinutes = selectedOrderType === 'catering' ? 240 : 60;
-            validationErrors.push(`Please select a time at least ${requiredMinutes / 60} hour${requiredMinutes > 60 ? 's' : ''} from now`);
+            validationErrors.push('Please select a time at least 1 hour from now');
           }
         }
       }
     } else if (selectedOrderType === 'catering') {
-      const cateringErrors = validateCateringOrder(cartTotal);
-      validationErrors.push(...cateringErrors);
+      // Validate catering minimum
+      if (cartTotal < 250) {
+        validationErrors.push('Catering orders require a $250 minimum');
+      }
+
+      // Validate catering details
+      if (!cateringDetails?.deliveryDate) {
+        validationErrors.push('Please select a catering date');
+      }
+      if (!cateringDetails?.deliveryTime) {
+        validationErrors.push('Please select a catering time');
+      }
+      if (!cateringDetails?.numberOfGuests || cateringDetails.numberOfGuests < 1) {
+        validationErrors.push('Please enter number of guests');
+      }
+
+      // Validate delivery address if delivery method selected
+      if (cateringDetails?.deliveryMethod === 'delivery') {
+        if (!cateringDetails?.deliveryAddress?.address) {
+          validationErrors.push('Please enter delivery address');
+        }
+        if (!cateringDetails?.deliveryAddress?.city) {
+          validationErrors.push('Please enter delivery city');
+        }
+        if (!cateringDetails?.deliveryAddress?.zipCode) {
+          validationErrors.push('Please enter delivery ZIP code');
+        }
+      }
+
+      // Validate 4-hour advance notice for catering
+      if (cateringDetails?.deliveryDate && cateringDetails?.deliveryTime) {
+        const cateringDateTime = new Date(cateringDetails.deliveryDate + 'T' + cateringDetails.deliveryTime);
+        const minCateringTime = new Date();
+        minCateringTime.setHours(minCateringTime.getHours() + 4);
+        
+        if (cateringDateTime <= minCateringTime) {
+          validationErrors.push('Catering orders require at least 4 hours advance notice');
+        }
+      }
     }
 
     return validationErrors;
@@ -246,7 +268,7 @@ export default function Checkout() {
         order_type: selectedOrderType,
         customer_id: user?.id,
         customer_email: user?.email,
-        tax_exempt: (taxExemptStatus?.verified && applyTaxExempt) || false,
+        tax_exempt: (taxExemptStatus?.verified && applyTaxExempt) ? 'yes' : 'no',
         tax_exempt_number: taxExemptStatus?.licenseNumber || '',
       };
 
@@ -256,18 +278,35 @@ export default function Checkout() {
           orderMetadata.estimated_ready = '20-30 minutes';
         } else {
           orderMetadata.pickup_time = `${scheduledDate}T${scheduledTime}`;
-          orderMetadata.pickup_time_formatted = `${new Date(scheduledDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} at ${formatTimeForDisplay(scheduledTime)}`;
+          orderMetadata.pickup_time_formatted = `${new Date(scheduledDate).toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            month: 'long', 
+            day: 'numeric' 
+          })} at ${formatTimeForDisplay(scheduledTime)}`;
         }
       } else if (selectedOrderType === 'catering') {
-        orderMetadata.catering_details = JSON.stringify({
+        // Build catering details object
+        const cateringInfo = {
+          delivery_method: cateringDetails.deliveryMethod,
           delivery_date: cateringDetails.deliveryDate,
           delivery_time: cateringDetails.deliveryTime,
-          delivery_address: cateringDetails.deliveryAddress,
+          delivery_time_formatted: `${new Date(cateringDetails.deliveryDate).toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            month: 'long', 
+            day: 'numeric' 
+          })} at ${formatTimeForDisplay(cateringDetails.deliveryTime)}`,
           number_of_guests: cateringDetails.numberOfGuests,
-          need_setup: cateringDetails.needSetup,
-          need_utensils: cateringDetails.needUtensils,
-          special_instructions: cateringDetails.specialInstructions,
-        });
+          need_setup: cateringDetails.needSetup ? 'yes' : 'no',
+          need_utensils: cateringDetails.needUtensils ? 'yes' : 'no',
+          special_instructions: cateringDetails.specialInstructions || '',
+        };
+
+        // Add delivery address only if delivery method
+        if (cateringDetails.deliveryMethod === 'delivery' && cateringDetails.deliveryAddress) {
+          cateringInfo.delivery_address = cateringDetails.deliveryAddress;
+        }
+
+        orderMetadata.catering_details = JSON.stringify(cateringInfo);
       }
       
       const sessionData = await stripeService.createCheckoutSession(
@@ -372,7 +411,7 @@ export default function Checkout() {
                     </span>
                   </div>
                   <p className="text-xs text-white/40 font-medium">
-                    $250 min • $20 delivery • 4hr advance
+                    $250 min • 4hr advance
                   </p>
                 </button>
               </div>
@@ -445,7 +484,6 @@ export default function Checkout() {
                       exit={{ opacity: 0, height: 0 }}
                       className="space-y-4"
                     >
-                      {/* Date Selection */}
                       <div>
                         <label className="block text-sm font-semibold text-white/70 mb-3 uppercase tracking-wider">
                           Select Date
@@ -460,7 +498,6 @@ export default function Checkout() {
                         />
                       </div>
 
-                      {/* Time Selection */}
                       {scheduledDate && (
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}
@@ -478,7 +515,6 @@ export default function Checkout() {
                             </div>
                           ) : (
                             <div className="space-y-4">
-                              {/* Lunch Period */}
                               {groupedTimeSlots.lunch.length > 0 && (
                                 <div>
                                   <h4 className="text-xs font-semibold text-white/40 mb-2 uppercase tracking-wider">
@@ -502,7 +538,6 @@ export default function Checkout() {
                                 </div>
                               )}
 
-                              {/* Dinner Period */}
                               {groupedTimeSlots.dinner.length > 0 && (
                                 <div>
                                   <h4 className="text-xs font-semibold text-white/40 mb-2 uppercase tracking-wider">
@@ -530,7 +565,6 @@ export default function Checkout() {
                         </motion.div>
                       )}
 
-                      {/* Selected Time Preview */}
                       {scheduledDate && scheduledTime && (
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}
