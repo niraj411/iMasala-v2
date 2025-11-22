@@ -1,4 +1,4 @@
-// src/pages/Checkout.jsx - Modern Design
+// src/pages/Checkout.jsx - Improved with Smart Scheduling
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -16,6 +16,18 @@ import { woocommerceService } from '../services/woocommerceService';
 import { stripeService } from '../services/stripeService';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+
+// Restaurant hours configuration
+const RESTAURANT_HOURS = {
+  // 0 = Sunday, 1 = Monday, etc.
+  0: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } }, // Sunday
+  1: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } }, // Monday
+  2: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } }, // Tuesday
+  3: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } }, // Wednesday
+  4: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:00' } }, // Thursday
+  5: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:30' } }, // Friday
+  6: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:30' } }, // Saturday
+};
 
 export default function Checkout() {
   const { cartItems, getCartTotal, orderType, setOrderType } = useCart();
@@ -47,29 +59,102 @@ export default function Checkout() {
   const taxAmount = cartTotal * taxRate;
   const finalTotal = cartTotal + deliveryFee + taxAmount;
 
-  // Generate available time slots
+  // Helper function to parse time string to minutes
+  const timeToMinutes = (timeStr) => {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    return hours * 60 + minutes;
+  };
+
+  // Helper function to format minutes to time string
+  const minutesToTime = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+  };
+
+  // Helper function to format time for display
+  const formatTimeForDisplay = (timeStr) => {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHour = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
+    return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+
+  // Get minimum schedulable datetime
+  const getMinDateTime = () => {
+    const now = new Date();
+    const minAdvanceMinutes = selectedOrderType === 'catering' ? 240 : 60; // 4 hours for catering, 1 hour for pickup
+    now.setMinutes(now.getMinutes() + minAdvanceMinutes);
+    return now;
+  };
+
+  // Generate available time slots based on selected date
   const availableTimeSlots = useMemo(() => {
-    const slots = [];
-    const startHour = 11;
-    const endHour = 21;
+    if (!scheduledDate) return [];
+
+    const selectedDateObj = new Date(scheduledDate + 'T00:00:00');
+    const dayOfWeek = selectedDateObj.getDay();
+    const hours = RESTAURANT_HOURS[dayOfWeek];
     
-    for (let hour = startHour; hour <= endHour; hour++) {
-      for (let minutes of ['00', '15', '30', '45']) {
-        if (hour === endHour && minutes !== '00') continue;
-        const period = hour >= 12 ? 'PM' : 'AM';
-        const displayHour = hour > 12 ? hour - 12 : hour;
+    if (!hours) return [];
+
+    const slots = [];
+    const minDateTime = getMinDateTime();
+    const isToday = scheduledDate === new Date().toISOString().split('T')[0];
+    
+    // Helper to generate slots for a period
+    const generateSlotsForPeriod = (period) => {
+      const startMinutes = timeToMinutes(period.start);
+      const endMinutes = timeToMinutes(period.end);
+      
+      // Generate slots every 15 minutes
+      for (let minutes = startMinutes; minutes <= endMinutes; minutes += 15) {
+        const timeStr = minutesToTime(minutes);
+        
+        // If today, check if slot is in the future with required advance notice
+        if (isToday) {
+          const slotDateTime = new Date(scheduledDate + 'T' + timeStr);
+          if (slotDateTime <= minDateTime) {
+            continue; // Skip past slots and slots too soon
+          }
+        }
+        
         slots.push({
-          value: `${hour.toString().padStart(2, '0')}:${minutes}`,
-          label: `${displayHour}:${minutes} ${period}`
+          value: timeStr,
+          label: formatTimeForDisplay(timeStr),
+          minutes: minutes
         });
       }
-    }
-    return slots;
-  }, []);
+    };
 
+    // Generate slots for lunch period
+    generateSlotsForPeriod(hours.lunch);
+    
+    // Generate slots for dinner period
+    generateSlotsForPeriod(hours.dinner);
+
+    return slots;
+  }, [scheduledDate, selectedOrderType]);
+
+  // Group time slots by meal period
+  const groupedTimeSlots = useMemo(() => {
+    if (!scheduledDate || availableTimeSlots.length === 0) return { lunch: [], dinner: [] };
+
+    const selectedDateObj = new Date(scheduledDate + 'T00:00:00');
+    const dayOfWeek = selectedDateObj.getDay();
+    const hours = RESTAURANT_HOURS[dayOfWeek];
+
+    const lunchEndMinutes = timeToMinutes(hours.lunch.end);
+
+    return {
+      lunch: availableTimeSlots.filter(slot => slot.minutes <= lunchEndMinutes),
+      dinner: availableTimeSlots.filter(slot => slot.minutes > lunchEndMinutes)
+    };
+  }, [availableTimeSlots, scheduledDate]);
+
+  // Get date constraints
   const minDate = useMemo(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+    return new Date().toISOString().split('T')[0];
   }, []);
 
   const maxDate = useMemo(() => {
@@ -101,7 +186,15 @@ export default function Checkout() {
     if (type === 'catering') {
       setOrderTiming('scheduled');
     }
+    
+    // Reset scheduled time when switching order types
+    setScheduledTime('');
   };
+
+  // Reset time when date changes
+  useEffect(() => {
+    setScheduledTime('');
+  }, [scheduledDate]);
 
   const validateCheckout = () => {
     const validationErrors = [];
@@ -118,6 +211,17 @@ export default function Checkout() {
         }
         if (!scheduledTime) {
           validationErrors.push('Please select a pickup time');
+        }
+        
+        // Validate selected time is still valid
+        if (scheduledDate && scheduledTime) {
+          const selectedDateTime = new Date(scheduledDate + 'T' + scheduledTime);
+          const minDateTime = getMinDateTime();
+          
+          if (selectedDateTime <= minDateTime) {
+            const requiredMinutes = selectedOrderType === 'catering' ? 240 : 60;
+            validationErrors.push(`Please select a time at least ${requiredMinutes / 60} hour${requiredMinutes > 60 ? 's' : ''} from now`);
+          }
         }
       }
     } else if (selectedOrderType === 'catering') {
@@ -152,6 +256,7 @@ export default function Checkout() {
           orderMetadata.estimated_ready = '20-30 minutes';
         } else {
           orderMetadata.pickup_time = `${scheduledDate}T${scheduledTime}`;
+          orderMetadata.pickup_time_formatted = `${new Date(scheduledDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} at ${formatTimeForDisplay(scheduledTime)}`;
         }
       } else if (selectedOrderType === 'catering') {
         orderMetadata.catering_details = JSON.stringify({
@@ -267,7 +372,7 @@ export default function Checkout() {
                     </span>
                   </div>
                   <p className="text-xs text-white/40 font-medium">
-                    $250 min • $20 delivery
+                    $250 min • $20 delivery • 4hr advance
                   </p>
                 </button>
               </div>
@@ -287,46 +392,46 @@ export default function Checkout() {
                 </h2>
 
                 {/* ASAP vs Scheduled */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-3 mb-6">
                   <button
                     onClick={() => setOrderTiming('asap')}
-                    className={`p-3 rounded-xl border-2 transition-all ${
+                    className={`p-4 rounded-xl border-2 transition-all ${
                       orderTiming === 'asap'
                         ? 'border-white bg-white/10'
                         : 'border-white/10 bg-white/[0.02] hover:bg-white/5'
                     }`}
                   >
-                    <div className="flex items-center gap-2 justify-center">
-                      <Zap className="w-4 h-4" strokeWidth={1.5} />
-                      <span className={`font-semibold text-sm ${
+                    <div className="flex items-center gap-2 justify-center mb-2">
+                      <Zap className="w-5 h-5" strokeWidth={1.5} />
+                      <span className={`font-semibold ${
                         orderTiming === 'asap' ? 'text-white' : 'text-white/60'
                       }`}>
                         ASAP
                       </span>
                     </div>
-                    <p className="text-xs text-white/40 mt-1 text-center font-medium">
-                      {estimatedPrepTime} min
+                    <p className="text-xs text-white/40 text-center font-medium">
+                      Ready in {estimatedPrepTime} min
                     </p>
                   </button>
 
                   <button
                     onClick={() => setOrderTiming('scheduled')}
-                    className={`p-3 rounded-xl border-2 transition-all ${
+                    className={`p-4 rounded-xl border-2 transition-all ${
                       orderTiming === 'scheduled'
                         ? 'border-white bg-white/10'
                         : 'border-white/10 bg-white/[0.02] hover:bg-white/5'
                     }`}
                   >
-                    <div className="flex items-center gap-2 justify-center">
-                      <Calendar className="w-4 h-4" strokeWidth={1.5} />
-                      <span className={`font-semibold text-sm ${
+                    <div className="flex items-center gap-2 justify-center mb-2">
+                      <Calendar className="w-5 h-5" strokeWidth={1.5} />
+                      <span className={`font-semibold ${
                         orderTiming === 'scheduled' ? 'text-white' : 'text-white/60'
                       }`}>
                         Schedule
                       </span>
                     </div>
-                    <p className="text-xs text-white/40 mt-1 text-center font-medium">
-                      Choose time
+                    <p className="text-xs text-white/40 text-center font-medium">
+                      Choose your time
                     </p>
                   </button>
                 </div>
@@ -338,11 +443,12 @@ export default function Checkout() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="grid sm:grid-cols-2 gap-3"
+                      className="space-y-4"
                     >
+                      {/* Date Selection */}
                       <div>
-                        <label className="block text-sm font-medium text-white/60 mb-2">
-                          Date
+                        <label className="block text-sm font-semibold text-white/70 mb-3 uppercase tracking-wider">
+                          Select Date
                         </label>
                         <input
                           type="date"
@@ -350,26 +456,99 @@ export default function Checkout() {
                           onChange={(e) => setScheduledDate(e.target.value)}
                           min={minDate}
                           max={maxDate}
-                          className="w-full px-4 py-2.5 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium text-sm"
+                          className="w-full px-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-white/60 mb-2">
-                          Time
-                        </label>
-                        <select
-                          value={scheduledTime}
-                          onChange={(e) => setScheduledTime(e.target.value)}
-                          className="w-full px-4 py-2.5 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium text-sm"
+
+                      {/* Time Selection */}
+                      {scheduledDate && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
                         >
-                          <option value="" className="bg-black">Select time</option>
-                          {availableTimeSlots.map((slot) => (
-                            <option key={slot.value} value={slot.value} className="bg-black">
-                              {slot.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                          <label className="block text-sm font-semibold text-white/70 mb-3 uppercase tracking-wider">
+                            Select Time
+                          </label>
+                          
+                          {availableTimeSlots.length === 0 ? (
+                            <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                              <p className="text-sm text-amber-300 font-medium">
+                                No available times for this date. Please select another day or choose ASAP.
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {/* Lunch Period */}
+                              {groupedTimeSlots.lunch.length > 0 && (
+                                <div>
+                                  <h4 className="text-xs font-semibold text-white/40 mb-2 uppercase tracking-wider">
+                                    Lunch (11:00 AM - 2:30 PM)
+                                  </h4>
+                                  <div className="grid grid-cols-4 gap-2">
+                                    {groupedTimeSlots.lunch.map((slot) => (
+                                      <button
+                                        key={slot.value}
+                                        onClick={() => setScheduledTime(slot.value)}
+                                        className={`px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                                          scheduledTime === slot.value
+                                            ? 'bg-white text-black'
+                                            : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10'
+                                        }`}
+                                      >
+                                        {slot.label}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Dinner Period */}
+                              {groupedTimeSlots.dinner.length > 0 && (
+                                <div>
+                                  <h4 className="text-xs font-semibold text-white/40 mb-2 uppercase tracking-wider">
+                                    Dinner (4:30 PM - 9:00 PM)
+                                  </h4>
+                                  <div className="grid grid-cols-4 gap-2">
+                                    {groupedTimeSlots.dinner.map((slot) => (
+                                      <button
+                                        key={slot.value}
+                                        onClick={() => setScheduledTime(slot.value)}
+                                        className={`px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                                          scheduledTime === slot.value
+                                            ? 'bg-white text-black'
+                                            : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10'
+                                        }`}
+                                      >
+                                        {slot.label}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+
+                      {/* Selected Time Preview */}
+                      {scheduledDate && scheduledTime && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl"
+                        >
+                          <div className="flex items-center gap-2 text-green-300 font-semibold">
+                            <Check className="w-5 h-5" strokeWidth={2} />
+                            <span>
+                              Pickup scheduled for {new Date(scheduledDate).toLocaleDateString('en-US', { 
+                                weekday: 'long', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })} at {formatTimeForDisplay(scheduledTime)}
+                            </span>
+                          </div>
+                        </motion.div>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
