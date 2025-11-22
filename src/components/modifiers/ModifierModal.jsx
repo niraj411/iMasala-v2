@@ -1,4 +1,4 @@
-// src/components/modifiers/ModifierModal.jsx
+// src/components/modifiers/ModifierModal.jsx - FIXED VERSION
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Check, AlertCircle, ShoppingBag } from 'lucide-react';
@@ -132,19 +132,19 @@ export default function ModifierModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
           />
           
-          {/* Modal */}
+          {/* Modal - FIXED POSITIONING */}
           <motion.div
             initial={{ opacity: 0, y: '100%' }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-x-0 bottom-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl z-50 max-h-[90vh] flex flex-col"
+            className="fixed left-0 right-0 bottom-0 md:left-1/2 md:top-1/2 md:right-auto md:bottom-auto md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl z-50 max-h-[90vh] flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-start gap-4 p-4 border-b">
+            <div className="flex items-start gap-4 p-4 md:p-6 border-b flex-shrink-0">
               {product.images && product.images[0]?.src && (
                 <img
                   src={product.images[0].src}
@@ -153,23 +153,23 @@ export default function ModifierModal({
                 />
               )}
               <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-bold text-masala-900 pr-8">
+                <h2 className="text-lg md:text-xl font-bold text-masala-900 pr-8">
                   {product.name}
                 </h2>
-                <p className="text-primary-600 font-semibold">
+                <p className="text-primary-600 font-semibold mt-1">
                   ${basePrice.toFixed(2)}
                 </p>
               </div>
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 hover:bg-masala-100 rounded-lg"
+                className="absolute top-4 right-4 p-2 hover:bg-masala-100 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5 text-masala-500" />
               </button>
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
               {modifiers.map((group) => (
                 <div key={group.id}>
                   <div className="flex items-center justify-between mb-3">
@@ -198,7 +198,7 @@ export default function ModifierModal({
                             option.id, 
                             group.type === 'multiple'
                           )}
-                          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
+                          className={`w-full flex items-center justify-between p-3 md:p-4 rounded-lg border-2 transition-all ${
                             isSelected
                               ? 'border-primary-500 bg-primary-50'
                               : 'border-masala-200 hover:border-masala-300'
@@ -214,7 +214,7 @@ export default function ModifierModal({
                                 <Check className="w-3 h-3 text-white" />
                               )}
                             </div>
-                            <span className="text-masala-900">
+                            <span className="text-masala-900 text-left">
                               {option.name}
                               {option.icon && (
                                 <span className="ml-2">{option.icon}</span>
@@ -222,7 +222,7 @@ export default function ModifierModal({
                             </span>
                           </div>
                           {option.price > 0 && (
-                            <span className="text-sm text-masala-500">
+                            <span className="text-sm text-masala-500 font-medium">
                               +${option.price.toFixed(2)}
                             </span>
                           )}
@@ -235,9 +235,9 @@ export default function ModifierModal({
 
               {/* Errors */}
               {errors.length > 0 && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <div className="flex gap-2">
-                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="flex gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                     <div>
                       {errors.map((error, i) => (
                         <p key={i} className="text-sm text-red-700">{error}</p>
@@ -249,21 +249,21 @@ export default function ModifierModal({
             </div>
 
             {/* Footer */}
-            <div className="border-t p-4 space-y-4">
+            <div className="border-t p-4 md:p-6 space-y-4 flex-shrink-0 bg-white">
               {/* Quantity Selector */}
               <div className="flex items-center justify-between">
                 <span className="font-medium text-masala-900">Quantity</span>
                 <div className="flex items-center gap-3 bg-masala-100 rounded-lg p-1">
                   <button
                     onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                    className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-colors"
+                    className="w-9 h-9 flex items-center justify-center hover:bg-white rounded-lg transition-colors"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                  <span className="w-8 text-center font-semibold">{quantity}</span>
+                  <span className="w-10 text-center font-semibold text-masala-900">{quantity}</span>
                   <button
                     onClick={() => setQuantity(q => q + 1)}
-                    className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-colors"
+                    className="w-9 h-9 flex items-center justify-center hover:bg-white rounded-lg transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -273,7 +273,7 @@ export default function ModifierModal({
               {/* Add to Cart Button */}
               <button
                 onClick={handleAddToCart}
-                className="w-full py-4 bg-primary-500 hover:bg-primary-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg transition-colors"
+                className="w-full py-4 md:py-5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 shadow-2xl shadow-primary-500/30 hover:shadow-primary-500/50 transition-all"
               >
                 <ShoppingBag className="w-5 h-5" />
                 Add to Order - ${itemTotal.toFixed(2)}
