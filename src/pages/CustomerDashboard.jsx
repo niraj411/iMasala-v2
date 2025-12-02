@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useOrders } from '../contexts/OrderContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Package, ShieldCheck, Tag } from 'lucide-react';
@@ -9,6 +9,28 @@ export default function CustomerDashboard() {
   const { orders, loading } = useOrders();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('orders');
+
+  useEffect(() => {
+    const fetchCustomerOrders = async () => {
+      if (!user?.email) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        console.log('Fetching orders for:', user.email);
+        const customerOrders = await woocommerceService.getOrdersByEmail(user.email);
+        console.log('Found orders:', customerOrders.length);
+        setOrders(customerOrders);
+      } catch (error) {
+        console.error('Error fetching customer orders:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCustomerOrders();
+  }, [user?.email]);
 
   const customerOrders = orders;
 

@@ -154,7 +154,22 @@ class WooCommerceService {
       throw error;
     }
   }
-  
+  async getOrdersByEmail(email) {
+    try {
+      const response = await this.api.get('/orders', {
+        params: {
+          search: email,
+          per_page: 50,
+          orderby: 'date',
+          order: 'desc'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching orders by email:', error);
+      return [];
+    }
+  }
 // src/services/woocommerceService.js - Update getProductsWithVariations:
 
 async getProductsWithVariations() {
