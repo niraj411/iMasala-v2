@@ -759,130 +759,111 @@ export default function Shop() {
         )}
       </AnimatePresence>
 
-      {/* Quick View Modal - Glass */}
+       {/* Quick View Modal - FIXED VERSION */}
       <AnimatePresence>
         {quickViewItem && (
           <>
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setQuickViewItem(null)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-md z-50"
+              className="fixed inset-0 bg-black/70 backdrop-blur-md z-50"
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed z-50 w-full max-w-2xl"
-              style={{
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                maxHeight: '90vh',
-              }}
-            >
-              <div className="bg-zinc-950/95 backdrop-blur-2xl border border-white/10 rounded-3xl overflow-hidden flex flex-col shadow-2xl" style={{ maxHeight: '90vh' }}>
-                {/* Image */}
-                <div className="relative w-full bg-black" style={{ height: '300px' }}>
-                  {quickViewItem.images && quickViewItem.images[0]?.src ? (
-                    <img
-                      src={quickViewItem.images[0].src}
-                      alt={quickViewItem.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <ShoppingBag className="w-20 h-20 text-white/10" />
-                    </div>
-                  )}
+            
+            {/* FIXED: Centering container - NO animation on this layer */}
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+              {/* Animated modal content */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="w-full max-w-2xl pointer-events-auto"
+              >
+                <div className="bg-zinc-950/95 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-white/10" style={{ maxHeight: '85vh' }}>
                   
-                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent"></div>
-                  
-                  <button
-                    onClick={() => setQuickViewItem(null)}
-                    className="absolute top-4 right-4 w-12 h-12 bg-white/10 backdrop-blur-2xl border border-white/20 hover:bg-white/20 text-white rounded-full flex items-center justify-center transition-colors"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-
-                  {/* Badges */}
-                  <div className="absolute top-4 left-4 flex flex-col gap-2">
-                    {quickViewItem.isPopular && (
-                      <span className="px-4 py-2 bg-orange-500/90 backdrop-blur-xl text-white text-sm font-bold rounded-full flex items-center gap-2 shadow-lg">
-                        <Star className="w-4 h-4 fill-current" />
-                        POPULAR
-                      </span>
+                  {/* Image */}
+                  <div className="relative w-full flex-shrink-0" style={{ height: '280px' }}>
+                    {quickViewItem.images && quickViewItem.images[0]?.src ? (
+                      <img
+                        src={quickViewItem.images[0].src}
+                        alt={quickViewItem.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
+                        <span className="text-6xl">🍛</span>
+                      </div>
                     )}
-                    <div className="flex gap-2">
-                      {quickViewItem.isVegetarian && (
-                        <span className="px-4 py-2 bg-green-500/90 backdrop-blur-xl text-white text-sm font-bold rounded-full shadow-lg">
-                          <Leaf className="w-4 h-4" />
-                        </span>
-                      )}
-                      {quickViewItem.isSpicy && (
-                        <span className="px-4 py-2 bg-red-500/90 backdrop-blur-xl text-white text-sm font-bold rounded-full shadow-lg">
-                          <Flame className="w-4 h-4" />
-                        </span>
-                      )}
-                    </div>
+                    
+                    {/* Close Button */}
+                    <button
+                      onClick={() => setQuickViewItem(null)}
+                      className="absolute top-4 right-4 w-10 h-10 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/80 transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                    
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent" />
                   </div>
-                </div>
 
-                {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6">
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="flex-1">
-                      <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                  {/* Content - Scrollable */}
+                  <div className="flex-1 overflow-y-auto p-6">
+                    {/* Title & Price */}
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                      <h2 className="text-2xl md:text-3xl font-bold text-white leading-tight">
                         {quickViewItem.name}
                       </h2>
-                      {quickViewItem.prepTime && (
-                        <p className="text-sm text-white/40 flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          Ready in {quickViewItem.prepTime} minutes
-                        </p>
-                      )}
+                      <span className="text-xl md:text-2xl font-bold text-orange-400 whitespace-nowrap">
+                        ${parseFloat(quickViewItem.price).toFixed(2)}
+                      </span>
                     </div>
-                    <span className="text-2xl md:text-3xl font-bold text-white">
-                      ${parseFloat(quickViewItem.price).toFixed(2)}
-                    </span>
+
+                    {/* Description */}
+                    {(quickViewItem.short_description || quickViewItem.description) && (
+                      <div 
+                        className="text-white/60 leading-relaxed text-sm md:text-base"
+                        dangerouslySetInnerHTML={{ 
+                          __html: quickViewItem.description || quickViewItem.short_description
+                        }}
+                      />
+                    )}
                   </div>
 
-                  {(quickViewItem.short_description || quickViewItem.description) && (
-                    <div 
-                      className="text-white/60 leading-relaxed text-sm md:text-base"
-                      dangerouslySetInnerHTML={{ 
-                        __html: quickViewItem.description || quickViewItem.short_description
+                  {/* Actions - Fixed at bottom */}
+                  <div className="p-6 border-t border-white/10 bg-zinc-950/95 backdrop-blur-2xl flex-shrink-0">
+                    <button
+                      onClick={(e) => {
+                        const item = quickViewItem; // Capture reference before closing
+                        if (productHasModifiers(item)) {
+                          // Set modifier product FIRST, then close quickview
+                          setModifierProduct(item);
+                          setQuickViewItem(null);
+                          // Small delay to let exit animation start before opening new modal
+                          setTimeout(() => {
+                            setModifierModalOpen(true);
+                          }, 50);
+                        } else {
+                          handleQuickAdd(item, e);
+                          setQuickViewItem(null);
+                        }
                       }}
-                    />
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="p-6 border-t border-white/10 bg-zinc-950/95 backdrop-blur-2xl">
-                  <button
-                    onClick={(e) => {
-                      if (productHasModifiers(quickViewItem)) {
-                        setQuickViewItem(null);
-                        setModifierProduct(quickViewItem);
-                        setModifierModalOpen(true);
-                      } else {
-                        handleQuickAdd(quickViewItem, e);
-                        setQuickViewItem(null);
+                      className="w-full py-4 md:py-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl font-bold text-base md:text-lg flex items-center justify-center gap-3 shadow-2xl shadow-orange-500/25 hover:shadow-orange-500/50 transition-all active:scale-[0.98]"
+                    >
+                      <ShoppingBag className="w-5 h-5 md:w-6 md:h-6" />
+                      {productHasModifiers(quickViewItem) 
+                        ? 'Customize & Add' 
+                        : `Add • $${parseFloat(quickViewItem.price).toFixed(2)}`
                       }
-                    }}
-                    className="w-full py-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 shadow-2xl shadow-orange-500/25 hover:shadow-orange-500/50 transition-all"
-                  >
-                    <ShoppingBag className="w-6 h-6" />
-                    {productHasModifiers(quickViewItem) 
-                      ? 'Customize & Add' 
-                      : `Add • $${parseFloat(quickViewItem.price).toFixed(2)}`
-                    }
-                  </button>
+                    </button>
+                  </div>
+                  
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>
