@@ -1,4 +1,12 @@
-// src/pages/Shop.jsx - PREMIUM APPLE-INSPIRED DARK THEME
+// src/pages/Shop.jsx - ORGANIZED VERSION
+// 
+// CHANGES MADE:
+// 1. Filter out "Uncategorized" from category nav
+// 2. Filter out "Uncategorized" from product groupings  
+// 3. Added displayCategories memo for cleaner filtering
+// 4. Products in "Uncategorized" still show under "All" view
+//
+
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -33,6 +41,16 @@ export default function Shop() {
   const [quickViewItem, setQuickViewItem] = useState(null);
   
   const categoryRefs = useRef({});
+
+  // ============================================
+  // NEW: Filter out Uncategorized from display
+  // ============================================
+  const displayCategories = useMemo(() => {
+    return categories.filter(cat => 
+      cat.slug !== 'uncategorized' && 
+      cat.name.toLowerCase() !== 'uncategorized'
+    );
+  }, [categories]);
 
   const getItemQuantity = (itemId) => {
     const cartItem = cartItems.find(item => item.id === itemId);
@@ -71,22 +89,44 @@ export default function Shop() {
     });
   }, [menuItems, searchQuery, activeCategory, filters, isCateringOrder]);
 
+  // ============================================
+  // UPDATED: Skip Uncategorized in groupings
+  // ============================================
   const itemsByCategory = useMemo(() => {
     if (activeCategory !== 'all') {
       return { [activeCategory]: filteredItems };
     }
     
-    return filteredItems.reduce((acc, item) => {
-      const primaryCategory = item.categories && item.categories[0];
+    const grouped = filteredItems.reduce((acc, item) => {
+      // Find the first non-uncategorized category
+      const validCategory = item.categories?.find(cat => 
+        cat.slug !== 'uncategorized' && 
+        cat.name.toLowerCase() !== 'uncategorized'
+      );
+      
+      // If no valid category, use the first one or 'other'
+      const primaryCategory = validCategory || (item.categories && item.categories[0]);
       const catId = primaryCategory?.id || 'other';
       const catName = primaryCategory?.name || 'Other';
       
+      // Skip if it's uncategorized (items will show but not under uncategorized header)
+      if (catName.toLowerCase() === 'uncategorized') {
+        return acc;
+      }
+      
       if (!acc[catId]) {
-        acc[catId] = { name: catName, items: [] };
+        acc[catId] = { name: catName, items: [], order: primaryCategory?.menu_order || 999 };
       }
       acc[catId].items.push(item);
       return acc;
     }, {});
+
+    // Sort categories by menu_order if available
+    const sortedEntries = Object.entries(grouped).sort((a, b) => {
+      return (a[1].order || 999) - (b[1].order || 999);
+    });
+
+    return Object.fromEntries(sortedEntries);
   }, [filteredItems, activeCategory]);
 
   const scrollToCategory = (categoryId) => {
@@ -368,8 +408,8 @@ export default function Shop() {
               All
             </button>
 
-            {/* Categories */}
-            {categories.map((category) => (
+            {/* Categories - NOW FILTERED */}
+            {displayCategories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => scrollToCategory(category.id)}
@@ -467,8 +507,11 @@ export default function Shop() {
             {Object.entries(itemsByCategory).map(([categoryId, categoryData]) => {
               const items = Array.isArray(categoryData) ? categoryData : categoryData.items;
               const categoryName = Array.isArray(categoryData) 
-                ? categories.find(c => c.id === parseInt(categoryId))?.name || categoryId
+                ? displayCategories.find(c => c.id === parseInt(categoryId))?.name || categoryId
                 : categoryData.name;
+              
+              // Skip empty categories
+              if (!items || items.length === 0) return null;
               
               return (
                 <div 
@@ -759,7 +802,7 @@ export default function Shop() {
         )}
       </AnimatePresence>
 
-       {/* Quick View Modal - FIXED VERSION */}
+      {/* Quick View Modal - FIXED VERSION */}
       <AnimatePresence>
         {quickViewItem && (
           <>
@@ -837,12 +880,10 @@ export default function Shop() {
                   <div className="p-6 border-t border-white/10 bg-zinc-950/95 backdrop-blur-2xl flex-shrink-0">
                     <button
                       onClick={(e) => {
-                        const item = quickViewItem; // Capture reference before closing
+                        const item = quickViewItem;
                         if (productHasModifiers(item)) {
-                          // Set modifier product FIRST, then close quickview
                           setModifierProduct(item);
                           setQuickViewItem(null);
-                          // Small delay to let exit animation start before opening new modal
                           setTimeout(() => {
                             setModifierModalOpen(true);
                           }, 50);

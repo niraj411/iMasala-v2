@@ -1,4 +1,4 @@
-// src/pages/Checkout.jsx - Final Version with Catering Fix
+// src/pages/Checkout.jsx - Fixed Version with Catering Metadata at Top Level
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -268,6 +268,8 @@ export default function Checkout() {
         order_type: selectedOrderType,
         customer_id: user?.id,
         customer_email: user?.email,
+        customer_name: user?.name || '',
+        customer_phone: user?.phone || '',
         tax_exempt: (taxExemptStatus?.verified && applyTaxExempt) ? 'yes' : 'no',
         tax_exempt_number: taxExemptStatus?.licenseNumber || '',
       };
@@ -285,28 +287,25 @@ export default function Checkout() {
           })} at ${formatTimeForDisplay(scheduledTime)}`;
         }
       } else if (selectedOrderType === 'catering') {
-        // Build catering details object
-        const cateringInfo = {
-          delivery_method: cateringDetails.deliveryMethod,
-          delivery_date: cateringDetails.deliveryDate,
-          delivery_time: cateringDetails.deliveryTime,
-          delivery_time_formatted: `${new Date(cateringDetails.deliveryDate).toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            month: 'long', 
-            day: 'numeric' 
-          })} at ${formatTimeForDisplay(cateringDetails.deliveryTime)}`,
-          number_of_guests: cateringDetails.numberOfGuests,
-          need_setup: cateringDetails.needSetup ? 'yes' : 'no',
-          need_utensils: cateringDetails.needUtensils ? 'yes' : 'no',
-          special_instructions: cateringDetails.specialInstructions || '',
-        };
+        // Put catering fields at TOP LEVEL of metadata (not nested)
+        // This allows the PHP backend to read them directly
+        orderMetadata.delivery_method = cateringDetails.deliveryMethod;
+        orderMetadata.delivery_date = cateringDetails.deliveryDate;
+        orderMetadata.delivery_time = cateringDetails.deliveryTime;
+        orderMetadata.delivery_time_formatted = `${new Date(cateringDetails.deliveryDate).toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          month: 'long', 
+          day: 'numeric' 
+        })} at ${formatTimeForDisplay(cateringDetails.deliveryTime)}`;
+        orderMetadata.number_of_guests = cateringDetails.numberOfGuests;
+        orderMetadata.need_setup = cateringDetails.needSetup ? 'yes' : 'no';
+        orderMetadata.need_utensils = cateringDetails.needUtensils ? 'yes' : 'no';
+        orderMetadata.special_instructions = cateringDetails.specialInstructions || '';
 
         // Add delivery address only if delivery method
         if (cateringDetails.deliveryMethod === 'delivery' && cateringDetails.deliveryAddress) {
-          cateringInfo.delivery_address = cateringDetails.deliveryAddress;
+          orderMetadata.delivery_address = cateringDetails.deliveryAddress;
         }
-
-        orderMetadata.catering_details = JSON.stringify(cateringInfo);
       }
       
       const sessionData = await stripeService.createCheckoutSession(
