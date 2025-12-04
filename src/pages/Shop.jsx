@@ -22,7 +22,7 @@ import { productHasModifiers } from '../config/modifiers';
 import toast from 'react-hot-toast';
 
 export default function Shop() {
-  const { products: menuItems = [], categories = [], loading } = useMenu();
+  const { products: menuItems = [], categories = [], loading } = useMenu() || {};
   const { addToCart, cartItems, updateQuantity } = useCart();
   const { isCateringOrder, setIsCateringOrder } = useCatering();
 
@@ -59,11 +59,19 @@ export default function Shop() {
 
   const filteredItems = useMemo(() => {
     return menuItems.filter(item => {
+      // Check if item is a catering item
+      const isCateringItem = item.categories?.some(cat => 
+        cat.slug === 'catering' || 
+        cat.slug === 'catering-trays' ||
+        cat.name.toLowerCase().includes('catering')
+      );
+      
       if (isCateringOrder) {
-        const isCateringItem = item.categories?.some(cat => 
-          cat.slug === 'catering' || cat.name.toLowerCase().includes('catering')
-        );
+        // In catering mode: ONLY show catering items
         if (!isCateringItem) return false;
+      } else {
+        // In regular pickup mode: EXCLUDE catering items
+        if (isCateringItem) return false;
       }
   
       if (searchQuery) {

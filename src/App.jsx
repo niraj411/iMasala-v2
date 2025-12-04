@@ -21,6 +21,7 @@ import OrderTracking from './pages/OrderTracking';
 import OrderSuccess from './pages/OrderSuccess';
 import Shop from './pages/Shop';
 import Home from './pages/Home';
+import Catering from './pages/Catering';
 
 // Components
 import LoadingSpinner from './components/ui/LoadingSpinner';
@@ -39,7 +40,7 @@ function AppRoutes() {
   }
 
   // Public routes that don't require authentication
-  const publicPaths = ['/order-success', '/order-cancelled', '/'];
+  const publicPaths = ['/order-success', '/order-cancelled', '/', '/catering'];
   const currentPath = window.location.pathname;
   
   // Only require auth for non-public paths
@@ -54,7 +55,8 @@ function AppRoutes() {
       <Routes>
         {/* Home / Landing Page - Public */}
         <Route path="/" element={<Home />} />
-        
+        <Route path="/catering" element={<Catering />} />
+
         {/* Admin Dashboard */}
         <Route 
           path="/admin" 

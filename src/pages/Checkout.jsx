@@ -1,10 +1,10 @@
-// src/pages/Checkout.jsx - Fixed Version with Catering Metadata at Top Level
+// src/pages/Checkout.jsx - With Tip Functionality
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingBag, Truck, Clock, AlertCircle, ChevronRight, 
   MapPin, Users, Utensils, Package, Store, Check, 
-  Calendar, Zap, Shield, CreditCard, ChevronDown
+  Calendar, Zap, Shield, CreditCard, ChevronDown, Heart, DollarSign
 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -28,6 +28,14 @@ const RESTAURANT_HOURS = {
   6: { lunch: { start: '11:00', end: '14:30' }, dinner: { start: '16:30', end: '21:30' } },
 };
 
+// Tip presets
+const TIP_PRESETS = [
+  { label: '10%', value: 0.10 },
+  { label: '15%', value: 0.15 },
+  { label: '20%', value: 0.20 },
+  { label: '25%', value: 0.25 },
+];
+
 export default function Checkout() {
   const { cartItems, getCartTotal, orderType, setOrderType } = useCart();
   const { user } = useAuth();
@@ -45,6 +53,11 @@ export default function Checkout() {
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
   
+  // Tip states
+  const [tipType, setTipType] = useState('preset'); // 'preset', 'custom', 'none'
+  const [selectedTipPreset, setSelectedTipPreset] = useState(0.18); // Default 18%
+  const [customTipAmount, setCustomTipAmount] = useState('');
+  
   // Other states
   const [taxExemptStatus, setTaxExemptStatus] = useState(null);
   const [applyTaxExempt, setApplyTaxExempt] = useState(false);
@@ -53,11 +66,22 @@ export default function Checkout() {
 
   // Calculate totals
   const cartTotal = getCartTotal();
+  
+  // Calculate tip amount
+  const tipAmount = useMemo(() => {
+    if (tipType === 'none') return 0;
+    if (tipType === 'custom') {
+      const parsed = parseFloat(customTipAmount);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+    return cartTotal * selectedTipPreset;
+  }, [tipType, selectedTipPreset, customTipAmount, cartTotal]);
+  
   // Only charge delivery fee for catering orders with delivery method
   const deliveryFee = (selectedOrderType === 'catering' && cateringDetails?.deliveryMethod === 'delivery') ? 20 : 0;
   const taxRate = (taxExemptStatus?.verified && applyTaxExempt) ? 0 : 0.0825;
   const taxAmount = cartTotal * taxRate;
-  const finalTotal = cartTotal + deliveryFee + taxAmount;
+  const finalTotal = cartTotal + deliveryFee + taxAmount + tipAmount;
 
   // Helper functions for time management
   const timeToMinutes = (timeStr) => {
@@ -179,6 +203,31 @@ export default function Checkout() {
     setScheduledTime('');
   };
 
+  const handleTipPresetClick = (preset) => {
+    setTipType('preset');
+    setSelectedTipPreset(preset);
+    setCustomTipAmount('');
+  };
+
+  const handleCustomTipChange = (value) => {
+    // Only allow numbers and decimal point
+    const sanitized = value.replace(/[^0-9.]/g, '');
+    // Prevent multiple decimal points
+    const parts = sanitized.split('.');
+    if (parts.length > 2) return;
+    // Limit to 2 decimal places
+    if (parts[1] && parts[1].length > 2) return;
+    
+    setCustomTipAmount(sanitized);
+    setTipType('custom');
+  };
+
+  const handleNoTip = () => {
+    setTipType('none');
+    setSelectedTipPreset(0);
+    setCustomTipAmount('');
+  };
+
   useEffect(() => {
     setScheduledTime('');
   }, [scheduledDate]);
@@ -272,6 +321,10 @@ export default function Checkout() {
         customer_phone: user?.phone || '',
         tax_exempt: (taxExemptStatus?.verified && applyTaxExempt) ? 'yes' : 'no',
         tax_exempt_number: taxExemptStatus?.licenseNumber || '',
+        // Tip information
+        tip_amount: tipAmount.toFixed(2),
+        tip_type: tipType,
+        tip_percentage: tipType === 'preset' ? (selectedTipPreset * 100).toFixed(0) + '%' : 'N/A',
       };
 
       if (selectedOrderType === 'pickup') {
@@ -288,7 +341,6 @@ export default function Checkout() {
         }
       } else if (selectedOrderType === 'catering') {
         // Put catering fields at TOP LEVEL of metadata (not nested)
-        // This allows the PHP backend to read them directly
         orderMetadata.delivery_method = cateringDetails.deliveryMethod;
         orderMetadata.delivery_date = cateringDetails.deliveryDate;
         orderMetadata.delivery_time = cateringDetails.deliveryTime;
@@ -308,9 +360,11 @@ export default function Checkout() {
         }
       }
       
+      // Pass tip amount to stripe service
       const sessionData = await stripeService.createCheckoutSession(
         cartItems, 
-        orderMetadata
+        orderMetadata,
+        tipAmount // Pass tip as separate parameter
       );
       
       await stripeService.redirectToCheckout(sessionData);
@@ -602,6 +656,101 @@ export default function Checkout() {
               )}
             </AnimatePresence>
 
+            {/* ==================== TIP SECTION ==================== */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6"
+            >
+              <h2 className="text-lg font-semibold text-white mb-2 flex items-center gap-2 tracking-tight">
+                <Heart className="w-5 h-5 text-orange-400" strokeWidth={1.5} />
+                Add a Tip
+              </h2>
+              <p className="text-sm text-white/40 mb-5 font-medium">
+                Show your appreciation for our team
+              </p>
+
+              {/* Tip Preset Buttons */}
+              <div className="grid grid-cols-4 gap-2 mb-4">
+                {TIP_PRESETS.map((preset) => (
+                  <button
+                    key={preset.value}
+                    onClick={() => handleTipPresetClick(preset.value)}
+                    className={`py-3 px-2 rounded-xl font-semibold transition-all ${
+                      tipType === 'preset' && selectedTipPreset === preset.value
+                        ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/25'
+                        : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10'
+                    }`}
+                  >
+                    <div className="text-lg">{preset.label}</div>
+                    <div className="text-xs opacity-70">
+                      ${(cartTotal * preset.value).toFixed(2)}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Custom Tip & No Tip Row */}
+              <div className="flex gap-3">
+                {/* Custom Tip Input */}
+                <div className="flex-1 relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
+                    <DollarSign className="w-5 h-5" />
+                  </div>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="Custom amount"
+                    value={customTipAmount}
+                    onChange={(e) => handleCustomTipChange(e.target.value)}
+                    onFocus={() => setTipType('custom')}
+                    className={`w-full pl-11 pr-4 py-3 rounded-xl font-medium transition-all ${
+                      tipType === 'custom'
+                        ? 'bg-orange-500/20 border-2 border-orange-500 text-white placeholder-white/40'
+                        : 'bg-white/5 border border-white/10 text-white placeholder-white/30'
+                    } focus:outline-none`}
+                  />
+                </div>
+
+                {/* No Tip Button */}
+                <button
+                  onClick={handleNoTip}
+                  className={`px-5 py-3 rounded-xl font-semibold transition-all ${
+                    tipType === 'none'
+                      ? 'bg-white/10 text-white border-2 border-white/20'
+                      : 'bg-white/5 text-white/40 hover:text-white/60 border border-white/10'
+                  }`}
+                >
+                  No Tip
+                </button>
+              </div>
+
+              {/* Tip Confirmation */}
+              {tipAmount > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4 p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-orange-300">
+                      <Heart className="w-4 h-4 fill-current" />
+                      <span className="font-medium">
+                        {tipType === 'preset' 
+                          ? `${(selectedTipPreset * 100).toFixed(0)}% tip` 
+                          : 'Custom tip'}
+                      </span>
+                    </div>
+                    <span className="font-bold text-orange-300">
+                      ${tipAmount.toFixed(2)}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
+            {/* ==================== END TIP SECTION ==================== */}
+
             {/* Error Messages */}
             <AnimatePresence>
               {errors.length > 0 && (
@@ -692,6 +841,15 @@ export default function Checkout() {
                   </span>
                   <span className="text-white font-semibold">${taxAmount.toFixed(2)}</span>
                 </div>
+                {tipAmount > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-orange-400 font-medium flex items-center gap-1">
+                      <Heart className="w-3 h-3" />
+                      Tip
+                    </span>
+                    <span className="text-orange-400 font-semibold">${tipAmount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between font-bold text-xl pt-3 border-t border-white/10">
                   <span className="text-white">Total</span>
                   <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">

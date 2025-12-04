@@ -298,11 +298,11 @@ const Home = () => {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" strokeWidth={2.5} />
               </button>
               <a
-                href="tel:+13036658889"
+                href="tel:+13036658530"
                 className="px-8 py-4 backdrop-blur-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] text-white rounded-2xl font-medium transition-all duration-300 flex items-center gap-2"
               >
                 <Phone className="w-4 h-4" strokeWidth={2} />
-                <span>(303) 665-8889</span>
+                <span>(303) 665-8530</span>
               </a>
             </motion.div>
           </motion.div>
@@ -557,7 +557,7 @@ const Home = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="tel:+13036658889"
+                href="tel:+13036658530"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-orange-500 hover:bg-orange-400 text-white rounded-2xl font-semibold transition-all duration-300"
               >
                 <Phone className="w-4 h-4" />
@@ -665,7 +665,7 @@ const Home = () => {
                 <MapPin className="w-7 h-7 text-orange-400" strokeWidth={1.5} />
               </div>
               <h3 className="text-2xl font-bold text-white mb-4">Location</h3>
-              <p className="text-white/60 text-lg mb-2">400 W South Boulder Rd</p>
+              <p className="text-white/60 text-lg mb-2">199 W South Boulder Rd</p>
               <p className="text-white/60 text-lg mb-6">Lafayette, CO 80026</p>
               <a
                 href="https://maps.google.com/?q=400+W+South+Boulder+Rd+Lafayette+CO+80026"
@@ -693,15 +693,18 @@ const Home = () => {
               <div className="space-y-3">
                 <div className="flex justify-between text-lg">
                   <span className="text-white/60">Monday - Thursday</span>
-                  <span className="text-white">11am - 9pm</span>
+                  <span className="text-white">11am - 2:30pm</span>
+                  <span className="text-white">4:30pm - 9pm</span>
                 </div>
                 <div className="flex justify-between text-lg">
                   <span className="text-white/60">Friday - Saturday</span>
-                  <span className="text-white">11am - 10pm</span>
+                  <span className="text-white">11am - 2:30pm</span>
+                  <span className="text-white">4:30pm - 9:30pm</span>
                 </div>
                 <div className="flex justify-between text-lg">
                   <span className="text-white/60">Sunday</span>
-                  <span className="text-white">11am - 9pm</span>
+                  <span className="text-white">11am - 2:30pm</span>
+                  <span className="text-white">4:30pm - 9pm</span>
                 </div>
               </div>
             </motion.div>
