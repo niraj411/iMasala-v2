@@ -12,6 +12,8 @@ import {
   BarChart3, Utensils, ChevronRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import AdminNotificationSetup from '../components/admin/AdminNotificationSetup';
+
 
 // Stats Card Component
 const StatsCard = ({ title, value, icon: Icon, color = 'primary', subtitle }) => {
@@ -482,6 +484,10 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <>
+              <AdminNotificationSetup 
+                adminEmail={user?.email}
+                adminName={user?.name || 'Staff Member'}
+              />
               {/* Overview Tab */}
               {activeTab === 'overview' && (
                 <div className="space-y-6">
