@@ -1,319 +1,630 @@
-// src/pages/Home.jsx - Landing Page
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { 
-  ArrowRight, Star, Clock, MapPin, Phone, Utensils, 
-  Sparkles, Award, Heart, Flame, ChevronRight, Package,
-  Users, Calendar, Shield, Zap, Check
+  ArrowRight, 
+  Star, 
+  MapPin, 
+  Phone, 
+  Clock,
+  ChefHat,
+  Flame,
+  Award,
+  Users,
+  Quote,
+  Sparkles,
+  ExternalLink
 } from 'lucide-react';
 
-export default function Home() {
+// Press Logos Component
+const PressLogo = ({ name, className = "" }) => {
+  const logos = {
+    'CPR': (
+      <div className={`flex items-center gap-2 ${className}`}>
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+          <span className="text-white font-bold text-xs">CPR</span>
+        </div>
+        <span className="text-white/80 font-semibold tracking-tight">Colorado Public Radio</span>
+      </div>
+    ),
+    '9NEWS': (
+      <div className={`flex items-center gap-2 ${className}`}>
+        <div className="w-8 h-8 rounded bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
+          <span className="text-white font-black text-sm">9</span>
+        </div>
+        <span className="text-white/80 font-bold tracking-tight">NEWS</span>
+      </div>
+    ),
+    'YELP': (
+      <div className={`flex items-center gap-2 ${className}`}>
+        <div className="w-8 h-8 rounded bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+          <span className="text-white font-black text-lg">Y</span>
+        </div>
+        <span className="text-white/80 font-bold tracking-tight">yelp</span>
+      </div>
+    ),
+    'DENVER POST': (
+      <div className={`flex items-center gap-1 ${className}`}>
+        <span className="text-white/80 font-serif font-bold text-lg tracking-tight italic">The Denver Post</span>
+      </div>
+    )
+  };
+  return logos[name] || null;
+};
+
+// Partner Logo Component - These would ideally be replaced with actual images
+const PartnerLogo = ({ name, className = "" }) => {
+  const logos = {
+    'GOGO': (
+      <div className={`flex flex-col items-center justify-center ${className}`}>
+        <span className="text-white/70 font-black text-xl tracking-widest">GOGO</span>
+        <span className="text-white/40 text-[10px] tracking-wider">CHARTERS</span>
+      </div>
+    ),
+    'CATERPILLAR': (
+      <div className={`flex flex-col items-center justify-center ${className}`}>
+        <span className="text-amber-400/90 font-black text-xl tracking-tight">CAT</span>
+        <div className="h-1 w-12 bg-amber-400/60 mt-0.5"></div>
+      </div>
+    ),
+    'MLB': (
+      <div className={`flex items-center justify-center ${className}`}>
+        <div className="w-10 h-10 rounded-full border-2 border-white/30 flex items-center justify-center">
+          <span className="text-white/80 font-black text-sm">MLB</span>
+        </div>
+      </div>
+    ),
+    'BVSD': (
+      <div className={`flex flex-col items-center justify-center ${className}`}>
+        <span className="text-white/70 font-bold text-lg tracking-tight">BVSD</span>
+        <span className="text-white/40 text-[9px]">Boulder Valley Schools</span>
+      </div>
+    ),
+    'SISTER CARMEN': (
+      <div className={`flex flex-col items-center justify-center ${className}`}>
+        <span className="text-white/70 font-semibold text-sm tracking-tight">Sister Carmen</span>
+        <span className="text-white/40 text-[10px]">Community Center</span>
+      </div>
+    )
+  };
+  return logos[name] || null;
+};
+
+// Animated Counter Component
+const AnimatedNumber = ({ value, suffix = "", duration = 2 }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+  const [count, setCount] = React.useState(0);
+
+  useEffect(() => {
+    if (isInView) {
+      let start = 0;
+      const end = parseInt(value);
+      const increment = end / (duration * 60);
+      const timer = setInterval(() => {
+        start += increment;
+        if (start >= end) {
+          setCount(end);
+          clearInterval(timer);
+        } else {
+          setCount(Math.floor(start));
+        }
+      }, 1000 / 60);
+      return () => clearInterval(timer);
+    }
+  }, [isInView, value, duration]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
+};
+
+const Home = () => {
   const navigate = useNavigate();
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
+  const heroY = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
+
+  const pressOutlets = ['CPR', '9NEWS', 'YELP', 'DENVER POST'];
+  const cateringPartners = ['GOGO', 'CATERPILLAR', 'MLB', 'BVSD', 'SISTER CARMEN'];
 
   const features = [
     {
-      icon: Utensils,
-      title: 'Authentic Flavors',
-      description: 'Traditional Indian & Himalayan recipes passed down through generations'
+      icon: ChefHat,
+      title: 'Master Chefs',
+      description: 'Recipes passed down through generations, prepared by skilled artisans of authentic Indian cuisine.'
     },
     {
       icon: Flame,
-      title: 'Fresh Ingredients',
-      description: 'We use only the finest, freshest ingredients in every dish'
+      title: 'Tandoor Fired',
+      description: 'Traditional clay oven cooking at 900°F for that unmistakable smoky, charred perfection.'
     },
     {
       icon: Award,
       title: 'Award Winning',
-      description: 'Recognized for excellence in authentic Indian cuisine'
+      description: "Recognized as Lafayette's premier destination for authentic Indian & Himalayan flavors."
     },
     {
       icon: Users,
-      title: 'Catering Services',
-      description: 'Perfect for events, parties, and corporate gatherings'
+      title: 'Corporate Catering',
+      description: 'Trusted by Fortune 500 companies, schools, and organizations across Colorado.'
     }
   ];
 
-  const menuCategories = [
-    { name: 'Appetizers', image: '🥟', color: 'from-orange-500/20 to-red-500/20' },
-    { name: 'Curries', image: '🍛', color: 'from-amber-500/20 to-orange-500/20' },
-    { name: 'Tandoori', image: '🍗', color: 'from-red-500/20 to-pink-500/20' },
-    { name: 'Biryani', image: '🍚', color: 'from-yellow-500/20 to-amber-500/20' },
-    { name: 'Breads', image: '🫓', color: 'from-orange-500/20 to-amber-500/20' },
-    { name: 'Desserts', image: '🍮', color: 'from-pink-500/20 to-purple-500/20' }
-  ];
-
-  const reviews = [
+  const testimonials = [
     {
       name: 'Sarah M.',
+      role: 'Google Review',
       rating: 5,
-      text: 'The best Indian food in Colorado! The butter chicken is absolutely divine.',
-      date: '2 weeks ago'
+      text: 'The butter chicken here is absolutely divine. Best Indian food in the Boulder-Lafayette area, hands down!',
+      image: null
     },
     {
-      name: 'James K.',
+      name: 'Corporate Event Manager',
+      role: 'Caterpillar Inc.',
       rating: 5,
-      text: 'Amazing catering service for our corporate event. Everyone loved the food!',
-      date: '1 month ago'
+      text: 'Tandoori Kitchen has catered our corporate events for 3 years. Always exceptional quality and service.',
+      image: null
     },
     {
-      name: 'Priya S.',
+      name: 'Michael R.',
+      role: 'Yelp Elite',
       rating: 5,
-      text: 'Authentic taste that reminds me of home. The samosas are perfect!',
-      date: '3 weeks ago'
+      text: 'Authentic flavors that transport you straight to India. The samosas and naan are perfection!',
+      image: null
     }
+  ];
+
+  const menuHighlights = [
+    { name: 'Butter Chicken', emoji: '🍛', description: 'Our signature creamy tomato curry' },
+    { name: 'Tandoori Mixed Grill', emoji: '🍢', description: 'Assortment from the clay oven' },
+    { name: 'Lamb Biryani', emoji: '🍚', description: 'Fragrant basmati rice masterpiece' },
+    { name: 'Garlic Naan', emoji: '🫓', description: 'Fresh from our tandoor oven' },
+    { name: 'Samosa Chaat', emoji: '🥟', description: 'Crispy pastry with chutneys' },
+    { name: 'Mango Lassi', emoji: '🥭', description: 'Creamy yogurt refreshment' },
   ];
 
   return (
-    <div className="min-h-screen bg-black">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Gradient Orbs */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-3xl"></div>
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-4 py-32 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 backdrop-blur-xl bg-white/5 border border-white/10 rounded-full mb-8">
-              <Sparkles className="w-4 h-4 text-amber-400" strokeWidth={2} />
-              <span className="text-sm font-semibold text-white/80">Authentic Indian & Himalayan Cuisine</span>
-            </div>
+    <div className="min-h-screen bg-black overflow-x-hidden">
+      
+      {/* ═══════════════════════════════════════════════════════════════════════
+          HERO SECTION
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0">
+          {/* Main gradient orbs */}
+          <motion.div 
+            className="absolute top-1/4 -left-32 w-[500px] h-[500px] rounded-full"
+            style={{
+              background: 'radial-gradient(circle, rgba(234,88,12,0.15) 0%, transparent 70%)',
+            }}
+            animate={{
+              x: [0, 50, 0],
+              y: [0, 30, 0],
+            }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div 
+            className="absolute bottom-1/4 -right-32 w-[600px] h-[600px] rounded-full"
+            style={{
+              background: 'radial-gradient(circle, rgba(239,68,68,0.12) 0%, transparent 70%)',
+            }}
+            animate={{
+              x: [0, -40, 0],
+              y: [0, -50, 0],
+            }}
+            transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          />
+          
+          {/* Subtle grain overlay */}
+          <div 
+            className="absolute inset-0 opacity-[0.015]"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            }}
+          />
+        </div>
 
-            {/* Main Heading */}
-            <h1 className="text-7xl md:text-8xl font-bold mb-6 tracking-tight">
-              <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
-                iMasala
+        <motion.div 
+          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
+          className="relative z-10 max-w-7xl mx-auto px-4 py-32 text-center"
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* Tagline Badge */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] rounded-full mb-10"
+            >
+              <Sparkles className="w-4 h-4 text-orange-400" strokeWidth={2} />
+              <span className="text-sm font-medium text-white/70 tracking-wide">Lafayette's Authentic Indian Kitchen</span>
+            </motion.div>
+
+            {/* Main Title */}
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 1 }}
+              className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold mb-6 tracking-tighter"
+            >
+              <span className="block text-white">Tandoori</span>
+              <span className="block bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent">
+                Kitchen
               </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-white/60 mb-4 font-medium">
-              by Tandoori Kitchen
-            </p>
-            <p className="text-lg md:text-xl text-white/40 mb-12 max-w-2xl mx-auto font-medium">
-              Experience the rich flavors of India with our authentic recipes, crafted with passion and served with love in Lafayette, Colorado.
-            </p>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 1 }}
+              className="text-lg sm:text-xl md:text-2xl text-white/50 mb-4 max-w-2xl mx-auto font-light tracking-wide"
+            >
+              Indian & Himalayan Cuisine
+            </motion.p>
+            
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 1 }}
+              className="text-base sm:text-lg text-white/30 mb-12 max-w-xl mx-auto font-light"
+            >
+              Where centuries-old recipes meet modern Colorado hospitality. 
+              Fire-roasted perfection, served with heart.
+            </motion.p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.8 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            >
               <button
                 onClick={() => navigate('/shop')}
-                className="group px-8 py-4 backdrop-blur-xl bg-white hover:bg-white/90 text-black rounded-2xl font-bold transition-all flex items-center gap-2 shadow-2xl"
+                className="group relative px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white rounded-2xl font-semibold transition-all duration-300 flex items-center gap-3 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-[1.02]"
               >
-                Order Now
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" strokeWidth={2} />
+                <span>Order Now</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" strokeWidth={2.5} />
               </button>
               <a
-                href="#menu"
-                className="px-8 py-4 backdrop-blur-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white rounded-2xl font-semibold transition-all"
+                href="tel:+13036658889"
+                className="px-8 py-4 backdrop-blur-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] text-white rounded-2xl font-medium transition-all duration-300 flex items-center gap-2"
               >
-                View Menu
+                <Phone className="w-4 h-4" strokeWidth={2} />
+                <span>(303) 665-8889</span>
               </a>
-            </div>
+            </motion.div>
+          </motion.div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white mb-1">5.0</div>
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
-                  ))}
-                </div>
-                <div className="text-sm text-white/40 font-medium">Rating</div>
+          {/* Stats Row */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1, duration: 0.8 }}
+            className="grid grid-cols-3 gap-4 sm:gap-8 mt-20 max-w-3xl mx-auto"
+          >
+            <div className="text-center p-4">
+              <div className="text-3xl sm:text-4xl font-bold text-white mb-2">
+                <AnimatedNumber value="15" suffix="+" />
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white mb-1">15+</div>
-                <div className="text-sm text-white/40 font-medium">Years Experience</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white mb-1">1000+</div>
-                <div className="text-sm text-white/40 font-medium">Happy Customers</div>
-              </div>
+              <div className="text-sm text-white/40 font-medium">Years Serving Colorado</div>
             </div>
+            <div className="text-center p-4 border-x border-white/[0.06]">
+              <div className="flex items-center justify-center gap-1 mb-2">
+                <span className="text-3xl sm:text-4xl font-bold text-white">5.0</span>
+                <Star className="w-6 h-6 text-amber-400 fill-amber-400" />
+              </div>
+              <div className="text-sm text-white/40 font-medium">Google Rating</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="text-3xl sm:text-4xl font-bold text-white mb-2">
+                <AnimatedNumber value="10000" suffix="+" />
+              </div>
+              <div className="text-sm text-white/40 font-medium">Happy Customers</div>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* Scroll Indicator */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 1 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="w-6 h-10 rounded-full border border-white/20 flex items-start justify-center p-2"
+          >
+            <motion.div 
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="w-1 h-2 bg-white/40 rounded-full"
+            />
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          AS FEATURED IN (PRESS) SECTION
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-16 sm:py-20 px-4 border-y border-white/[0.04]">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-10"
+          >
+            <p className="text-sm uppercase tracking-[0.3em] text-white/30 font-medium">As Featured In</p>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.2 }}
+            className="flex flex-wrap justify-center items-center gap-8 sm:gap-12 md:gap-16"
+          >
+            {pressOutlets.map((outlet, index) => (
+              <motion.div
+                key={outlet}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 + 0.3, duration: 0.6 }}
+                className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-500 cursor-pointer"
+              >
+                <PressLogo name={outlet} />
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 px-4">
+      {/* ═══════════════════════════════════════════════════════════════════════
+          WHY TANDOORI KITCHEN SECTION
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-24 sm:py-32 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16 sm:mb-20"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-              Why Choose iMasala?
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+              Why Tandoori Kitchen?
             </h2>
-            <p className="text-white/40 text-lg font-medium">
-              We bring authentic Indian flavors to your table
+            <p className="text-lg sm:text-xl text-white/40 max-w-2xl mx-auto font-light">
+              More than a restaurant — a culinary journey through the heart of India
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <Icon className="w-6 h-6 text-orange-400" strokeWidth={1.5} />
-                  </div>
-                  <h3 className="text-xl font-semibold text-white mb-2 tracking-tight">
-                    {feature.title}
-                  </h3>
-                  <p className="text-white/60 font-medium text-sm">
-                    {feature.description}
-                  </p>
-                </motion.div>
-              );
-            })}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.6 }}
+                className="group relative p-8 rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/[0.05] hover:border-orange-500/20 transition-all duration-500"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-600/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                  <feature.icon className="w-7 h-7 text-orange-400" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
+                <p className="text-white/40 font-light leading-relaxed">{feature.description}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Menu Categories */}
-      <section id="menu" className="py-24 px-4">
+      {/* ═══════════════════════════════════════════════════════════════════════
+          MENU HIGHLIGHTS SECTION
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <section id="menu" className="py-24 sm:py-32 px-4 bg-gradient-to-b from-transparent via-orange-950/5 to-transparent">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-              Explore Our Menu
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+              Signature Dishes
             </h2>
-            <p className="text-white/40 text-lg font-medium">
-              From traditional curries to tandoori specialties
+            <p className="text-lg sm:text-xl text-white/40 max-w-2xl mx-auto font-light">
+              Taste the favorites that keep our guests coming back
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
-            {menuCategories.map((category, index) => (
-              <motion.button
-                key={category.name}
-                initial={{ opacity: 0, scale: 0.9 }}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-12">
+            {menuHighlights.map((item, index) => (
+              <motion.div
+                key={item.name}
+                initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: index * 0.08, duration: 0.5 }}
                 onClick={() => navigate('/shop')}
-                className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group"
+                className="group cursor-pointer p-6 sm:p-8 rounded-3xl bg-white/[0.02] border border-white/[0.05] hover:border-orange-500/30 hover:bg-white/[0.04] transition-all duration-500"
               >
-                <div className={`text-5xl mb-3 group-hover:scale-110 transition-transform`}>
-                  {category.image}
+                <div className="text-4xl sm:text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  {item.emoji}
                 </div>
-                <h3 className="font-semibold text-white group-hover:text-white/80 transition-colors">
-                  {category.name}
-                </h3>
-              </motion.button>
+                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">{item.name}</h3>
+                <p className="text-sm text-white/40">{item.description}</p>
+              </motion.div>
             ))}
           </div>
 
-          <div className="text-center">
-            <button
-              onClick={() => navigate('/shop')}
-              className="group inline-flex items-center gap-2 px-8 py-4 backdrop-blur-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white rounded-2xl font-semibold transition-all"
-            >
-              View Full Menu
-              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" strokeWidth={2} />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Catering CTA */}
-      <section className="py-24 px-4">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="backdrop-blur-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-3xl p-12 text-center"
+            className="text-center"
           >
-            <div className="w-16 h-16 rounded-full bg-orange-500/20 border border-orange-500/30 flex items-center justify-center mx-auto mb-6">
-              <Users className="w-8 h-8 text-orange-400" strokeWidth={1.5} />
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
-              Planning an Event?
-            </h2>
-            <p className="text-white/60 text-lg mb-8 max-w-2xl mx-auto font-medium">
-              Let us cater your next event! From corporate gatherings to family celebrations, we bring authentic Indian cuisine to your table.
-            </p>
-            <div className="flex flex-wrap gap-4 justify-center">
-              <div className="flex items-center gap-2 text-white/80">
-                <Check className="w-5 h-5 text-green-400" strokeWidth={2} />
-                <span className="font-medium">$250 minimum</span>
-              </div>
-              <div className="flex items-center gap-2 text-white/80">
-                <Check className="w-5 h-5 text-green-400" strokeWidth={2} />
-                <span className="font-medium">Free setup assistance</span>
-              </div>
-              <div className="flex items-center gap-2 text-white/80">
-                <Check className="w-5 h-5 text-green-400" strokeWidth={2} />
-                <span className="font-medium">Customizable menu</span>
-              </div>
-            </div>
             <button
               onClick={() => navigate('/shop')}
-              className="mt-8 px-8 py-4 backdrop-blur-xl bg-white hover:bg-white/90 text-black rounded-2xl font-bold transition-all inline-flex items-center gap-2"
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-white hover:bg-white/90 text-black rounded-2xl font-semibold transition-all duration-300"
             >
-              Order Catering
-              <ArrowRight className="w-5 h-5" strokeWidth={2} />
+              <span>View Full Menu</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" strokeWidth={2} />
             </button>
           </motion.div>
         </div>
       </section>
 
-      {/* Reviews */}
-      <section className="py-24 px-4">
+      {/* ═══════════════════════════════════════════════════════════════════════
+          CATERING PARTNERS SECTION
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-24 sm:py-32 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            transition={{ duration: 0.8 }}
+            className="text-center mb-6"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-              What People Say
+            <div className="inline-flex items-center gap-2 px-4 py-2 backdrop-blur-xl bg-orange-500/10 border border-orange-500/20 rounded-full mb-8">
+              <Users className="w-4 h-4 text-orange-400" strokeWidth={2} />
+              <span className="text-sm font-medium text-orange-400/90">Trusted by Industry Leaders</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+              Our Catering Partners
             </h2>
-            <p className="text-white/40 text-lg font-medium">
-              Loved by our community
+            <p className="text-lg sm:text-xl text-white/40 max-w-2xl mx-auto font-light">
+              Proud to serve Colorado's leading organizations with exceptional Indian cuisine
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {reviews.map((review, index) => (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="mt-16"
+          >
+            {/* Partner logos grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 sm:gap-8 items-center justify-items-center">
+              {cateringPartners.map((partner, index) => (
+                <motion.div
+                  key={partner}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 + 0.2, duration: 0.6 }}
+                  className="w-full h-24 sm:h-28 flex items-center justify-center p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-white/[0.1] hover:bg-white/[0.04] transition-all duration-500 grayscale hover:grayscale-0"
+                >
+                  <PartnerLogo name={partner} />
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Catering CTA */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="mt-16 sm:mt-20 p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-transparent border border-orange-500/20 text-center"
+          >
+            <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+              Planning a Corporate Event?
+            </h3>
+            <p className="text-white/50 mb-8 max-w-xl mx-auto">
+              From intimate board meetings to large company gatherings, we bring authentic Indian flavors to your event with white-glove service.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="tel:+13036658889"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-orange-500 hover:bg-orange-400 text-white rounded-2xl font-semibold transition-all duration-300"
+              >
+                <Phone className="w-4 h-4" />
+                <span>Call for Catering</span>
+              </a>
+              <button
+                onClick={() => navigate('/shop')}
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-white rounded-2xl font-medium transition-all duration-300"
+              >
+                <span>Order Online</span>
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          TESTIMONIALS SECTION
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-24 sm:py-32 px-4 border-t border-white/[0.04]">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+              What People Say
+            </h2>
+            <p className="text-lg sm:text-xl text-white/40 max-w-2xl mx-auto font-light">
+              Join thousands of satisfied customers who've made Tandoori Kitchen their favorite
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {testimonials.map((testimonial, index) => (
               <motion.div
-                key={review.name}
-                initial={{ opacity: 0, y: 20 }}
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6"
+                transition={{ delay: index * 0.15, duration: 0.6 }}
+                className="relative p-8 rounded-3xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-white/[0.06]"
               >
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
+                <Quote className="absolute top-6 right-6 w-8 h-8 text-white/[0.05]" />
+                
+                <div className="flex items-center gap-1 mb-6">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />
                   ))}
                 </div>
-                <p className="text-white/80 mb-4 font-medium">
-                  "{review.text}"
+                
+                <p className="text-white/70 mb-6 leading-relaxed font-light">
+                  "{testimonial.text}"
                 </p>
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-white">{review.name}</span>
-                  <span className="text-xs text-white/40 font-medium">{review.date}</span>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold">
+                    {testimonial.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="text-white font-medium">{testimonial.name}</div>
+                    <div className="text-white/40 text-sm">{testimonial.role}</div>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -321,102 +632,76 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Location & Hours */}
-      <section className="py-24 px-4">
+      {/* ═══════════════════════════════════════════════════════════════════════
+          LOCATION & HOURS SECTION
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-24 sm:py-32 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Location */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+              Visit Us
+            </h2>
+            <p className="text-lg sm:text-xl text-white/40 max-w-2xl mx-auto font-light">
+              Located in the heart of Lafayette, Colorado
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            {/* Location Card */}
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-8"
+              transition={{ duration: 0.8 }}
+              className="p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.06]"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
-                  <MapPin className="w-6 h-6 text-white/60" strokeWidth={1.5} />
-                </div>
-                <h3 className="text-2xl font-bold text-white tracking-tight">Visit Us</h3>
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-600/10 flex items-center justify-center mb-6">
+                <MapPin className="w-7 h-7 text-orange-400" strokeWidth={1.5} />
               </div>
-              
-              <div className="space-y-4">
-                <a 
-                  href="https://www.google.com/maps/search/?api=1&query=199+W+South+Boulder+Rd+Lafayette+CO+80026"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3 text-white/80 hover:text-white transition-colors group"
-                >
-                  <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0 text-orange-400" strokeWidth={1.5} />
-                  <div>
-                    <p className="font-medium">199 W. South Boulder Rd.</p>
-                    <p className="text-white/60">Lafayette, CO 80026</p>
-                  </div>
-                </a>
-                
-                <a 
-                  href="tel:3036658530"
-                  className="flex items-start gap-3 text-white/80 hover:text-white transition-colors group"
-                >
-                  <Phone className="w-5 h-5 mt-0.5 flex-shrink-0 text-orange-400" strokeWidth={1.5} />
-                  <div>
-                    <p className="font-medium">(303) 665-8530</p>
-                    <p className="text-white/60 text-sm">Call for reservations</p>
-                  </div>
-                </a>
-              </div>
-
-              <button
-                onClick={() => window.open('https://www.google.com/maps/search/?api=1&query=199+W+South+Boulder+Rd+Lafayette+CO+80026', '_blank')}
-                className="mt-6 w-full px-6 py-3 backdrop-blur-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+              <h3 className="text-2xl font-bold text-white mb-4">Location</h3>
+              <p className="text-white/60 text-lg mb-2">400 W South Boulder Rd</p>
+              <p className="text-white/60 text-lg mb-6">Lafayette, CO 80026</p>
+              <a
+                href="https://maps.google.com/?q=400+W+South+Boulder+Rd+Lafayette+CO+80026"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 font-medium transition-colors"
               >
-                Get Directions
-                <ArrowRight className="w-4 h-4" strokeWidth={2} />
-              </button>
+                <span>Get Directions</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
             </motion.div>
 
-            {/* Hours */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
+            {/* Hours Card */}
+            <motion.div 
+              initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-8"
+              transition={{ duration: 0.8 }}
+              className="p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.06]"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-white/60" strokeWidth={1.5} />
-                </div>
-                <h3 className="text-2xl font-bold text-white tracking-tight">Hours</h3>
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-600/10 flex items-center justify-center mb-6">
+                <Clock className="w-7 h-7 text-orange-400" strokeWidth={1.5} />
               </div>
-
-              <div className="space-y-4">
-                <div className="flex justify-between items-start pb-4 border-b border-white/10">
-                  <div>
-                    <p className="font-semibold text-white mb-1">Monday - Thursday</p>
-                    <div className="text-sm text-white/60 space-y-0.5">
-                      <p>Lunch: 11:00 AM - 2:30 PM</p>
-                      <p>Dinner: 4:30 PM - 9:00 PM</p>
-                    </div>
-                  </div>
+              <h3 className="text-2xl font-bold text-white mb-6">Hours</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between text-lg">
+                  <span className="text-white/60">Monday - Thursday</span>
+                  <span className="text-white">11am - 9pm</span>
                 </div>
-                
-                <div className="flex justify-between items-start pb-4 border-b border-white/10">
-                  <div>
-                    <p className="font-semibold text-white mb-1">Friday - Saturday</p>
-                    <div className="text-sm text-white/60 space-y-0.5">
-                      <p>Lunch: 11:00 AM - 2:30 PM</p>
-                      <p>Dinner: 4:30 PM - 9:30 PM</p>
-                    </div>
-                  </div>
+                <div className="flex justify-between text-lg">
+                  <span className="text-white/60">Friday - Saturday</span>
+                  <span className="text-white">11am - 10pm</span>
                 </div>
-                
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-semibold text-white mb-1">Sunday</p>
-                    <div className="text-sm text-white/60 space-y-0.5">
-                      <p>Lunch: 11:00 AM - 2:30 PM</p>
-                      <p>Dinner: 4:30 PM - 9:00 PM</p>
-                    </div>
-                  </div>
+                <div className="flex justify-between text-lg">
+                  <span className="text-white/60">Sunday</span>
+                  <span className="text-white">11am - 9pm</span>
                 </div>
               </div>
             </motion.div>
@@ -424,30 +709,47 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-24 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-              Ready to Experience<br />Authentic Indian Cuisine?
-            </h2>
-            <p className="text-white/60 text-lg mb-8 font-medium">
-              Order online for pickup or catering today
-            </p>
-            <button
-              onClick={() => navigate('/shop')}
-              className="px-10 py-5 backdrop-blur-xl bg-white hover:bg-white/90 text-black rounded-2xl font-bold transition-all inline-flex items-center gap-2 text-lg shadow-2xl"
-            >
-              Start Your Order
-              <ArrowRight className="w-6 h-6" strokeWidth={2} />
-            </button>
-          </motion.div>
-        </div>
+      {/* ═══════════════════════════════════════════════════════════════════════
+          FINAL CTA SECTION
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-24 sm:py-32 px-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="max-w-4xl mx-auto text-center"
+        >
+          <div className="relative p-10 sm:p-16 rounded-[2.5rem] overflow-hidden">
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-orange-600/10 to-red-600/10" />
+            <div className="absolute inset-0 backdrop-blur-3xl" />
+            <div className="absolute inset-0 border border-orange-500/20 rounded-[2.5rem]" />
+            
+            {/* Content */}
+            <div className="relative z-10">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+                Ready to Experience<br />Authentic Flavors?
+              </h2>
+              <p className="text-lg sm:text-xl text-white/50 mb-10 max-w-xl mx-auto font-light">
+                Order now and taste the difference that 15+ years of passion and tradition brings to every dish.
+              </p>
+              <button
+                onClick={() => navigate('/shop')}
+                className="group px-10 py-5 bg-white hover:bg-white/90 text-black rounded-2xl font-bold text-lg transition-all duration-300 flex items-center gap-3 mx-auto shadow-2xl shadow-white/10 hover:shadow-white/20 hover:scale-[1.02]"
+              >
+                <span>Start Your Order</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" strokeWidth={2.5} />
+              </button>
+            </div>
+          </div>
+        </motion.div>
       </section>
+
+      {/* Footer Spacer */}
+      <div className="h-16" />
     </div>
   );
-}
+};
+
+export default Home;
