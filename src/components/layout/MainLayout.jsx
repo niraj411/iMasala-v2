@@ -5,14 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingBag, User, Menu, X, Home, UtensilsCrossed, 
   Clock, ChevronRight, Plus, Minus, Trash2, ArrowRight,
-  Phone, MapPin, Star, Gift, ChevronDown, LogOut
+  Phone, MapPin, Star, Gift, ChevronDown, LogOut, LogIn
 } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function MainLayout({ children }) {
   const { cartItems, getCartTotal, updateQuantity, removeFromCart } = useCart();
-  const { user, logout } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -40,9 +40,10 @@ export default function MainLayout({ children }) {
 
   const isAdmin = user?.roles?.includes('administrator') || user?.roles?.includes('shop_manager');
 
+  // Navigation links - different for logged in vs guest
   const navLinks = [
     { path: '/shop', label: 'Menu', icon: UtensilsCrossed },
-    { path: '/my-account', label: 'My Orders', icon: Clock },
+    ...(isAuthenticated ? [{ path: '/my-account', label: 'My Orders', icon: Clock }] : []),
     ...(isAdmin ? [{ path: '/admin', label: 'Dashboard', icon: Home }] : []),
   ];
 
@@ -96,34 +97,48 @@ export default function MainLayout({ children }) {
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-3">
-              {/* User Menu */}
+              {/* User Menu - Different for logged in vs guest */}
               <div className="hidden md:block relative group">
-                <button className="flex items-center gap-2 px-3 py-2 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all">
-                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                    <User className="w-4 h-4" strokeWidth={1.5} />
-                  </div>
-                  <span className="text-sm font-medium max-w-24 truncate">
-                    {user?.displayName || user?.email?.split('@')[0] || 'Account'}
-                  </span>
-                  <ChevronDown className="w-4 h-4" strokeWidth={1.5} />
-                </button>
-                <div className="absolute right-0 top-full mt-2 w-48 backdrop-blur-xl bg-black/90 rounded-2xl border border-white/10 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                  <div className="p-2">
-                    <Link 
-                      to="/my-account" 
-                      className="block px-3 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/5 rounded-xl transition-all font-medium"
-                    >
-                      My Account
-                    </Link>
-                    <button 
-                      onClick={logout}
-                      className="w-full text-left px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all font-medium flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4" strokeWidth={1.5} />
-                      Sign Out
+                {isAuthenticated ? (
+                  // Logged in user menu
+                  <>
+                    <button className="flex items-center gap-2 px-3 py-2 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                        <User className="w-4 h-4" strokeWidth={1.5} />
+                      </div>
+                      <span className="text-sm font-medium max-w-24 truncate">
+                        {user?.displayName || user?.email?.split('@')[0] || 'Account'}
+                      </span>
+                      <ChevronDown className="w-4 h-4" strokeWidth={1.5} />
                     </button>
-                  </div>
-                </div>
+                    <div className="absolute right-0 top-full mt-2 w-48 backdrop-blur-xl bg-black/90 rounded-2xl border border-white/10 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                      <div className="p-2">
+                        <Link 
+                          to="/my-account" 
+                          className="block px-3 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/5 rounded-xl transition-all font-medium"
+                        >
+                          My Account
+                        </Link>
+                        <button 
+                          onClick={logout}
+                          className="w-full text-left px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all font-medium flex items-center gap-2"
+                        >
+                          <LogOut className="w-4 h-4" strokeWidth={1.5} />
+                          Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  // Guest - Show Sign In button
+                  <Link
+                    to="/my-account"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all"
+                  >
+                    <LogIn className="w-4 h-4" strokeWidth={1.5} />
+                    <span className="text-sm font-medium">Sign In</span>
+                  </Link>
+                )}
               </div>
 
               {/* Cart Button */}
@@ -311,7 +326,7 @@ export default function MainLayout({ children }) {
                   <div>
                     <h2 className="font-bold text-white text-lg tracking-tight">iMasala</h2>
                     <p className="text-xs text-white/40 font-medium">
-                      {user?.email || 'Guest'}
+                      {isAuthenticated ? (user?.email || 'Welcome back!') : 'Welcome, Guest'}
                     </p>
                   </div>
                   <button
@@ -341,16 +356,27 @@ export default function MainLayout({ children }) {
               </nav>
 
               <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
-                <button
-                  onClick={() => {
-                    logout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
-                >
-                  <LogOut className="w-4 h-4" strokeWidth={1.5} />
-                  Sign Out
-                </button>
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" strokeWidth={1.5} />
+                    Sign Out
+                  </button>
+                ) : (
+                  <Link
+                    to="/my-account"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-3 bg-white/10 hover:bg-white/15 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+                  >
+                    <LogIn className="w-4 h-4" strokeWidth={1.5} />
+                    Sign In
+                  </Link>
+                )}
               </div>
             </motion.div>
           </>
