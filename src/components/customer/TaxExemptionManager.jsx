@@ -1,199 +1,395 @@
 // src/components/customer/TaxExemptionManager.jsx
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Upload, Check, AlertCircle, FileText, Calendar } from 'lucide-react';
-import { taxExemptionService } from '../../services/taxExemptionService';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ShieldCheck, AlertCircle, CheckCircle2, 
+  Edit2, Trash2, X, Building2, Calendar, Hash
+} from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { taxExemptionService } from '../../services/taxExemptionService';
 import toast from 'react-hot-toast';
+
+// US States for dropdown
+const US_STATES = [
+  { code: 'CO', name: 'Colorado' },
+  { code: 'AZ', name: 'Arizona' },
+  { code: 'CA', name: 'California' },
+  { code: 'NM', name: 'New Mexico' },
+  { code: 'NV', name: 'Nevada' },
+  { code: 'TX', name: 'Texas' },
+  { code: 'UT', name: 'Utah' },
+  { code: 'WY', name: 'Wyoming' },
+  // Add more as needed
+];
 
 export default function TaxExemptionManager() {
   const { user } = useAuth();
-  const [exemptionData, setExemptionData] = useState({
+  const [exemptionData, setExemptionData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  
+  const [formData, setFormData] = useState({
     licenseNumber: '',
-    state: '',
+    state: 'CO',
     expiryDate: '',
-    verified: false
+    organizationName: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
-    if (user?.id) {
-      loadExemptionData();
-    }
+    loadExemptionData();
   }, [user]);
 
-  const loadExemptionData = async () => {
-    try {
-      const data = await taxExemptionService.getTaxExemption(user.id);
-      if (data && Object.keys(data).length > 0) {
-        setExemptionData(data);
-      }
-    } catch (error) {
-      console.error('Error loading tax exemption:', error);
+  const loadExemptionData = () => {
+    if (!user?.id && !user?.email) {
+      setLoading(false);
+      return;
     }
+    
+    const userId = user.id || user.email;
+    const data = taxExemptionService.getTaxExemption(userId);
+    setExemptionData(data);
+    
+    if (data) {
+      setFormData({
+        licenseNumber: data.licenseNumber || '',
+        state: data.state || 'CO',
+        expiryDate: data.expiryDate || '',
+        organizationName: data.organizationName || ''
+      });
+    }
+    
+    setLoading(false);
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!formData.licenseNumber?.trim()) {
+      errors.licenseNumber = 'Tax exempt license number is required';
+    } else if (!taxExemptionService.validateLicenseFormat(formData.licenseNumber)) {
+      errors.licenseNumber = 'Invalid license number format';
+    }
+    
+    if (!formData.state) {
+      errors.state = 'State is required';
+    }
+    
+    if (formData.expiryDate) {
+      const expiry = new Date(formData.expiryDate);
+      const today = new Date();
+      if (expiry < today) {
+        errors.expiryDate = 'Expiry date cannot be in the past';
+      }
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
+    
+    if (!validateForm()) return;
+    
+    setSaving(true);
     try {
-      await taxExemptionService.updateTaxExemption(user.id, exemptionData);
-      toast.success('Tax exemption information updated successfully!');
-      setIsEditing(false);
+      const userId = user.id || user.email;
+      const savedData = taxExemptionService.saveTaxExemption(userId, formData);
+      setExemptionData(savedData);
+      setShowForm(false);
+      toast.success('Tax exemption saved successfully!');
     } catch (error) {
-      toast.error('Failed to update tax exemption information');
+      console.error('Error saving tax exemption:', error);
+      toast.error('Failed to save tax exemption');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  const states = [
-    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
-    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
-    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
-    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
-    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
-  ];
+  const handleRemove = () => {
+    if (!confirm('Are you sure you want to remove your tax exemption?')) return;
+    
+    const userId = user.id || user.email;
+    taxExemptionService.removeTaxExemption(userId);
+    setExemptionData(null);
+    setFormData({
+      licenseNumber: '',
+      state: 'CO',
+      expiryDate: '',
+      organizationName: ''
+    });
+    toast.success('Tax exemption removed');
+  };
 
-  if (!isEditing && exemptionData.licenseNumber) {
+  const handleEdit = () => {
+    setShowForm(true);
+  };
+
+  // Calculate min date (today) for expiry
+  const minExpiryDate = new Date().toISOString().split('T')[0];
+
+  if (loading) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-lg border border-masala-200 p-6"
-      >
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-              <FileText className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg text-masala-900">Tax Exempt Status</h3>
-              <p className="text-sm text-green-600 flex items-center gap-1 mt-1">
-                <Check className="w-4 h-4" />
-                Active
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => setIsEditing(true)}
-            className="text-primary-600 hover:text-primary-700 font-medium text-sm"
-          >
-            Edit
-          </button>
+      <div className="text-center py-12">
+        <div className="w-10 h-10 mx-auto mb-3">
+          <div className="w-full h-full border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <p className="text-sm text-masala-600">License Number</p>
-            <p className="font-medium text-masala-900">{exemptionData.licenseNumber}</p>
-          </div>
-          <div>
-            <p className="text-sm text-masala-600">State</p>
-            <p className="font-medium text-masala-900">{exemptionData.state}</p>
-          </div>
-          <div>
-            <p className="text-sm text-masala-600">Expiry Date</p>
-            <p className="font-medium text-masala-900">{exemptionData.expiryDate}</p>
-          </div>
-        </div>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-lg border border-masala-200 p-6"
-    >
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-masala-900 mb-2">
-          Tax Exemption Certificate
-        </h3>
-        <p className="text-sm text-masala-600">
-          Upload your tax exemption certificate to apply tax-free status to your orders
-        </p>
-      </div>
+    <div>
+      <h2 className="text-sm font-semibold text-white/70 mb-4 uppercase tracking-wider">
+        Tax Exemption Status
+      </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-masala-700 mb-1">
-            Tax Exempt License Number
-          </label>
-          <input
-            type="text"
-            value={exemptionData.licenseNumber}
-            onChange={(e) => setExemptionData({...exemptionData, licenseNumber: e.target.value})}
-            className="w-full px-3 py-2 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-            placeholder="Enter your license number"
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-masala-700 mb-1">
-              State
-            </label>
-            <select
-              value={exemptionData.state}
-              onChange={(e) => setExemptionData({...exemptionData, state: e.target.value})}
-              className="w-full px-3 py-2 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
-            >
-              <option value="">Select State</option>
-              {states.map(state => (
-                <option key={state} value={state}>{state}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-masala-700 mb-1">
-              Expiry Date
-            </label>
-            <input
-              type="date"
-              value={exemptionData.expiryDate}
-              onChange={(e) => setExemptionData({...exemptionData, expiryDate: e.target.value})}
-              className="w-full px-3 py-2 border border-masala-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <div className="flex gap-3">
-            <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-yellow-800">
-              <p className="font-medium mb-1">Verification Required</p>
-              <p>Your tax exemption will be verified by our team within 24-48 hours.</p>
+      {/* Current Status Card */}
+      {exemptionData && !showForm ? (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`rounded-xl p-5 mb-4 ${
+            exemptionData.verified && !exemptionData.expired
+              ? 'bg-green-500/10 border border-green-500/20'
+              : 'bg-amber-500/10 border border-amber-500/20'
+          }`}
+        >
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-4">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                exemptionData.verified && !exemptionData.expired
+                  ? 'bg-green-500/20'
+                  : 'bg-amber-500/20'
+              }`}>
+                {exemptionData.verified && !exemptionData.expired ? (
+                  <CheckCircle2 className="w-6 h-6 text-green-400" />
+                ) : (
+                  <AlertCircle className="w-6 h-6 text-amber-400" />
+                )}
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-semibold text-white">Tax Exempt</span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                    exemptionData.verified && !exemptionData.expired
+                      ? 'bg-green-500/30 text-green-300'
+                      : 'bg-amber-500/30 text-amber-300'
+                  }`}>
+                    {exemptionData.expired ? 'Expired' : exemptionData.verified ? 'Active' : 'Pending'}
+                  </span>
+                </div>
+                
+                <div className="space-y-1 mt-3">
+                  <div className="flex items-center gap-2 text-sm text-white/60">
+                    <Hash className="w-4 h-4" />
+                    <span>License: <span className="text-white font-medium">{exemptionData.licenseNumber}</span></span>
+                  </div>
+                  {exemptionData.organizationName && (
+                    <div className="flex items-center gap-2 text-sm text-white/60">
+                      <Building2 className="w-4 h-4" />
+                      <span>{exemptionData.organizationName}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 text-sm text-white/60">
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>State: {exemptionData.state}</span>
+                  </div>
+                  {exemptionData.expiryDate && (
+                    <div className="flex items-center gap-2 text-sm text-white/60">
+                      <Calendar className="w-4 h-4" />
+                      <span>Expires: {new Date(exemptionData.expiryDate).toLocaleDateString()}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleEdit}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                title="Edit"
+              >
+                <Edit2 className="w-4 h-4 text-white/40" />
+              </button>
+              <button
+                onClick={handleRemove}
+                className="p-2 hover:bg-red-500/20 rounded-lg transition-colors"
+                title="Remove"
+              >
+                <Trash2 className="w-4 h-4 text-red-400/60" />
+              </button>
             </div>
           </div>
-        </div>
-
-        <div className="flex gap-3">
-          {isEditing && (
-            <button
-              type="button"
-              onClick={() => setIsEditing(false)}
-              className="px-4 py-2 border border-masala-200 text-masala-700 rounded-lg hover:bg-masala-50 transition-colors"
-            >
-              Cancel
-            </button>
+          
+          {exemptionData.verified && !exemptionData.expired && (
+            <p className="text-green-400/80 text-sm mt-4 pt-4 border-t border-green-500/20">
+              ✓ Tax will be automatically removed from your orders at checkout
+            </p>
           )}
+          
+          {exemptionData.expired && (
+            <p className="text-amber-400/80 text-sm mt-4 pt-4 border-t border-amber-500/20">
+              ⚠ Your exemption has expired. Please update with new expiry date.
+            </p>
+          )}
+        </motion.div>
+      ) : !showForm && (
+        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center mb-4">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center">
+            <ShieldCheck className="w-8 h-8 text-white/20" />
+          </div>
+          <p className="text-white/60 font-medium mb-1">No tax exemption on file</p>
+          <p className="text-white/30 text-sm mb-4">
+            If you're a non-profit or tax-exempt organization, add your details below
+          </p>
           <button
-            type="submit"
-            disabled={loading}
-            className="px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+            onClick={() => setShowForm(true)}
+            className="px-5 py-2.5 bg-white/10 hover:bg-white/15 text-white rounded-xl font-medium transition-all"
           >
-            {loading ? 'Saving...' : 'Save Tax Exemption'}
+            Add Tax Exemption
           </button>
         </div>
-      </form>
-    </motion.div>
+      )}
+
+      {/* Form */}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <form onSubmit={handleSubmit} className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-white">Tax Exemption Details</h3>
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="p-1 hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-white/40" />
+                </button>
+              </div>
+              
+              {/* Organization Name */}
+              <div>
+                <label className="block text-sm font-medium text-white/60 mb-2">
+                  Organization Name (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={formData.organizationName}
+                  onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
+                  placeholder="e.g., Boulder Valley School District"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-white/20"
+                />
+              </div>
+              
+              {/* License Number */}
+              <div>
+                <label className="block text-sm font-medium text-white/60 mb-2">
+                  Tax Exempt License Number *
+                </label>
+                <input
+                  type="text"
+                  value={formData.licenseNumber}
+                  onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value.toUpperCase() })}
+                  placeholder="e.g., 98-12345-0001"
+                  required
+                  className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-white/30 focus:outline-none ${
+                    formErrors.licenseNumber ? 'border-red-500/50' : 'border-white/10 focus:border-white/20'
+                  }`}
+                />
+                {formErrors.licenseNumber && (
+                  <p className="text-red-400 text-sm mt-1">{formErrors.licenseNumber}</p>
+                )}
+              </div>
+              
+              {/* State & Expiry Row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-white/60 mb-2">
+                    Issuing State *
+                  </label>
+                  <select
+                    value={formData.state}
+                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                    required
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-white/20 appearance-none"
+                  >
+                    {US_STATES.map(state => (
+                      <option key={state.code} value={state.code} className="bg-zinc-900">
+                        {state.name} ({state.code})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-white/60 mb-2">
+                    Expiry Date (Optional)
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.expiryDate}
+                    onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                    min={minExpiryDate}
+                    className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white focus:outline-none ${
+                      formErrors.expiryDate ? 'border-red-500/50' : 'border-white/10 focus:border-white/20'
+                    }`}
+                  />
+                  {formErrors.expiryDate && (
+                    <p className="text-red-400 text-sm mt-1">{formErrors.expiryDate}</p>
+                  )}
+                </div>
+              </div>
+              
+              {/* Info Note */}
+              <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                <p className="text-blue-300 text-sm">
+                  💡 Your tax exemption will be applied automatically at checkout once saved.
+                </p>
+              </div>
+              
+              {/* Actions */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="px-5 py-2.5 bg-white hover:bg-white/90 text-black rounded-xl font-semibold transition-all disabled:opacity-50 flex items-center gap-2"
+                >
+                  {saving ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-4 h-4" />
+                      Save Exemption
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowForm(false);
+                    setFormErrors({});
+                  }}
+                  className="px-5 py-2.5 bg-white/10 hover:bg-white/15 text-white rounded-xl font-medium transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
