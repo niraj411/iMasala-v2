@@ -1,12 +1,14 @@
-// src/App.jsx - Corrected Routes
+// src/App.jsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { OrderProvider } from './contexts/OrderContext';
 import { MenuProvider } from './contexts/MenuContext';
 import { CartProvider } from './contexts/CartContext';
 import { CateringProvider } from './contexts/CateringContext'; 
 import { Toaster } from 'react-hot-toast';
+import { useNotifications } from './hooks/useNotifications';
+import NotificationPermission, { useNotificationPrompt } from './components/NotificationPermission';
 
 // Layout
 import MainLayout from './components/layout/MainLayout';
@@ -39,11 +41,9 @@ function AppRoutes() {
     );
   }
 
-  // Public routes that don't require authentication
   const publicPaths = ['/order-success', '/order-cancelled', '/', '/catering'];
   const currentPath = window.location.pathname;
   
-  // Only require auth for non-public paths
   if (!isAuthenticated && !publicPaths.includes(currentPath) && !currentPath.startsWith('/order/')) {
     return <Login />;
   }
@@ -53,11 +53,8 @@ function AppRoutes() {
   return (
     <MainLayout>
       <Routes>
-        {/* Home / Landing Page - Public */}
         <Route path="/" element={<Home />} />
         <Route path="/catering" element={<Catering />} />
-
-        {/* Admin Dashboard */}
         <Route 
           path="/admin" 
           element={
@@ -84,23 +81,11 @@ function AppRoutes() {
               )
           } 
         />
-        
-        {/* Customer Dashboard */}
         <Route path="/my-account" element={<CustomerDashboard />} />
-        
-        {/* Shop / Menu */}
         <Route path="/shop" element={<Shop />} />
-
-        {/* Checkout */}
         <Route path="/checkout" element={<Checkout />} />
-        
-        {/* Cart (optional standalone page) */}
         <Route path="/cart" element={<Cart />} />
-        
-        {/* Order Success */}
         <Route path="/order-success" element={<OrderSuccess />} />
-        
-        {/* Order Cancelled */}
         <Route 
           path="/order-cancelled" 
           element={
@@ -123,11 +108,7 @@ function AppRoutes() {
             </div>
           } 
         />
-        
-        {/* Order Tracking */}
         <Route path="/order/:orderId" element={<OrderTracking />} />
-        
-        {/* 404 Fallback */}
         <Route 
           path="*" 
           element={
@@ -153,7 +134,17 @@ function AppRoutes() {
   );
 }
 
-function App() {
+// This component handles notifications and must be inside AuthProvider
+function NotificationHandler() {
+  useNotifications(); // Initialize foreground message listener
+  const { showPrompt, closePrompt } = useNotificationPrompt();
+  
+  return (
+    <NotificationPermission show={showPrompt} onClose={closePrompt} />
+  );
+}
+
+function App() {  
   return (
     <Router>
       <AuthProvider>
@@ -162,6 +153,7 @@ function App() {
             <CateringProvider>
               <OrderProvider>
                 <AppRoutes />
+                <NotificationHandler />
                 <Toaster 
                   position="bottom-center"
                   toastOptions={{
