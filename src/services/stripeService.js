@@ -28,7 +28,7 @@ const formatModifiersForDisplay = (modifiers) => {
 };
 
 export const stripeService = {
-  async createCheckoutSession(cartItems, orderMetadata) {
+  async createCheckoutSession(cartItems, orderMetadata, tipAmount = 0) {
     try {
       const response = await axios.post(
         'https://tandoorikitchenco.com/wp-json/imasala/v1/create-checkout',
@@ -54,6 +54,7 @@ export const stripeService = {
             };
           }),
           metadata: orderMetadata,
+          tip_amount: tipAmount,
         },
         {
           headers: {
