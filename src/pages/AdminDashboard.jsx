@@ -465,6 +465,8 @@ export default function AdminDashboard() {
                       : 'border-transparent text-white/40 hover:text-white/60 hover:bg-white/[0.02]'
                   }`}
                 >
+                    <AdminNotificationSetup compact={true} />
+
                   <Icon className="w-4 h-4" strokeWidth={1.5} />
                   {tab.label}
                 </button>
