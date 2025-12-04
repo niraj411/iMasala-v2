@@ -1,10 +1,11 @@
-// src/pages/Checkout.jsx - With Tip Functionality
+// src/pages/Checkout.jsx - With Guest Checkout & Tip Functionality
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingBag, Truck, Clock, AlertCircle, ChevronRight, 
   MapPin, Users, Utensils, Package, Store, Check, 
-  Calendar, Zap, Shield, CreditCard, ChevronDown, Heart, DollarSign
+  Calendar, Zap, Shield, CreditCard, ChevronDown, Heart, DollarSign,
+  User, Mail, Phone as PhoneIcon
 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -54,9 +55,17 @@ export default function Checkout() {
   const [scheduledTime, setScheduledTime] = useState('');
   
   // Tip states
-  const [tipType, setTipType] = useState('preset'); // 'preset', 'custom', 'none'
-  const [selectedTipPreset, setSelectedTipPreset] = useState(0.18); // Default 18%
+  const [tipType, setTipType] = useState('preset');
+  const [selectedTipPreset, setSelectedTipPreset] = useState(0.18);
   const [customTipAmount, setCustomTipAmount] = useState('');
+  
+  // Guest checkout info
+  const [guestInfo, setGuestInfo] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: ''
+  });
   
   // Other states
   const [taxExemptStatus, setTaxExemptStatus] = useState(null);
@@ -77,7 +86,6 @@ export default function Checkout() {
     return cartTotal * selectedTipPreset;
   }, [tipType, selectedTipPreset, customTipAmount, cartTotal]);
   
-  // Only charge delivery fee for catering orders with delivery method
   const deliveryFee = (selectedOrderType === 'catering' && cateringDetails?.deliveryMethod === 'delivery') ? 20 : 0;
   const taxRate = (taxExemptStatus?.verified && applyTaxExempt) ? 0 : 0.0825;
   const taxAmount = cartTotal * taxRate;
@@ -109,7 +117,6 @@ export default function Checkout() {
     return now;
   };
 
-  // Generate available time slots based on selected date
   const availableTimeSlots = useMemo(() => {
     if (!scheduledDate) return [];
 
@@ -210,12 +217,9 @@ export default function Checkout() {
   };
 
   const handleCustomTipChange = (value) => {
-    // Only allow numbers and decimal point
     const sanitized = value.replace(/[^0-9.]/g, '');
-    // Prevent multiple decimal points
     const parts = sanitized.split('.');
     if (parts.length > 2) return;
-    // Limit to 2 decimal places
     if (parts[1] && parts[1].length > 2) return;
     
     setCustomTipAmount(sanitized);
@@ -234,6 +238,21 @@ export default function Checkout() {
 
   const validateCheckout = () => {
     const validationErrors = [];
+
+    // Guest checkout validation
+    if (!user) {
+      if (!guestInfo.firstName.trim()) {
+        validationErrors.push('Please enter your first name');
+      }
+      if (!guestInfo.email.trim()) {
+        validationErrors.push('Please enter your email');
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestInfo.email)) {
+        validationErrors.push('Please enter a valid email address');
+      }
+      if (!guestInfo.phone.trim()) {
+        validationErrors.push('Please enter your phone number');
+      }
+    }
 
     if (cartItems.length === 0) {
       validationErrors.push('Your cart is empty');
@@ -259,12 +278,10 @@ export default function Checkout() {
         }
       }
     } else if (selectedOrderType === 'catering') {
-      // Validate catering minimum
       if (cartTotal < 250) {
         validationErrors.push('Catering orders require a $250 minimum');
       }
 
-      // Validate catering details
       if (!cateringDetails?.deliveryDate) {
         validationErrors.push('Please select a catering date');
       }
@@ -275,7 +292,6 @@ export default function Checkout() {
         validationErrors.push('Please enter number of guests');
       }
 
-      // Validate delivery address if delivery method selected
       if (cateringDetails?.deliveryMethod === 'delivery') {
         if (!cateringDetails?.deliveryAddress?.address) {
           validationErrors.push('Please enter delivery address');
@@ -288,7 +304,6 @@ export default function Checkout() {
         }
       }
 
-      // Validate 4-hour advance notice for catering
       if (cateringDetails?.deliveryDate && cateringDetails?.deliveryTime) {
         const cateringDateTime = new Date(cateringDetails.deliveryDate + 'T' + cateringDetails.deliveryTime);
         const minCateringTime = new Date();
@@ -313,15 +328,21 @@ export default function Checkout() {
 
     setLoading(true);
     try {
+      const customerName = user?.name || 
+        `${guestInfo.firstName} ${guestInfo.lastName}`.trim() || 
+        guestInfo.firstName;
+
       const orderMetadata = {
         order_type: selectedOrderType,
-        customer_id: user?.id,
-        customer_email: user?.email,
-        customer_name: user?.name || '',
-        customer_phone: user?.phone || '',
+        customer_id: user?.id || 0,
+        customer_email: user?.email || guestInfo.email,
+        customer_name: customerName,
+        customer_first_name: user?.firstName || guestInfo.firstName,
+        customer_last_name: user?.lastName || guestInfo.lastName,
+        customer_phone: user?.phone || guestInfo.phone,
+        is_guest: !user ? 'yes' : 'no',
         tax_exempt: (taxExemptStatus?.verified && applyTaxExempt) ? 'yes' : 'no',
         tax_exempt_number: taxExemptStatus?.licenseNumber || '',
-        // Tip information
         tip_amount: tipAmount.toFixed(2),
         tip_type: tipType,
         tip_percentage: tipType === 'preset' ? (selectedTipPreset * 100).toFixed(0) + '%' : 'N/A',
@@ -340,7 +361,6 @@ export default function Checkout() {
           })} at ${formatTimeForDisplay(scheduledTime)}`;
         }
       } else if (selectedOrderType === 'catering') {
-        // Put catering fields at TOP LEVEL of metadata (not nested)
         orderMetadata.delivery_method = cateringDetails.deliveryMethod;
         orderMetadata.delivery_date = cateringDetails.deliveryDate;
         orderMetadata.delivery_time = cateringDetails.deliveryTime;
@@ -354,17 +374,15 @@ export default function Checkout() {
         orderMetadata.need_utensils = cateringDetails.needUtensils ? 'yes' : 'no';
         orderMetadata.special_instructions = cateringDetails.specialInstructions || '';
 
-        // Add delivery address only if delivery method
         if (cateringDetails.deliveryMethod === 'delivery' && cateringDetails.deliveryAddress) {
           orderMetadata.delivery_address = cateringDetails.deliveryAddress;
         }
       }
       
-      // Pass tip amount to stripe service
       const sessionData = await stripeService.createCheckoutSession(
         cartItems, 
         orderMetadata,
-        tipAmount // Pass tip as separate parameter
+        tipAmount
       );
       
       await stripeService.redirectToCheckout(sessionData);
@@ -403,10 +421,97 @@ export default function Checkout() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
+            
+            {/* ==================== GUEST INFO SECTION ==================== */}
+            {!user && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6"
+              >
+                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2 tracking-tight">
+                  <User className="w-5 h-5 text-white/60" strokeWidth={1.5} />
+                  Your Information
+                </h2>
+                <p className="text-sm text-white/40 mb-5 font-medium">
+                  We'll use this to send your order confirmation
+                </p>
+                
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-white/60 mb-2">
+                      First Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={guestInfo.firstName}
+                      onChange={(e) => setGuestInfo(prev => ({ ...prev, firstName: e.target.value }))}
+                      placeholder="John"
+                      className="w-full px-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-white/60 mb-2">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      value={guestInfo.lastName}
+                      onChange={(e) => setGuestInfo(prev => ({ ...prev, lastName: e.target.value }))}
+                      placeholder="Doe"
+                      className="w-full px-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-white/60 mb-2">
+                      <Mail className="w-4 h-4 inline mr-2" strokeWidth={1.5} />
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      value={guestInfo.email}
+                      onChange={(e) => setGuestInfo(prev => ({ ...prev, email: e.target.value }))}
+                      placeholder="john@example.com"
+                      className="w-full px-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-white/60 mb-2">
+                      <PhoneIcon className="w-4 h-4 inline mr-2" strokeWidth={1.5} />
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      value={guestInfo.phone}
+                      onChange={(e) => setGuestInfo(prev => ({ ...prev, phone: e.target.value }))}
+                      placeholder="(303) 555-1234"
+                      className="w-full px-4 py-3 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium"
+                    />
+                  </div>
+                </div>
+                
+                <div className="mt-4 p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                  <p className="text-sm text-white/40 font-medium">
+                    Have an account?{' '}
+                    <a href="/my-account" className="text-white hover:underline">
+                      Sign in
+                    </a>
+                    {' '}to track orders and earn rewards.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+            {/* ==================== END GUEST INFO SECTION ==================== */}
+
             {/* Order Type Selection */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: !user ? 0.1 : 0 }}
               className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6"
             >
               <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2 tracking-tight">
@@ -483,7 +588,6 @@ export default function Checkout() {
                   Pickup Time
                 </h2>
 
-                {/* ASAP vs Scheduled */}
                 <div className="grid grid-cols-2 gap-3 mb-6">
                   <button
                     onClick={() => setOrderTiming('asap')}
@@ -528,7 +632,6 @@ export default function Checkout() {
                   </button>
                 </div>
 
-                {/* Scheduled Time Selection */}
                 <AnimatePresence>
                   {orderTiming === 'scheduled' && (
                     <motion.div
@@ -656,7 +759,7 @@ export default function Checkout() {
               )}
             </AnimatePresence>
 
-            {/* ==================== TIP SECTION ==================== */}
+            {/* Tip Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -671,7 +774,6 @@ export default function Checkout() {
                 Show your appreciation for our team
               </p>
 
-              {/* Tip Preset Buttons */}
               <div className="grid grid-cols-4 gap-2 mb-4">
                 {TIP_PRESETS.map((preset) => (
                   <button
@@ -691,9 +793,7 @@ export default function Checkout() {
                 ))}
               </div>
 
-              {/* Custom Tip & No Tip Row */}
               <div className="flex gap-3">
-                {/* Custom Tip Input */}
                 <div className="flex-1 relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
                     <DollarSign className="w-5 h-5" />
@@ -713,7 +813,6 @@ export default function Checkout() {
                   />
                 </div>
 
-                {/* No Tip Button */}
                 <button
                   onClick={handleNoTip}
                   className={`px-5 py-3 rounded-xl font-semibold transition-all ${
@@ -726,7 +825,6 @@ export default function Checkout() {
                 </button>
               </div>
 
-              {/* Tip Confirmation */}
               {tipAmount > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -749,7 +847,6 @@ export default function Checkout() {
                 </motion.div>
               )}
             </motion.div>
-            {/* ==================== END TIP SECTION ==================== */}
 
             {/* Error Messages */}
             <AnimatePresence>
@@ -794,7 +891,6 @@ export default function Checkout() {
                 Order Summary
               </h2>
 
-              {/* Cart Items */}
               <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
                 {cartItems.map((item, index) => (
                   <div key={`${item.id}-${index}`} className="flex justify-between items-start gap-3">
@@ -821,7 +917,6 @@ export default function Checkout() {
                 ))}
               </div>
               
-              {/* Totals */}
               <div className="border-t border-white/10 pt-4 space-y-2 mb-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-white/60 font-medium">Subtotal</span>
@@ -858,8 +953,8 @@ export default function Checkout() {
                 </div>
               </div>
 
-              {/* Tax Exempt Toggle */}
-              {taxExemptStatus?.verified ? (
+              {/* Tax Exempt Toggle - Only for logged in users with verified status */}
+              {user && taxExemptStatus?.verified ? (
                 <label className="flex items-start gap-3 p-3 bg-green-500/10 border border-green-500/20 rounded-xl cursor-pointer hover:bg-green-500/15 transition-all mb-4">
                   <input
                     type="checkbox"
@@ -877,7 +972,7 @@ export default function Checkout() {
                     </p>
                   </div>
                 </label>
-              ) : (
+              ) : user && (
                 <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl opacity-60 mb-4">
                   <div className="flex items-start gap-3">
                     <input
@@ -895,7 +990,6 @@ export default function Checkout() {
                 </div>
               )}
 
-              {/* Action Buttons */}
               <div className="space-y-3">
                 <button
                   onClick={proceedToPayment}
@@ -923,7 +1017,6 @@ export default function Checkout() {
                 </button>
               </div>
 
-              {/* Trust Signals */}
               <div className="mt-6 pt-4 border-t border-white/10">
                 <div className="flex items-center justify-center gap-4 text-xs text-white/30">
                   <div className="flex items-center gap-1.5">
