@@ -9,11 +9,12 @@ import {
   ChevronDown, Eye, Printer,
   ShieldCheck, Calendar, MapPin,
   Phone, Mail, X, ExternalLink,
-  BarChart3, Utensils, ChevronRight, Settings
+  BarChart3, Utensils, ChevronRight, Settings, ChefHat
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AdminNotificationSetup from '../components/admin/AdminNotificationSetup';
 import ModifierManager from '../components/admin/ModifierManager';
+import KitchenDisplay from '../components/admin/KitchenDisplay';
 
 
 // Stats Card Component
@@ -373,7 +374,7 @@ const ServerStatus = () => {
 export default function AdminDashboard() {
   const { orders, loading, refreshOrders } = useOrders();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('kitchen');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState('all');
@@ -423,6 +424,7 @@ export default function AdminDashboard() {
   };
 
   const tabs = [
+    { id: 'kitchen', label: 'Kitchen', icon: ChefHat },
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'orders', label: 'All Orders', icon: Package },
     { id: 'modifiers', label: 'Modifiers', icon: Settings },
@@ -488,10 +490,22 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <>
-              <AdminNotificationSetup 
+              <AdminNotificationSetup
                 adminEmail={user?.email}
                 adminName={user?.name || 'Staff Member'}
               />
+
+              {/* Kitchen Tab */}
+              {activeTab === 'kitchen' && (
+                <KitchenDisplay
+                  orders={orders}
+                  onStatusUpdate={handleStatusUpdate}
+                  onViewDetails={setSelectedOrder}
+                  onRefresh={handleRefresh}
+                  refreshing={refreshing}
+                />
+              )}
+
               {/* Overview Tab */}
               {activeTab === 'overview' && (
                 <div className="space-y-6">

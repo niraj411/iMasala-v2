@@ -41,11 +41,15 @@ function AppRoutes() {
     );
   }
 
-  const publicPaths = ['/order-success', '/order-cancelled', '/', '/catering', '/shop', '/cart', '/checkout'];
+  const publicPaths = ['/order-success', '/order-cancelled', '/', '/catering', '/shop', '/cart', '/checkout', '/login'];
   const currentPath = window.location.pathname;
   
   if (!isAuthenticated && !publicPaths.includes(currentPath) && !currentPath.startsWith('/order/')) {
-    return <Login />;
+    return (
+      <MainLayout>
+        <Login />
+      </MainLayout>
+    );
   }
 
   const isAdmin = user?.roles?.includes('administrator') || user?.roles?.includes('shop_manager');
@@ -54,6 +58,7 @@ function AppRoutes() {
     <MainLayout>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/catering" element={<Catering />} />
         <Route 
           path="/admin" 
