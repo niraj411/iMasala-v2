@@ -41,7 +41,7 @@ function AppRoutes() {
     );
   }
 
-  const publicPaths = ['/order-success', '/order-cancelled', '/', '/catering'];
+  const publicPaths = ['/order-success', '/order-cancelled', '/', '/catering', '/shop', '/cart', '/checkout'];
   const currentPath = window.location.pathname;
   
   if (!isAuthenticated && !publicPaths.includes(currentPath) && !currentPath.startsWith('/order/')) {

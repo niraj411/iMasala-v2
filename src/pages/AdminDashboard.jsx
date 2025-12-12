@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useOrders } from '../contexts/OrderContext';
 import { useAuth } from '../contexts/AuthContext';
 import { woocommerceService } from '../services/woocommerceService';
-import { 
-  RefreshCw, Package, Server, Users, 
-  TrendingUp, DollarSign, Clock, CheckCircle, 
-  XCircle, AlertCircle, Search, Filter, 
-  ChevronDown, Eye, Printer, 
+import {
+  RefreshCw, Package, Server, Users,
+  TrendingUp, DollarSign, Clock, CheckCircle,
+  XCircle, AlertCircle, Search, Filter,
+  ChevronDown, Eye, Printer,
   ShieldCheck, Calendar, MapPin,
   Phone, Mail, X, ExternalLink,
-  BarChart3, Utensils, ChevronRight
+  BarChart3, Utensils, ChevronRight, Settings
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AdminNotificationSetup from '../components/admin/AdminNotificationSetup';
+import ModifierManager from '../components/admin/ModifierManager';
 
 
 // Stats Card Component
@@ -424,6 +425,7 @@ export default function AdminDashboard() {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'orders', label: 'All Orders', icon: Package },
+    { id: 'modifiers', label: 'Modifiers', icon: Settings },
     { id: 'settings', label: 'Settings', icon: Server }
   ];
 
@@ -607,6 +609,11 @@ export default function AdminDashboard() {
                     </div>
                   )}
                 </div>
+              )}
+
+              {/* Modifiers Tab */}
+              {activeTab === 'modifiers' && (
+                <ModifierManager />
               )}
 
               {/* Settings Tab */}
