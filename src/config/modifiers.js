@@ -37,13 +37,13 @@ export const modifierGroups = {
     type: 'single',
     required: true,
     options: [
-      { id: 'chicken_tikka', name: 'Chicken Tikka', price: 0 },
-      { id: 'malai_chicken', name: 'Malai Chicken', price: 0 },
-      { id: 'lamb_seekh', name: 'Lamb Seekh Kebob', price: 2.00 },
-      { id: 'chicken_seekh', name: 'Chicken Seekh Kebob', price: 0 },
-      { id: 'tandoori_shrimp', name: 'Tandoori Shrimp', price: 3.00 },
-      { id: 'paneer_tikka', name: 'Paneer Tikka', price: 0 },
-      { id: 'mixed_grill', name: 'Mixed Grill', price: 4.00 },
+      { id: 'tandoori_chicken_bone', name: 'Tandoori Chicken (w/ Bone)', price: 0 },
+      { id: 'chicken_tikka', name: 'Chicken Tikka (Boneless)', price: 2.00 },
+      { id: 'honey_chicken_tikka', name: 'Honey Chicken Tikka (Boneless)', price: 3.00 },
+      { id: 'lamb_boneless', name: 'Lamb (Boneless)', price: 4.00 },
+      { id: 'shrimp', name: 'Shrimp', price: 4.00 },
+      { id: 'lamb_shrimp', name: 'Lamb (Boneless) & Shrimp', price: 5.00 },
+      { id: 'mixed_grill', name: 'Mixed Grill (Chicken/Lamb/Shrimp)', price: 5.00 },
     ]
   },
 

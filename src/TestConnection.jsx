@@ -28,7 +28,7 @@ function TestConnection() {
 
   return (
     <div style={{ padding: '40px', fontFamily: 'Arial' }}>
-      <h1>🍛 Imasala - Connection Test</h1>
+      <h1>🍛 Tandoori Kitchen - Connection Test</h1>
       <div style={{ 
         background: status.includes('✅') ? '#d4edda' : '#f8d7da', 
         padding: '20px', 

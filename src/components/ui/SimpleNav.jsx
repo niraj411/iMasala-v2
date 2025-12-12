@@ -21,7 +21,7 @@ export default function SimpleNav() {
           {/* Logo */}
           <Link to="/" className="flex items-center group">
             <span className="text-2xl font-semibold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent tracking-tight">
-              iMasala
+              Tandoori Kitchen
             </span>
           </Link>
 

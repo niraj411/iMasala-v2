@@ -6,7 +6,7 @@ import {
   ArrowRight, Shield, Utensils, CheckCircle, AlertCircle, Loader2
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 export default function Login() {
@@ -543,13 +543,13 @@ export default function Login() {
           </div>
 
           {/* Guest Checkout */}
-          <button
-            onClick={() => navigate('/shop')}
+          <Link
+            to="/shop"
             className="w-full py-3 border border-white/10 text-white/60 hover:text-white hover:bg-white/5 rounded-xl transition-all font-semibold flex items-center justify-center gap-2"
           >
             Continue to Menu
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </Link>
         </motion.div>
 
         {/* Trust signals */}

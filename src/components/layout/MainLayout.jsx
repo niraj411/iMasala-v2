@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ShoppingBag, User, Menu, X, Home, UtensilsCrossed, 
+import {
+  ShoppingBag, User, Menu, X, Home, UtensilsCrossed,
   Clock, ChevronRight, Plus, Minus, Trash2, ArrowRight,
-  Phone, MapPin, Star, Gift, ChevronDown, LogOut, LogIn
+  Phone, MapPin, Star, Sparkles, ChevronDown, LogOut, LogIn
 } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -49,11 +49,11 @@ export default function MainLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Top Banner - Promotional */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2.5 px-4 text-sm border-b border-white/10">
+      {/* Top Banner - Updates */}
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-center py-2.5 px-4 text-sm border-b border-white/10">
         <span className="inline-flex items-center gap-2 font-medium">
-          <Gift className="w-4 h-4" strokeWidth={2} />
-          <span>First order? Use code <strong className="font-bold">WELCOME15</strong> for 15% off!</span>
+          <Sparkles className="w-4 h-4" strokeWidth={2} />
+          <span>Stay tuned for new updates on our app!</span>
         </span>
       </div>
 
@@ -70,10 +70,10 @@ export default function MainLayout({ children }) {
             {/* Logo */}
             <Link to="/shop" className="flex items-center gap-3 group">
               <div className="w-12 h-12 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-white/20 transition-all">
-                <span className="text-white font-bold text-lg">iM</span>
+                <span className="text-white font-bold text-lg">TK</span>
               </div>
               <div className="hidden sm:block">
-                <h1 className="font-bold text-white leading-tight tracking-tight text-lg">iMasala</h1>
+                <h1 className="font-bold text-white leading-tight tracking-tight text-lg">Tandoori Kitchen</h1>
                 <p className="text-xs text-white/40 font-medium">Authentic Indian Cuisine</p>
               </div>
             </Link>
@@ -324,7 +324,7 @@ export default function MainLayout({ children }) {
               <div className="p-6 border-b border-white/10">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="font-bold text-white text-lg tracking-tight">iMasala</h2>
+                    <h2 className="font-bold text-white text-lg tracking-tight">Tandoori Kitchen</h2>
                     <p className="text-xs text-white/40 font-medium">
                       {isAuthenticated ? (user?.email || 'Welcome back!') : 'Welcome, Guest'}
                     </p>
@@ -419,9 +419,9 @@ export default function MainLayout({ children }) {
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/10">
-                  <span className="text-white font-bold text-lg">iM</span>
+                  <span className="text-white font-bold text-lg">TK</span>
                 </div>
-                <h3 className="font-bold text-white text-lg tracking-tight">iMasala</h3>
+                <h3 className="font-bold text-white text-lg tracking-tight">Tandoori Kitchen</h3>
               </div>
               <p className="text-white/40 text-sm leading-relaxed font-medium">
                 Authentic Indian & Himalayan cuisine crafted with traditional recipes and the finest ingredients.
@@ -499,7 +499,7 @@ export default function MainLayout({ children }) {
           {/* Bottom Bar */}
           <div className="border-t border-white/10 pt-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/30">
-              <p className="font-medium">© {new Date().getFullYear()} iMasala. All rights reserved.</p>
+              <p className="font-medium">© {new Date().getFullYear()} Tandoori Kitchen. All rights reserved.</p>
               <div className="flex items-center gap-4 font-medium">
                 <a href="https://tandoorikitchenco.com/privacy-policy" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                   Privacy Policy
