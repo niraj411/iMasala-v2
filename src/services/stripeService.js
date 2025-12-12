@@ -2,8 +2,10 @@
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 
-// Use your Stripe publishable key
-const stripePromise = loadStripe('pk_test_51SUZUaDlQAsWuKRF2uiFmcK7cP5bYBFV28mJV2FjbzcIE73aAgwEhmhWARdP0aWx0oaoyKsI58cNrEkVczDgs8vE00SN6hvmWi');
+const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
+const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51SUZUaDlQAsWuKRF2uiFmcK7cP5bYBFV28mJV2FjbzcIE73aAgwEhmhWARdP0aWx0oaoyKsI58cNrEkVczDgs8vE00SN6hvmWi';
+
+const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
 // Helper function to format modifiers for display
 const formatModifiersForDisplay = (modifiers) => {
@@ -37,7 +39,7 @@ export const stripeService = {
       });
 
       const response = await axios.post(
-        'https://tandoorikitchenco.com/wp-json/imasala/v1/create-checkout',
+        `${WORDPRESS_URL}/wp-json/imasala/v1/create-checkout`,
         {
           items: cartItems.map(item => {
             const modifierString = formatModifiersForDisplay(item.modifiers);

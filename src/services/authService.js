@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-const WORDPRESS_API = 'https://tandoorikitchenco.com/wp-json/wp/v2';
-const JWT_AUTH = 'https://tandoorikitchenco.com/wp-json/jwt-auth/v1';
+const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
+const WORDPRESS_API = `${WORDPRESS_URL}/wp-json/wp/v2`;
+const JWT_AUTH = `${WORDPRESS_URL}/wp-json/jwt-auth/v1`;
 
 export const authService = {
   async login(username, password) {
