@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { 
-  ArrowRight, 
-  Star, 
-  MapPin, 
-  Phone, 
+import {
+  ArrowRight,
+  Star,
+  MapPin,
+  Phone,
   Clock,
   ChefHat,
   Flame,
@@ -13,7 +13,9 @@ import {
   Users,
   Quote,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Utensils,
+  Timer
 } from 'lucide-react';
 
 // Press Logos Component
@@ -433,6 +435,177 @@ const Home = () => {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          LUNCH BUFFET SECTION
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-24 sm:py-32 px-4 relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0">
+          <motion.div
+            className="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 5, repeat: Infinity }}
+          />
+          <motion.div
+            className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"
+            animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 6, repeat: Infinity }}
+          />
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="relative rounded-[2.5rem] overflow-hidden"
+          >
+            {/* Card Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-red-500/10 to-orange-600/20" />
+            <div className="absolute inset-0 backdrop-blur-xl" />
+            <div className="absolute inset-0 border border-orange-500/30 rounded-[2.5rem]" />
+
+            {/* Content */}
+            <div className="relative p-8 sm:p-12 md:p-16">
+              <div className="grid md:grid-cols-2 gap-10 items-center">
+                {/* Left Side - Text */}
+                <div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 }}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 border border-orange-500/30 rounded-full mb-6"
+                  >
+                    <Flame className="w-4 h-4 text-orange-400" />
+                    <span className="text-sm font-semibold text-orange-400">WEEKDAY SPECIAL</span>
+                  </motion.div>
+
+                  <motion.h2
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 }}
+                    className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight"
+                  >
+                    Lunch
+                    <span className="block text-orange-400">Buffet</span>
+                  </motion.h2>
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4 }}
+                    className="text-lg text-white/60 mb-6 max-w-md"
+                  >
+                    Unlimited authentic Indian dishes, fresh naan from our tandoor, and so much more. All you can eat!
+                  </motion.p>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5 }}
+                    className="flex flex-wrap gap-4 mb-8"
+                  >
+                    <div className="flex items-center gap-2 text-white/70">
+                      <Clock className="w-5 h-5 text-orange-400" />
+                      <span>Mon-Fri 11AM-2:30PM</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-white/70">
+                      <Utensils className="w-5 h-5 text-orange-400" />
+                      <span>15+ Dishes Daily</span>
+                    </div>
+                  </motion.div>
+
+                  <motion.button
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.6 }}
+                    onClick={() => navigate('/lunch-buffet')}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="group flex items-center gap-3 px-8 py-4 bg-white hover:bg-white/90 text-black rounded-2xl font-bold transition-all shadow-lg"
+                  >
+                    <span>Learn More</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                </div>
+
+                {/* Right Side - Price Card */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4, type: "spring" }}
+                  className="flex justify-center"
+                >
+                  <div className="relative">
+                    {/* Glow */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl blur-2xl opacity-40" />
+
+                    {/* Card */}
+                    <motion.div
+                      whileHover={{ scale: 1.02, rotate: 1 }}
+                      className="relative bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl p-8 sm:p-10 text-center shadow-2xl cursor-pointer"
+                      onClick={() => navigate('/lunch-buffet')}
+                    >
+                      {/* Badge */}
+                      <motion.div
+                        animate={{ rotate: [0, 5, -5, 0] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                        className="absolute -top-4 -right-4 bg-yellow-400 text-black px-4 py-2 rounded-full text-sm font-black shadow-lg"
+                      >
+                        BEST VALUE!
+                      </motion.div>
+
+                      <p className="text-white/80 text-sm font-semibold tracking-wider mb-3">ALL YOU CAN EAT</p>
+
+                      <div className="flex items-start justify-center gap-1 mb-2">
+                        <span className="text-3xl text-white/80 font-bold mt-3">$</span>
+                        <motion.span
+                          animate={{ scale: [1, 1.05, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                          className="text-8xl font-black text-white"
+                        >
+                          14
+                        </motion.span>
+                        <span className="text-3xl text-white/80 font-bold mt-3">.99</span>
+                      </div>
+
+                      <p className="text-white/70 text-sm mb-6">per person</p>
+
+                      {/* Features */}
+                      <div className="space-y-2 text-left">
+                        {['Tandoori Specialties', 'Fresh Naan Bread', 'Curries & Rice', 'Desserts Included'].map((item, idx) => (
+                          <motion.div
+                            key={idx}
+                            initial={{ opacity: 0, x: -10 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.6 + idx * 0.1 }}
+                            className="flex items-center gap-2 text-white/90"
+                          >
+                            <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <span className="text-sm font-medium">{item}</span>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 

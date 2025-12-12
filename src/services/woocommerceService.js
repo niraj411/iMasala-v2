@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://tandoorikitchenco.com/wp-json/wc/v3';
-const CONSUMER_KEY = 'ck_008af43ae701970f3967fb5520937abf49530e2a';
-const CONSUMER_SECRET = 'cs_c225cd4adcc19f0df1e245cc08bffea8b1f800bd';
+const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
+const API_BASE_URL = `${WORDPRESS_URL}/wp-json/wc/v3`;
+const CONSUMER_KEY = import.meta.env.VITE_WC_CONSUMER_KEY;
+const CONSUMER_SECRET = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
 
 class WooCommerceService {
@@ -18,7 +19,7 @@ class WooCommerceService {
   }
 
   async syncCartToCheckout(cartItems) {
-    const checkoutUrl = `https://tandoorikitchenco.com/checkout/`;
+    const checkoutUrl = `${WORDPRESS_URL}/checkout/`;
     return checkoutUrl;
   }
 

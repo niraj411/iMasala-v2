@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShoppingBag, User, Menu, X, Home, UtensilsCrossed,
   Clock, ChevronRight, Plus, Minus, Trash2, ArrowRight,
-  Phone, MapPin, Star, Sparkles, ChevronDown, LogOut, LogIn
+  Phone, MapPin, Star, Sparkles, ChevronDown, LogOut, LogIn, Flame
 } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -43,6 +43,7 @@ export default function MainLayout({ children }) {
   // Navigation links - different for logged in vs guest
   const navLinks = [
     { path: '/shop', label: 'Menu', icon: UtensilsCrossed },
+    { path: '/lunch-buffet', label: 'Buffet', icon: Flame },
     ...(isAuthenticated ? [{ path: '/my-account', label: 'My Orders', icon: Clock }] : []),
     ...(isAdmin ? [{ path: '/admin', label: 'Dashboard', icon: Home }] : []),
   ];
@@ -68,7 +69,7 @@ export default function MainLayout({ children }) {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link to="/shop" className="flex items-center gap-3 group">
+            <Link to="/" className="flex items-center gap-3 group">
               <div className="w-12 h-12 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-white/20 transition-all">
                 <span className="text-white font-bold text-lg">TK</span>
               </div>

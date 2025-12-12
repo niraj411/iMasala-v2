@@ -24,6 +24,7 @@ import OrderSuccess from './pages/OrderSuccess';
 import Shop from './pages/Shop';
 import Home from './pages/Home';
 import Catering from './pages/Catering';
+import LunchBuffet from './pages/LunchBuffet';
 
 // Components
 import LoadingSpinner from './components/ui/LoadingSpinner';
@@ -41,7 +42,7 @@ function AppRoutes() {
     );
   }
 
-  const publicPaths = ['/order-success', '/order-cancelled', '/', '/catering', '/shop', '/cart', '/checkout', '/login'];
+  const publicPaths = ['/order-success', '/order-cancelled', '/', '/catering', '/shop', '/cart', '/checkout', '/login', '/lunch-buffet'];
   const currentPath = window.location.pathname;
   
   if (!isAuthenticated && !publicPaths.includes(currentPath) && !currentPath.startsWith('/order/')) {
@@ -60,6 +61,7 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/catering" element={<Catering />} />
+        <Route path="/lunch-buffet" element={<LunchBuffet />} />
         <Route 
           path="/admin" 
           element={

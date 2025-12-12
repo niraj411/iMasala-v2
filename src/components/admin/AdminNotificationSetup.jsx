@@ -28,6 +28,9 @@ const firebaseConfig = {
 // VAPID key for web push - this is already configured
 const VAPID_KEY = 'BAYiphZs1LM-QbQZeCPmJMnD2iUyLQJICexnaOcHfgVccCM8TlcgEVPuk82ClqtcBjQoE7Xu4z6XS75AYqbpZG0';
 
+// API URL from environment
+const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
+
 export default function AdminNotificationSetup({ compact = false }) {
   const { user } = useAuth();
   const [status, setStatus] = useState('checking'); // checking, unsupported, denied, prompt, enabled
@@ -132,7 +135,7 @@ export default function AdminNotificationSetup({ compact = false }) {
 
       // Register as admin token
       const adminEmail = user?.email || 'admin@tandoorikitchenco.com';
-      const response = await fetch('https://tandoorikitchenco.com/wp-json/imasala/v1/register-admin-token', {
+      const response = await fetch(`${WORDPRESS_URL}/wp-json/imasala/v1/register-admin-token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -184,7 +187,7 @@ export default function AdminNotificationSetup({ compact = false }) {
       
       if (fcmToken) {
         // Unregister token from server
-        await fetch('https://tandoorikitchenco.com/wp-json/imasala/v1/unregister-push-token', {
+        await fetch(`${WORDPRESS_URL}/wp-json/imasala/v1/unregister-push-token`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -221,7 +224,7 @@ export default function AdminNotificationSetup({ compact = false }) {
       }
 
       const adminEmail = user?.email || 'admin@tandoorikitchenco.com';
-      const response = await fetch('https://tandoorikitchenco.com/wp-json/imasala/v1/register-admin-token', {
+      const response = await fetch(`${WORDPRESS_URL}/wp-json/imasala/v1/register-admin-token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -257,7 +260,7 @@ export default function AdminNotificationSetup({ compact = false }) {
     setLoading(true);
     
     try {
-      const response = await fetch('https://tandoorikitchenco.com/wp-json/imasala/v1/test-notification', {
+      const response = await fetch(`${WORDPRESS_URL}/wp-json/imasala/v1/test-notification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

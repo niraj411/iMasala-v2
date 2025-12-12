@@ -1,9 +1,11 @@
+const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
+
 export const cartSyncService = {
   /**
    * Build proper WooCommerce add-to-cart URLs with attributes
    */
   buildAddToCartURL(cartItems) {
-    const baseUrl = 'https://tandoorikitchenco.com/';
+    const baseUrl = `${WORDPRESS_URL}/`;
     const urlParams = new URLSearchParams();
     
     // Clear existing cart first
@@ -40,7 +42,7 @@ export const cartSyncService = {
       console.log('Adding items to WooCommerce cart via AJAX...');
       
       // Clear existing cart first
-      await fetch('https://tandoorikitchenco.com/?wc-ajax=clear_cart', {
+      await fetch(`${WORDPRESS_URL}/?wc-ajax=clear_cart`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -63,7 +65,7 @@ export const cartSyncService = {
           }
         }
         
-        const response = await fetch('https://tandoorikitchenco.com/?wc-ajax=add_to_cart', {
+        const response = await fetch(`${WORDPRESS_URL}/?wc-ajax=add_to_cart`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -80,7 +82,7 @@ export const cartSyncService = {
       
       // Redirect to check-out page after all items are added
       console.log('All items added, redirecting to check-out...');
-      window.location.href = 'https://tandoorikitchenco.com/check-out/';
+      window.location.href = `${WORDPRESS_URL}/check-out/`;
       
     } catch (error) {
       console.error('AJAX cart error:', error);
