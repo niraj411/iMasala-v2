@@ -27,7 +27,22 @@ export function MenuProvider({ children }) {
       try {
         // Fetch products (with variations if available)
         const productsData = await woocommerceService.getProductsWithVariations();
-        setProducts(productsData);
+
+        // Map WooCommerce tags to boolean flags for filtering
+        const processedProducts = productsData.map(product => ({
+          ...product,
+          isVegetarian: product.tags?.some(tag =>
+            tag.slug === 'vegetarian' || tag.slug === 'veg' || tag.name?.toLowerCase() === 'vegetarian'
+          ) || false,
+          isSpicy: product.tags?.some(tag =>
+            tag.slug === 'spicy' || tag.slug === 'hot' || tag.name?.toLowerCase() === 'spicy'
+          ) || false,
+          isPopular: product.tags?.some(tag =>
+            tag.slug === 'popular' || tag.slug === 'featured' || tag.slug === 'best-seller' || tag.name?.toLowerCase() === 'popular'
+          ) || product.featured || false,
+        }));
+
+        setProducts(processedProducts);
       } catch (err) {
         console.error('Error fetching products:', err);
         setError('Failed to load menu. Please try again.');
@@ -60,14 +75,29 @@ export function MenuProvider({ children }) {
   const refetch = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const [categoriesData, productsData] = await Promise.all([
         woocommerceService.getCategories(),
         woocommerceService.getProductsWithVariations()
       ]);
       setCategories(categoriesData);
-      setProducts(productsData);
+
+      // Map WooCommerce tags to boolean flags for filtering
+      const processedProducts = productsData.map(product => ({
+        ...product,
+        isVegetarian: product.tags?.some(tag =>
+          tag.slug === 'vegetarian' || tag.slug === 'veg' || tag.name?.toLowerCase() === 'vegetarian'
+        ) || false,
+        isSpicy: product.tags?.some(tag =>
+          tag.slug === 'spicy' || tag.slug === 'hot' || tag.name?.toLowerCase() === 'spicy'
+        ) || false,
+        isPopular: product.tags?.some(tag =>
+          tag.slug === 'popular' || tag.slug === 'featured' || tag.slug === 'best-seller' || tag.name?.toLowerCase() === 'popular'
+        ) || product.featured || false,
+      }));
+
+      setProducts(processedProducts);
     } catch (err) {
       console.error('Error refetching data:', err);
       setError('Failed to load menu. Please try again.');
