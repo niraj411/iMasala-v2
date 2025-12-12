@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2732" height="2732" viewBox="0 0 2732 2732">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000"/>
+      <stop offset="100%" style="stop-color:#1a1a1a"/>
+    </linearGradient>
+    <linearGradient id="logo-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316"/>
+      <stop offset="100%" style="stop-color:#ea580c"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="2732" height="2732" fill="url(#bg)"/>
+  <!-- Logo Container -->
+  <rect x="1016" y="1016" width="700" height="700" rx="140" fill="url(#logo-bg)"/>
+  <!-- TK Letters -->
+  <text x="1366" y="1450" font-family="Arial Black, sans-serif" font-size="320" font-weight="900" fill="white" text-anchor="middle">TK</text>
+  <!-- App Name -->
+  <text x="1366" y="1900" font-family="Arial, sans-serif" font-size="80" font-weight="600" fill="white" text-anchor="middle">Tandoori Kitchen</text>
+</svg>

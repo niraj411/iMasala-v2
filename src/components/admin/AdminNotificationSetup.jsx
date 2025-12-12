@@ -1,32 +1,15 @@
 // src/components/admin/AdminNotificationSetup.jsx
-// Self-contained - no external notification service dependency
+// Unified notification setup for web and native platforms
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Bell, BellRing, BellOff, X, Loader2, 
+import {
+  Bell, BellRing, BellOff, X, Loader2,
   Smartphone, Volume2, AlertCircle, CheckCircle,
   RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
-
-// Firebase imports
-import { initializeApp, getApps } from 'firebase/app';
-import { getMessaging, getToken } from 'firebase/messaging';
-
-// Firebase config - update with your actual values
-const firebaseConfig = {
-    apiKey: "AIzaSyByYH4FwC9R6hQGSuK52s5LaHFIAm2yqWU",
-    authDomain: "imasala-37b4d.firebaseapp.com",
-    projectId: "imasala-37b4d",
-    storageBucket: "imasala-37b4d.firebasestorage.app",
-    messagingSenderId: "483793848610",
-    appId: "1:483793848610:web:c0560b717161fc644c3d7b",
-    measurementId: "G-ZW43QH5VD5"
-  };
-
-// VAPID key for web push - this is already configured
-const VAPID_KEY = 'BAYiphZs1LM-QbQZeCPmJMnD2iUyLQJICexnaOcHfgVccCM8TlcgEVPuk82ClqtcBjQoE7Xu4z6XS75AYqbpZG0';
+import { pushNotificationService } from '../../services/pushNotificationService';
 
 // API URL from environment
 const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
@@ -37,28 +20,31 @@ export default function AdminNotificationSetup({ compact = false }) {
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState(null);
   const [lastRegistered, setLastRegistered] = useState(null);
+  const [platformInfo, setPlatformInfo] = useState(null);
 
   useEffect(() => {
     checkNotificationStatus();
+    setPlatformInfo(pushNotificationService.getPlatformInfo());
+
+    // Cleanup on unmount
+    return () => {
+      pushNotificationService.cleanup();
+    };
   }, []);
 
   const checkNotificationStatus = async () => {
     setStatus('checking');
-    
-    // Check if notifications are supported
-    if (!('Notification' in window)) {
-      setStatus('unsupported');
-      return;
-    }
 
-    if (!('serviceWorker' in navigator)) {
+    // Check if notifications are supported
+    const isSupported = await pushNotificationService.isSupported();
+    if (!isSupported) {
       setStatus('unsupported');
       return;
     }
 
     // Check current permission
-    const permission = Notification.permission;
-    
+    const permission = await pushNotificationService.getPermissionStatus();
+
     if (permission === 'denied') {
       setStatus('denied');
       return;
@@ -66,7 +52,7 @@ export default function AdminNotificationSetup({ compact = false }) {
 
     if (permission === 'granted') {
       // Check if we have a registered token
-      const existingToken = localStorage.getItem('admin_fcm_token');
+      const existingToken = pushNotificationService.getStoredToken() || localStorage.getItem('admin_fcm_token');
       if (existingToken) {
         setToken(existingToken);
         setLastRegistered(localStorage.getItem('admin_fcm_registered_at'));
@@ -80,95 +66,42 @@ export default function AdminNotificationSetup({ compact = false }) {
     setStatus('prompt');
   };
 
-  const initializeFirebase = async () => {
-    try {
-      // Initialize Firebase app
-      let app;
-      if (getApps().length === 0) {
-        app = initializeApp(firebaseConfig);
-      } else {
-        app = getApps()[0];
-      }
-
-      // Register service worker first
-      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-      console.log('Service Worker registered:', registration);
-
-      // Get messaging instance
-      const messaging = getMessaging(app);
-
-      // Get FCM token
-      const fcmToken = await getToken(messaging, {
-        vapidKey: VAPID_KEY,
-        serviceWorkerRegistration: registration
-      });
-
-      return fcmToken;
-    } catch (error) {
-      console.error('Firebase initialization error:', error);
-      throw error;
-    }
-  };
-
   const enableNotifications = async () => {
     setLoading(true);
-    
-    try {
-      // Request permission
-      const permission = await Notification.requestPermission();
-      
-      if (permission !== 'granted') {
-        setStatus('denied');
-        toast.error('Notification permission denied');
-        setLoading(false);
-        return;
-      }
 
-      // Initialize Firebase and get token
-      const fcmToken = await initializeFirebase();
-      
-      if (!fcmToken) {
+    try {
+      // Initialize push notifications (handles permission request)
+      const pushToken = await pushNotificationService.initialize();
+
+      if (!pushToken) {
         throw new Error('Failed to get notification token');
       }
 
-      console.log('FCM Token obtained:', fcmToken.substring(0, 30) + '...');
+      console.log('Push Token obtained:', pushToken.substring(0, 30) + '...');
 
-      // Register as admin token
+      // Register as admin token with backend
       const adminEmail = user?.email || 'admin@tandoorikitchenco.com';
-      const response = await fetch(`${WORDPRESS_URL}/wp-json/imasala/v1/register-admin-token`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token: fcmToken,
-          email: adminEmail,
-          platform: 'web'
-        })
-      });
-
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.message || 'Failed to register admin token');
-      }
+      await pushNotificationService.registerWithBackend(adminEmail, true);
 
       // Save token locally
       const now = new Date().toISOString();
-      localStorage.setItem('admin_fcm_token', fcmToken);
+      localStorage.setItem('admin_fcm_token', pushToken);
       localStorage.setItem('admin_fcm_registered_at', now);
-      
-      setToken(fcmToken);
+
+      setToken(pushToken);
       setLastRegistered(now);
       setStatus('enabled');
-      
+
       toast.success('Order notifications enabled!');
-      
-      // Show a test notification
-      new Notification('Notifications Enabled! 🔔', {
-        body: 'You will now receive alerts for new orders.',
-        icon: '/logo192.png'
-      });
+
+      // Show a test notification on web
+      const platformInfo = pushNotificationService.getPlatformInfo();
+      if (!platformInfo.isNative && 'Notification' in window) {
+        new Notification('Notifications Enabled!', {
+          body: 'You will now receive alerts for new orders.',
+          icon: '/logo192.png'
+        });
+      }
 
     } catch (error) {
       console.error('Error enabling notifications:', error);
@@ -181,29 +114,15 @@ export default function AdminNotificationSetup({ compact = false }) {
 
   const disableNotifications = async () => {
     setLoading(true);
-    
-    try {
-      const fcmToken = localStorage.getItem('admin_fcm_token');
-      
-      if (fcmToken) {
-        // Unregister token from server
-        await fetch(`${WORDPRESS_URL}/wp-json/imasala/v1/unregister-push-token`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ token: fcmToken })
-        });
-      }
 
-      // Clear local storage
-      localStorage.removeItem('admin_fcm_token');
-      localStorage.removeItem('admin_fcm_registered_at');
-      
+    try {
+      // Unregister token from backend and clear local storage
+      await pushNotificationService.unregisterFromBackend();
+
       setToken(null);
       setLastRegistered(null);
       setStatus('prompt');
-      
+
       toast.success('Notifications disabled');
     } catch (error) {
       console.error('Error disabling notifications:', error);
@@ -215,38 +134,24 @@ export default function AdminNotificationSetup({ compact = false }) {
 
   const refreshToken = async () => {
     setLoading(true);
-    
+
     try {
-      const fcmToken = await initializeFirebase();
-      
-      if (!fcmToken) {
+      const pushToken = await pushNotificationService.initialize();
+
+      if (!pushToken) {
         throw new Error('Failed to get new token');
       }
 
       const adminEmail = user?.email || 'admin@tandoorikitchenco.com';
-      const response = await fetch(`${WORDPRESS_URL}/wp-json/imasala/v1/register-admin-token`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token: fcmToken,
-          email: adminEmail,
-          platform: 'web'
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to refresh token');
-      }
+      await pushNotificationService.registerWithBackend(adminEmail, true);
 
       const now = new Date().toISOString();
-      localStorage.setItem('admin_fcm_token', fcmToken);
+      localStorage.setItem('admin_fcm_token', pushToken);
       localStorage.setItem('admin_fcm_registered_at', now);
-      
-      setToken(fcmToken);
+
+      setToken(pushToken);
       setLastRegistered(now);
-      
+
       toast.success('Token refreshed successfully');
     } catch (error) {
       console.error('Error refreshing token:', error);
@@ -475,6 +380,11 @@ export default function AdminNotificationSetup({ compact = false }) {
             {lastRegistered && (
               <p className="text-xs text-white/30 text-center">
                 Registered: {new Date(lastRegistered).toLocaleString()}
+                {platformInfo && (
+                  <span className="ml-2 px-2 py-0.5 bg-white/10 rounded-full text-white/50">
+                    {platformInfo.platform === 'ios' ? 'iOS' : platformInfo.platform === 'android' ? 'Android' : 'Web'}
+                  </span>
+                )}
               </p>
             )}
 
