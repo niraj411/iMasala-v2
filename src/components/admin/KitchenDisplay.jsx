@@ -64,8 +64,13 @@ const SwipeableOrderCard = ({ order, onStatusUpdate, onViewDetails, nextStatus }
   const StatusIcon = config.icon;
 
   const orderType = order.meta_data?.find(m => m.key === 'order_type')?.value || 'pickup';
-  const pickupTime = order.meta_data?.find(m => m.key === 'pickup_time')?.value;
+  const pickupTime = order.meta_data?.find(m => m.key === 'pickup_time' || m.key === 'scheduled_time')?.value;
   const orderNotes = order.customer_note;
+
+  // Get tip amount from fee_lines or meta_data
+  const tipFromFees = order.fee_lines?.find(f => f.name?.toLowerCase().includes('tip'))?.total;
+  const tipFromMeta = order.meta_data?.find(m => m.key === 'tip_amount' || m.key === '_tip_amount')?.value;
+  const tipAmount = parseFloat(tipFromFees || tipFromMeta || 0);
 
   // Calculate time since order
   const timeSinceOrder = () => {
@@ -195,7 +200,12 @@ const SwipeableOrderCard = ({ order, onStatusUpdate, onViewDetails, nextStatus }
 
         {/* Total */}
         <div className="flex items-center justify-between pt-3 border-t border-white/10">
-          <span className="text-white/50 font-medium">Total</span>
+          <div>
+            <span className="text-white/50 font-medium">Total</span>
+            {tipAmount > 0 && (
+              <span className="text-green-400 text-xs ml-2">(+${tipAmount.toFixed(2)} tip)</span>
+            )}
+          </div>
           <span className="text-xl font-bold text-white">${parseFloat(order.total).toFixed(2)}</span>
         </div>
 
