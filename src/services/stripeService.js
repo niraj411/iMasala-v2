@@ -12,8 +12,6 @@ const STRIPE_PUBLISHABLE_KEY = STRIPE_MODE === 'live'
   ? import.meta.env.VITE_STRIPE_LIVE_PUBLISHABLE_KEY
   : import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY || 'pk_test_51SUZUaDlQAsWuKRF2uiFmcK7cP5bYBFV28mJV2FjbzcIE73aAgwEhmhWARdP0aWx0oaoyKsI58cNrEkVczDgs8vE00SN6hvmWi';
 
-console.log('Stripe Mode:', STRIPE_MODE);
-
 const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
 // Helper function to format modifiers for display
@@ -41,12 +39,6 @@ const formatModifiersForDisplay = (modifiers) => {
 export const stripeService = {
   async createCheckoutSession(cartItems, orderMetadata, tipAmount = 0) {
     try {
-      console.log('Creating checkout with:', { 
-        itemCount: cartItems.length, 
-        tipAmount,
-        metadata: orderMetadata 
-      });
-
       const response = await axios.post(
         `${WORDPRESS_URL}/wp-json/imasala/v1/create-checkout`,
         {
@@ -81,8 +73,6 @@ export const stripeService = {
         }
       );
 
-      console.log('Checkout session response:', response.data);
-
       // Validate response
       if (!response.data) {
         throw new Error('No response data from checkout endpoint');
@@ -94,43 +84,34 @@ export const stripeService = {
 
       return response.data;
     } catch (error) {
-      console.error('Error creating checkout session:', error);
-      console.error('Error details:', error.response?.data);
       throw error;
     }
   },
 
   async redirectToCheckout(sessionData) {
-    console.log('redirectToCheckout called with:', sessionData);
-
-    // Validate sessionData
     if (!sessionData) {
       throw new Error('No session data provided to redirectToCheckout');
     }
 
     // If URL is provided by backend, use it directly (preferred method)
     if (sessionData.url) {
-      console.log('Redirecting to Stripe URL:', sessionData.url);
       window.location.href = sessionData.url;
       return;
     }
-    
+
     // Fallback to Stripe.js redirect
     if (sessionData.sessionId) {
-      console.log('Using Stripe.js redirect with sessionId:', sessionData.sessionId);
       const stripe = await stripePromise;
-      const { error } = await stripe.redirectToCheckout({ 
-        sessionId: sessionData.sessionId 
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: sessionData.sessionId
       });
-      
+
       if (error) {
-        console.error('Stripe redirect error:', error);
         throw error;
       }
       return;
     }
 
-    // If we get here, something is wrong
     throw new Error('Session data missing both url and sessionId');
   }
 };

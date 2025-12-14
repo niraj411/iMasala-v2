@@ -8,7 +8,6 @@ const JWT_AUTH = `${WORDPRESS_URL}/wp-json/jwt-auth/v1`;
 export const authService = {
   async login(username, password) {
     try {
-      console.log('Attempting login to:', JWT_AUTH);
       const response = await axios.post(`${JWT_AUTH}/token`, {
         username,
         password
@@ -21,7 +20,7 @@ export const authService = {
             Authorization: `Bearer ${response.data.token}`
           },
           params: {
-            context: 'edit' // This returns email field
+            context: 'edit'
           }
         });
 
@@ -32,7 +31,6 @@ export const authService = {
       }
       throw new Error('Authentication failed');
     } catch (error) {
-      console.error('Login error:', error);
       throw new Error('Login failed: ' + (error.response?.data?.message || error.message));
     }
   },
@@ -41,13 +39,12 @@ export const authService = {
     const token = await storageService.get('wc_token');
     if (!token) throw new Error('No token found');
 
-    console.log('Validating token with:', WORDPRESS_API);
     const response = await axios.get(`${WORDPRESS_API}/users/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       },
       params: {
-        context: 'edit' // This returns email field
+        context: 'edit'
       }
     });
 
