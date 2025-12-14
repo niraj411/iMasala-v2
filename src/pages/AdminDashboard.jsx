@@ -65,6 +65,14 @@ const OrderCard = ({ order, onStatusUpdate, onViewDetails }) => {
   const isCatering = orderType === 'catering';
   const isTaxExempt = order.meta_data?.find(m => m.key === 'tax_exempt')?.value === 'yes';
 
+  // Get tip amount from fee_lines or meta_data
+  const tipFromFees = order.fee_lines?.find(f => f.name?.toLowerCase().includes('tip'))?.total;
+  const tipFromMeta = order.meta_data?.find(m => m.key === 'tip_amount' || m.key === '_tip_amount')?.value;
+  const tipAmount = parseFloat(tipFromFees || tipFromMeta || 0);
+
+  // Get scheduled time
+  const pickupTime = order.meta_data?.find(m => m.key === 'pickup_time' || m.key === 'scheduled_time')?.value;
+
   return (
     <div className="backdrop-blur-xl bg-white/5 rounded-2xl p-4 border border-white/10 hover:border-white/15 transition-all group">
       {/* Header */}
@@ -106,14 +114,31 @@ const OrderCard = ({ order, onStatusUpdate, onViewDetails }) => {
         )}
       </div>
 
+      {/* Scheduled Time */}
+      {pickupTime && (
+        <div className="mb-3 p-2 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+          <p className="text-xs text-blue-300 font-medium flex items-center gap-1.5">
+            <Clock className="w-3 h-3" />
+            {pickupTime === 'ASAP' ? 'ASAP' : pickupTime}
+          </p>
+        </div>
+      )}
+
       {/* Items Preview */}
       <div className="mb-3 p-3 bg-white/[0.02] rounded-xl border border-white/5">
         <p className="text-xs text-white/40 font-medium">
           {order.line_items?.length || 0} item{order.line_items?.length !== 1 ? 's' : ''}
         </p>
-        <p className="text-lg font-bold text-white mt-0.5 tracking-tight">
-          ${parseFloat(order.total).toFixed(2)}
-        </p>
+        <div className="flex items-baseline justify-between mt-0.5">
+          <p className="text-lg font-bold text-white tracking-tight">
+            ${parseFloat(order.total).toFixed(2)}
+          </p>
+          {tipAmount > 0 && (
+            <p className="text-xs text-green-400 font-medium">
+              +${tipAmount.toFixed(2)} tip
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Actions */}
@@ -154,7 +179,12 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusUpdate }) => {
 
   const isTaxExempt = order.meta_data?.find(m => m.key === 'tax_exempt')?.value === 'yes';
   const orderType = order.meta_data?.find(m => m.key === 'order_type')?.value || 'pickup';
-  const pickupTime = order.meta_data?.find(m => m.key === 'pickup_time')?.value;
+  const pickupTime = order.meta_data?.find(m => m.key === 'pickup_time' || m.key === 'scheduled_time')?.value;
+
+  // Get tip amount from fee_lines or meta_data
+  const tipFromFees = order.fee_lines?.find(f => f.name?.toLowerCase().includes('tip'))?.total;
+  const tipFromMeta = order.meta_data?.find(m => m.key === 'tip_amount' || m.key === '_tip_amount')?.value;
+  const tipAmount = parseFloat(tipFromFees || tipFromMeta || 0);
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-50 p-4">
@@ -275,7 +305,7 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusUpdate }) => {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-white/60 font-medium">Subtotal</span>
-                <span className="text-white font-semibold">${parseFloat(order.total - (order.total_tax || 0)).toFixed(2)}</span>
+                <span className="text-white font-semibold">${parseFloat(order.total - (order.total_tax || 0) - tipAmount).toFixed(2)}</span>
               </div>
               {order.shipping_total && parseFloat(order.shipping_total) > 0 && (
                 <div className="flex justify-between text-sm">
@@ -289,6 +319,12 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusUpdate }) => {
                 </span>
                 <span className="text-white font-semibold">${parseFloat(order.total_tax || 0).toFixed(2)}</span>
               </div>
+              {tipAmount > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-green-400 font-medium">Tip</span>
+                  <span className="text-green-400 font-semibold">${tipAmount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between font-bold text-lg pt-3 border-t border-white/10">
                 <span className="text-white/90">Total</span>
                 <span className="text-white">${parseFloat(order.total).toFixed(2)}</span>
