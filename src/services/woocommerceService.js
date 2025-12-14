@@ -46,6 +46,18 @@ class WooCommerceService {
     this.api.interceptors.response.use(
       (response) => {
         console.log('API Response:', response.status, response.config.url);
+
+        // Fix: Handle case where API returns JSON as string instead of parsed object
+        if (typeof response.data === 'string' && response.data.trim().startsWith('{') ||
+            typeof response.data === 'string' && response.data.trim().startsWith('[')) {
+          try {
+            response.data = JSON.parse(response.data);
+            console.log('Parsed string response to JSON');
+          } catch (e) {
+            console.warn('Failed to parse response as JSON:', e);
+          }
+        }
+
         return response;
       },
       (error) => {
