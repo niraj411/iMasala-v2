@@ -497,7 +497,7 @@ export default function Checkout() {
                 <div className="mt-4 p-3 bg-white/[0.02] border border-white/5 rounded-xl">
                   <p className="text-sm text-white/40 font-medium">
                     Have an account?{' '}
-                    <a href="/my-account" className="text-white hover:underline">
+                    <a href="/login" className="text-white hover:underline">
                       Sign in
                     </a>
                     {' '}to track orders and earn rewards.
