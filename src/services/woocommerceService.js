@@ -1,10 +1,20 @@
 import axios from 'axios';
+import { Capacitor } from '@capacitor/core';
 
 const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
 const API_BASE_URL = `${WORDPRESS_URL}/wp-json/wc/v3`;
 const CONSUMER_KEY = import.meta.env.VITE_WC_CONSUMER_KEY;
 const CONSUMER_SECRET = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
+// Debug logging for native platforms
+const isNative = Capacitor.isNativePlatform();
+console.log('WooCommerce Service Init:', {
+  isNative,
+  platform: Capacitor.getPlatform(),
+  apiUrl: API_BASE_URL,
+  hasKey: !!CONSUMER_KEY,
+  hasSecret: !!CONSUMER_SECRET
+});
 
 class WooCommerceService {
   constructor() {
@@ -14,8 +24,40 @@ class WooCommerceService {
         username: CONSUMER_KEY,
         password: CONSUMER_SECRET
       },
-      timeout: 300000
+      timeout: 300000,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
     });
+
+    // Add request/response interceptors for debugging
+    this.api.interceptors.request.use(
+      (config) => {
+        console.log('API Request:', config.method?.toUpperCase(), config.url);
+        return config;
+      },
+      (error) => {
+        console.error('API Request Error:', error);
+        return Promise.reject(error);
+      }
+    );
+
+    this.api.interceptors.response.use(
+      (response) => {
+        console.log('API Response:', response.status, response.config.url);
+        return response;
+      },
+      (error) => {
+        console.error('API Response Error:', {
+          url: error.config?.url,
+          status: error.response?.status,
+          message: error.message,
+          data: error.response?.data
+        });
+        return Promise.reject(error);
+      }
+    );
   }
 
   async syncCartToCheckout(cartItems) {
@@ -321,7 +363,7 @@ class WooCommerceService {
   }
 
   async validateDeliveryAddress(address) {
-    const validZipCodes = ['80229', '80233', '80234', '80235'];
+    const validZipCodes = ['80229', '80233', '80234', '80235', '80303', '80026', '80027'];
     return validZipCodes.includes(address.zipCode);
   }
 }

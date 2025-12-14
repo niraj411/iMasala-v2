@@ -133,7 +133,7 @@ export default function MainLayout({ children }) {
                 ) : (
                   // Guest - Show Sign In button
                   <Link
-                    to="/my-account"
+                    to="/login"
                     className="flex items-center gap-2 px-4 py-2 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all"
                   >
                     <LogIn className="w-4 h-4" strokeWidth={1.5} />
@@ -370,7 +370,7 @@ export default function MainLayout({ children }) {
                   </button>
                 ) : (
                   <Link
-                    to="/my-account"
+                    to="/login"
                     onClick={() => setMobileMenuOpen(false)}
                     className="w-full py-3 bg-white/10 hover:bg-white/15 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
                   >
