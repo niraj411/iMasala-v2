@@ -18,15 +18,25 @@ export function MenuProvider({ children }) {
       try {
         // Fetch categories first
         const categoriesData = await woocommerceService.getCategories();
-        setCategories(categoriesData);
+        // Ensure it's an array
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
       } catch (err) {
         console.error('Error fetching categories:', err);
+        setCategories([]);
         // Continue even if categories fail
       }
 
       try {
         // Fetch products (with variations if available)
         const productsData = await woocommerceService.getProductsWithVariations();
+
+        // Ensure it's an array before processing
+        if (!Array.isArray(productsData)) {
+          console.error('Products data is not an array:', productsData);
+          setProducts([]);
+          setError('Failed to load menu. Please try again.');
+          return;
+        }
 
         // Map WooCommerce tags to boolean flags for filtering
         const processedProducts = productsData.map(product => ({
@@ -45,6 +55,7 @@ export function MenuProvider({ children }) {
         setProducts(processedProducts);
       } catch (err) {
         console.error('Error fetching products:', err);
+        setProducts([]);
         setError('Failed to load menu. Please try again.');
       } finally {
         setLoading(false);
@@ -81,7 +92,16 @@ export function MenuProvider({ children }) {
         woocommerceService.getCategories(),
         woocommerceService.getProductsWithVariations()
       ]);
-      setCategories(categoriesData);
+
+      // Ensure arrays
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+
+      if (!Array.isArray(productsData)) {
+        console.error('Products data is not an array:', productsData);
+        setProducts([]);
+        setError('Failed to load menu. Please try again.');
+        return;
+      }
 
       // Map WooCommerce tags to boolean flags for filtering
       const processedProducts = productsData.map(product => ({
@@ -100,6 +120,7 @@ export function MenuProvider({ children }) {
       setProducts(processedProducts);
     } catch (err) {
       console.error('Error refetching data:', err);
+      setProducts([]);
       setError('Failed to load menu. Please try again.');
     } finally {
       setLoading(false);
