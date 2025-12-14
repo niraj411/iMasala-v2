@@ -16,40 +16,33 @@ const SwipeableOrderCard = ({ order, onStatusUpdate, onViewDetails, nextStatus }
   const constraintsRef = useRef(null);
   const x = useMotionValue(0);
 
-  // Transform x position to background color intensity
+  // Transform x position to background color intensity (only green for right swipe)
   const background = useTransform(
     x,
-    [-150, 0, 150],
+    [0, 150],
     [
-      'rgba(239, 68, 68, 0.3)', // Red for left swipe (cancel/hold)
       'rgba(0, 0, 0, 0)',
-      'rgba(34, 197, 94, 0.3)'  // Green for right swipe (next status)
+      'rgba(34, 197, 94, 0.3)'  // Green for right swipe (complete)
     ]
   );
 
   const actionOpacity = useTransform(
     x,
-    [-100, -50, 0, 50, 100],
-    [1, 0.5, 0, 0.5, 1]
+    [0, 50, 100],
+    [0, 0.5, 1]
   );
 
   const handleDragEnd = (event, info) => {
     const threshold = 100;
     if (info.offset.x > threshold && nextStatus) {
-      // Swipe right - move to next status
+      // Swipe right - move to next status (complete)
       onStatusUpdate(order.id, nextStatus);
       toast.success(`Order #${order.id} → ${nextStatus}`, {
         icon: '✓',
         style: { background: '#1f2937', color: '#fff' }
       });
-    } else if (info.offset.x < -threshold) {
-      // Swipe left - put on hold
-      onStatusUpdate(order.id, 'on-hold');
-      toast('Order on hold', {
-        icon: '⏸️',
-        style: { background: '#1f2937', color: '#fff' }
-      });
     }
+    // Left swipe disabled - no action
     setIsDragging(false);
   };
 
@@ -85,17 +78,13 @@ const SwipeableOrderCard = ({ order, onStatusUpdate, onViewDetails, nextStatus }
 
   return (
     <div ref={constraintsRef} className="relative overflow-hidden rounded-2xl">
-      {/* Swipe Indicators */}
+      {/* Swipe Indicator (right side only) */}
       <motion.div
-        className="absolute inset-0 flex items-center justify-between px-6 pointer-events-none"
+        className="absolute inset-0 flex items-center justify-end px-6 pointer-events-none"
         style={{ opacity: actionOpacity }}
       >
-        <div className="flex items-center gap-2 text-red-400">
-          <AlertCircle className="w-6 h-6" />
-          <span className="font-semibold">Hold</span>
-        </div>
         <div className="flex items-center gap-2 text-green-400">
-          <span className="font-semibold">{nextStatus || 'Done'}</span>
+          <span className="font-semibold">{nextStatus === 'processing' ? 'Start' : nextStatus === 'completed' ? 'Complete' : 'Done'}</span>
           <CheckCircle className="w-6 h-6" />
         </div>
       </motion.div>
@@ -103,7 +92,7 @@ const SwipeableOrderCard = ({ order, onStatusUpdate, onViewDetails, nextStatus }
       {/* Card */}
       <motion.div
         drag="x"
-        dragConstraints={constraintsRef}
+        dragConstraints={{ left: 0, right: 150 }}
         dragElastic={0.1}
         onDragStart={() => setIsDragging(true)}
         onDragEnd={handleDragEnd}
@@ -211,8 +200,7 @@ const SwipeableOrderCard = ({ order, onStatusUpdate, onViewDetails, nextStatus }
 
         {/* Swipe Hint */}
         <div className="mt-3 flex items-center justify-center gap-2 text-xs text-white/30">
-          <ChevronRight className="w-4 h-4 rotate-180" />
-          <span>Swipe to change status</span>
+          <span>Swipe right to {nextStatus === 'processing' ? 'start' : 'complete'}</span>
           <ChevronRight className="w-4 h-4" />
         </div>
       </motion.div>
@@ -301,7 +289,7 @@ export default function KitchenDisplay({ orders, onStatusUpdate, onViewDetails, 
             </div>
             Kitchen Display
           </h2>
-          <p className="text-white/40 text-sm mt-1">Swipe orders right to advance status</p>
+          <p className="text-white/40 text-sm mt-1">Swipe right to complete orders</p>
         </div>
 
         <div className="flex items-center gap-2">

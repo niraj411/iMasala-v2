@@ -1,6 +1,6 @@
 {
   "appId": "com.tandoorikitchen.app",
-  "appName": "Tandoori Kitchen",
+  "appName": "iMasala by Tandoori Kitchen",
   "webDir": "dist",
   "server": {
     "androidScheme": "https"
