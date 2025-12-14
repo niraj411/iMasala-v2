@@ -6,15 +6,8 @@ const API_BASE_URL = `${WORDPRESS_URL}/wp-json/wc/v3`;
 const CONSUMER_KEY = import.meta.env.VITE_WC_CONSUMER_KEY;
 const CONSUMER_SECRET = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
-// Debug logging for native platforms
+// Platform detection for native apps
 const isNative = Capacitor.isNativePlatform();
-console.log('WooCommerce Service Init:', {
-  isNative,
-  platform: Capacitor.getPlatform(),
-  apiUrl: API_BASE_URL,
-  hasKey: !!CONSUMER_KEY,
-  hasSecret: !!CONSUMER_SECRET
-});
 
 class WooCommerceService {
   constructor() {
@@ -31,44 +24,21 @@ class WooCommerceService {
       }
     });
 
-    // Add request/response interceptors for debugging
-    this.api.interceptors.request.use(
-      (config) => {
-        console.log('API Request:', config.method?.toUpperCase(), config.url);
-        return config;
-      },
-      (error) => {
-        console.error('API Request Error:', error);
-        return Promise.reject(error);
-      }
-    );
-
+    // Response interceptor to handle JSON string responses
     this.api.interceptors.response.use(
       (response) => {
-        console.log('API Response:', response.status, response.config.url);
-
         // Fix: Handle case where API returns JSON as string instead of parsed object
         if (typeof response.data === 'string' && response.data.trim().startsWith('{') ||
             typeof response.data === 'string' && response.data.trim().startsWith('[')) {
           try {
             response.data = JSON.parse(response.data);
-            console.log('Parsed string response to JSON');
           } catch (e) {
-            console.warn('Failed to parse response as JSON:', e);
+            // Keep original response if parsing fails
           }
         }
-
         return response;
       },
-      (error) => {
-        console.error('API Response Error:', {
-          url: error.config?.url,
-          status: error.response?.status,
-          message: error.message,
-          data: error.response?.data
-        });
-        return Promise.reject(error);
-      }
+      (error) => Promise.reject(error)
     );
   }
 
@@ -145,10 +115,8 @@ class WooCommerceService {
       let allProducts = [];
       let page = 1;
       let hasMore = true;
-      const MAX_PAGES = 10; // Safety limit to prevent infinite loops
+      const MAX_PAGES = 10;
       const MAX_PRODUCTS_PER_PAGE = 100;
-
-      console.log('Fetching all products with pagination...');
 
       while (hasMore && page <= MAX_PAGES) {
         const response = await this.api.get('/products', {
@@ -166,30 +134,23 @@ class WooCommerceService {
         if (typeof products === 'string') {
           try {
             products = JSON.parse(products);
-            console.log('Parsed string response to array');
           } catch (e) {
-            console.error('Failed to parse products string:', e);
             break;
           }
         }
 
         // Validate response is an array
         if (!Array.isArray(products)) {
-          console.error('API returned non-array response:', typeof products, products);
           break;
         }
 
-        // Safety check: if response claims > 100 items on a single page, something is wrong
+        // Safety check: reject unexpected response sizes
         if (products.length > MAX_PRODUCTS_PER_PAGE) {
-          console.error('API returned unexpected number of products:', products.length);
           break;
         }
 
         if (products.length > 0) {
           allProducts = [...allProducts, ...products];
-          console.log(`Page ${page}: fetched ${products.length} products (total: ${allProducts.length})`);
-
-          // If we got less than 100, we've reached the last page
           hasMore = products.length === MAX_PRODUCTS_PER_PAGE;
           page++;
         } else {
@@ -197,14 +158,8 @@ class WooCommerceService {
         }
       }
 
-      if (page > MAX_PAGES) {
-        console.warn(`Reached max page limit (${MAX_PAGES}), stopping pagination`);
-      }
-
-      console.log(`Total products fetched: ${allProducts.length}`);
       return allProducts;
     } catch (error) {
-      console.error('Error fetching products:', error);
       throw error;
     }
   }
