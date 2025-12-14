@@ -50,6 +50,7 @@ export function OrderProvider({ children }) {
       orders,
       loading,
       fetchOrders,
+      refreshOrders: fetchOrders, // Alias for backward compatibility
       updateOrderStatus
     }}>
       {children}
