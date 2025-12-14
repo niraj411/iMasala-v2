@@ -3,7 +3,16 @@ import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 
 const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
-const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51SUZUaDlQAsWuKRF2uiFmcK7cP5bYBFV28mJV2FjbzcIE73aAgwEhmhWARdP0aWx0oaoyKsI58cNrEkVczDgs8vE00SN6hvmWi';
+
+// Stripe mode toggle: 'test' or 'live'
+const STRIPE_MODE = import.meta.env.VITE_STRIPE_MODE || 'test';
+
+// Get the appropriate key based on mode
+const STRIPE_PUBLISHABLE_KEY = STRIPE_MODE === 'live'
+  ? import.meta.env.VITE_STRIPE_LIVE_PUBLISHABLE_KEY
+  : import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY || 'pk_test_51SUZUaDlQAsWuKRF2uiFmcK7cP5bYBFV28mJV2FjbzcIE73aAgwEhmhWARdP0aWx0oaoyKsI58cNrEkVczDgs8vE00SN6hvmWi';
+
+console.log('Stripe Mode:', STRIPE_MODE);
 
 const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
