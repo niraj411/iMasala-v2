@@ -9,7 +9,7 @@ import {
   ChevronDown, Eye, Printer,
   ShieldCheck, Calendar, MapPin,
   Phone, Mail, X, ExternalLink,
-  BarChart3, Utensils, ChevronRight, Settings, ChefHat
+  BarChart3, Utensils, ChevronRight, Settings, ChefHat, Flame
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AdminNotificationSetup from '../components/admin/AdminNotificationSetup';
@@ -450,14 +450,83 @@ export default function AdminDashboard() {
     return matchesFilter && matchesSearch;
   });
 
+  // Helper to get tip from an order
+  const getOrderTip = (order) => {
+    const tipFromFees = order.fee_lines?.find(f => f.name?.toLowerCase().includes('tip'))?.total;
+    const tipFromMeta = order.meta_data?.find(m => m.key === 'tip_amount' || m.key === '_tip_amount')?.value;
+    return parseFloat(tipFromFees || tipFromMeta || 0);
+  };
+
+  // Date helpers
+  const isToday = (date) => {
+    const today = new Date();
+    const d = new Date(date);
+    return d.toDateString() === today.toDateString();
+  };
+
+  const isThisWeek = (date) => {
+    const now = new Date();
+    const d = new Date(date);
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return d >= weekAgo;
+  };
+
+  const isThisMonth = (date) => {
+    const now = new Date();
+    const d = new Date(date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  };
+
+  // Calculate comprehensive stats
+  const completedOrders = orders.filter(o => o.status === 'completed');
+  const todayOrders = orders.filter(o => isToday(o.date_created));
+  const weekOrders = orders.filter(o => isThisWeek(o.date_created));
+  const monthOrders = orders.filter(o => isThisMonth(o.date_created));
+
   const stats = {
     total: orders.length,
     pending: orders.filter(o => o.status === 'pending').length,
     processing: orders.filter(o => o.status === 'processing').length,
-    revenue: orders
-      .filter(o => o.status === 'completed')
-      .reduce((sum, o) => sum + parseFloat(o.total), 0)
+    revenue: completedOrders.reduce((sum, o) => sum + parseFloat(o.total), 0),
+    // New analytics
+    todayRevenue: todayOrders.filter(o => o.status === 'completed').reduce((sum, o) => sum + parseFloat(o.total), 0),
+    weekRevenue: weekOrders.filter(o => o.status === 'completed').reduce((sum, o) => sum + parseFloat(o.total), 0),
+    monthRevenue: monthOrders.filter(o => o.status === 'completed').reduce((sum, o) => sum + parseFloat(o.total), 0),
+    todayOrders: todayOrders.length,
+    weekOrders: weekOrders.length,
+    totalTips: orders.reduce((sum, o) => sum + getOrderTip(o), 0),
+    todayTips: todayOrders.reduce((sum, o) => sum + getOrderTip(o), 0),
+    avgOrderValue: completedOrders.length > 0
+      ? completedOrders.reduce((sum, o) => sum + parseFloat(o.total), 0) / completedOrders.length
+      : 0,
+    cateringOrders: orders.filter(o => o.meta_data?.find(m => m.key === 'order_type')?.value === 'catering').length,
+    pickupOrders: orders.filter(o => {
+      const type = o.meta_data?.find(m => m.key === 'order_type')?.value;
+      return !type || type === 'pickup';
+    }).length,
   };
+
+  // Calculate top selling items
+  const itemCounts = {};
+  orders.forEach(order => {
+    order.line_items?.forEach(item => {
+      if (!itemCounts[item.name]) {
+        itemCounts[item.name] = { name: item.name, quantity: 0, revenue: 0 };
+      }
+      itemCounts[item.name].quantity += item.quantity;
+      itemCounts[item.name].revenue += parseFloat(item.total);
+    });
+  });
+  const topItems = Object.values(itemCounts)
+    .sort((a, b) => b.quantity - a.quantity)
+    .slice(0, 5);
+
+  // Orders by hour (last 24 hours)
+  const ordersByHour = Array(24).fill(0);
+  todayOrders.forEach(order => {
+    const hour = new Date(order.date_created).getHours();
+    ordersByHour[hour]++;
+  });
 
   const tabs = [
     { id: 'kitchen', label: 'Kitchen', icon: ChefHat },
@@ -543,40 +612,196 @@ export default function AdminDashboard() {
               {/* Overview Tab */}
               {activeTab === 'overview' && (
                 <div className="space-y-6">
+                  {/* Today's Summary */}
+                  <div className="backdrop-blur-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 rounded-2xl border border-orange-500/20 p-6">
+                    <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-orange-400" />
+                      Today's Summary
+                    </h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center p-4 bg-white/5 rounded-xl">
+                        <p className="text-3xl font-bold text-white">{stats.todayOrders}</p>
+                        <p className="text-sm text-white/50 mt-1">Orders</p>
+                      </div>
+                      <div className="text-center p-4 bg-white/5 rounded-xl">
+                        <p className="text-3xl font-bold text-green-400">${stats.todayRevenue.toFixed(0)}</p>
+                        <p className="text-sm text-white/50 mt-1">Revenue</p>
+                      </div>
+                      <div className="text-center p-4 bg-white/5 rounded-xl">
+                        <p className="text-3xl font-bold text-emerald-400">${stats.todayTips.toFixed(2)}</p>
+                        <p className="text-sm text-white/50 mt-1">Tips</p>
+                      </div>
+                      <div className="text-center p-4 bg-white/5 rounded-xl">
+                        <p className="text-3xl font-bold text-blue-400">${stats.avgOrderValue.toFixed(0)}</p>
+                        <p className="text-sm text-white/50 mt-1">Avg Order</p>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Stats Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <StatsCard 
-                      title="Total Orders" 
-                      value={stats.total} 
+                    <StatsCard
+                      title="Total Orders"
+                      value={stats.total}
                       icon={Package}
                       color="blue"
                     />
-                    <StatsCard 
-                      title="Pending" 
-                      value={stats.pending} 
+                    <StatsCard
+                      title="Pending"
+                      value={stats.pending}
                       icon={Clock}
                       color="yellow"
                     />
-                    <StatsCard 
-                      title="Processing" 
-                      value={stats.processing} 
+                    <StatsCard
+                      title="Processing"
+                      value={stats.processing}
                       icon={Utensils}
                       color="primary"
                     />
-                    <StatsCard 
-                      title="Revenue" 
-                      value={`$${stats.revenue.toFixed(0)}`} 
+                    <StatsCard
+                      title="Total Revenue"
+                      value={`$${stats.revenue.toFixed(0)}`}
                       icon={DollarSign}
                       color="green"
                       subtitle="Completed orders"
                     />
                   </div>
 
+                  {/* Revenue & Analytics Row */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Revenue Breakdown */}
+                    <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-green-400" />
+                        Revenue Breakdown
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                          <span className="text-white/70 font-medium">Today</span>
+                          <span className="text-xl font-bold text-white">${stats.todayRevenue.toFixed(2)}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                          <span className="text-white/70 font-medium">This Week</span>
+                          <span className="text-xl font-bold text-white">${stats.weekRevenue.toFixed(2)}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                          <span className="text-white/70 font-medium">This Month</span>
+                          <span className="text-xl font-bold text-white">${stats.monthRevenue.toFixed(2)}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+                          <span className="text-green-400 font-medium">Total Tips</span>
+                          <span className="text-xl font-bold text-green-400">${stats.totalTips.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Top Selling Items */}
+                    <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <Flame className="w-5 h-5 text-orange-400" />
+                        Top Selling Items
+                      </h3>
+                      {topItems.length > 0 ? (
+                        <div className="space-y-3">
+                          {topItems.map((item, idx) => (
+                            <div key={item.name} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+                              <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
+                                idx === 0 ? 'bg-yellow-500/20 text-yellow-400' :
+                                idx === 1 ? 'bg-gray-400/20 text-gray-300' :
+                                idx === 2 ? 'bg-orange-700/20 text-orange-400' :
+                                'bg-white/10 text-white/60'
+                              }`}>
+                                #{idx + 1}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-white font-medium truncate">{item.name}</p>
+                                <p className="text-xs text-white/40">{item.quantity} sold</p>
+                              </div>
+                              <span className="text-green-400 font-semibold">${item.revenue.toFixed(0)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-white/40 text-center py-8">No sales data yet</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Orders by Hour & Order Types */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Orders by Hour */}
+                    <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-blue-400" />
+                        Today's Orders by Hour
+                      </h3>
+                      <div className="flex items-end gap-1 h-32">
+                        {ordersByHour.map((count, hour) => {
+                          const maxCount = Math.max(...ordersByHour, 1);
+                          const height = (count / maxCount) * 100;
+                          const isNow = new Date().getHours() === hour;
+                          return (
+                            <div
+                              key={hour}
+                              className="flex-1 flex flex-col items-center gap-1"
+                              title={`${hour}:00 - ${count} orders`}
+                            >
+                              <div
+                                className={`w-full rounded-t transition-all ${
+                                  isNow ? 'bg-orange-500' : count > 0 ? 'bg-blue-500/60' : 'bg-white/10'
+                                }`}
+                                style={{ height: `${Math.max(height, 4)}%` }}
+                              />
+                              {hour % 4 === 0 && (
+                                <span className="text-[10px] text-white/40">{hour}</span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <p className="text-xs text-white/40 text-center mt-2">Hours (0-23)</p>
+                    </div>
+
+                    {/* Order Types */}
+                    <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <Package className="w-5 h-5 text-purple-400" />
+                        Order Types
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-white/5 rounded-xl">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-white font-medium">Pickup Orders</span>
+                            <span className="text-2xl font-bold text-white">{stats.pickupOrders}</span>
+                          </div>
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div
+                              className="bg-blue-500 h-2 rounded-full transition-all"
+                              style={{ width: `${stats.total > 0 ? (stats.pickupOrders / stats.total) * 100 : 0}%` }}
+                            />
+                          </div>
+                        </div>
+                        <div className="p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-purple-400 font-medium">Catering Orders</span>
+                            <span className="text-2xl font-bold text-purple-400">{stats.cateringOrders}</span>
+                          </div>
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div
+                              className="bg-purple-500 h-2 rounded-full transition-all"
+                              style={{ width: `${stats.total > 0 ? (stats.cateringOrders / stats.total) * 100 : 0}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Recent Orders */}
                   <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
                     <div className="flex items-center justify-between mb-5">
                       <h2 className="text-lg font-semibold text-white tracking-tight">Recent Orders</h2>
-                      <button 
+                      <button
                         onClick={() => setActiveTab('orders')}
                         className="text-sm text-white/60 hover:text-white font-medium flex items-center gap-1 transition-colors"
                       >
