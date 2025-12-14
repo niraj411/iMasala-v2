@@ -133,33 +133,62 @@ class WooCommerceService {
       let allProducts = [];
       let page = 1;
       let hasMore = true;
-      
+      const MAX_PAGES = 10; // Safety limit to prevent infinite loops
+      const MAX_PRODUCTS_PER_PAGE = 100;
+
       console.log('Fetching all products with pagination...');
-      
-      while (hasMore) {
+
+      while (hasMore && page <= MAX_PAGES) {
         const response = await this.api.get('/products', {
           params: {
-            per_page: 100,
+            per_page: MAX_PRODUCTS_PER_PAGE,
             page: page,
             status: 'publish',
             stock_status: 'instock'
           }
         });
-        
-        const products = response.data;
-        
-        if (products && products.length > 0) {
+
+        let products = response.data;
+
+        // Handle case where response is a JSON string instead of parsed array
+        if (typeof products === 'string') {
+          try {
+            products = JSON.parse(products);
+            console.log('Parsed string response to array');
+          } catch (e) {
+            console.error('Failed to parse products string:', e);
+            break;
+          }
+        }
+
+        // Validate response is an array
+        if (!Array.isArray(products)) {
+          console.error('API returned non-array response:', typeof products, products);
+          break;
+        }
+
+        // Safety check: if response claims > 100 items on a single page, something is wrong
+        if (products.length > MAX_PRODUCTS_PER_PAGE) {
+          console.error('API returned unexpected number of products:', products.length);
+          break;
+        }
+
+        if (products.length > 0) {
           allProducts = [...allProducts, ...products];
           console.log(`Page ${page}: fetched ${products.length} products (total: ${allProducts.length})`);
-          
+
           // If we got less than 100, we've reached the last page
-          hasMore = products.length === 100;
+          hasMore = products.length === MAX_PRODUCTS_PER_PAGE;
           page++;
         } else {
           hasMore = false;
         }
       }
-      
+
+      if (page > MAX_PAGES) {
+        console.warn(`Reached max page limit (${MAX_PAGES}), stopping pagination`);
+      }
+
       console.log(`Total products fetched: ${allProducts.length}`);
       return allProducts;
     } catch (error) {
