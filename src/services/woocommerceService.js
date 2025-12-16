@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Capacitor } from '@capacitor/core';
+import { CapacitorHttp } from '@capacitor/core';
 
 const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
 const API_BASE_URL = `${WORDPRESS_URL}/wp-json/wc/v3`;
@@ -9,8 +10,12 @@ const CONSUMER_SECRET = import.meta.env.VITE_WC_CONSUMER_SECRET;
 // Platform detection for native apps
 const isNative = Capacitor.isNativePlatform();
 
+// Base64 encode for Basic Auth
+const authHeader = 'Basic ' + btoa(`${CONSUMER_KEY}:${CONSUMER_SECRET}`);
+
 class WooCommerceService {
   constructor() {
+    // Axios for web platform
     this.api = axios.create({
       baseURL: API_BASE_URL,
       auth: {
@@ -42,6 +47,62 @@ class WooCommerceService {
     );
   }
 
+  // Native HTTP request helper (bypasses CORS on iOS/Android)
+  async nativeRequest(method, endpoint, params = {}, data = null) {
+    const url = new URL(`${API_BASE_URL}${endpoint}`);
+
+    // Add query params
+    Object.keys(params).forEach(key => {
+      if (params[key] !== undefined && params[key] !== null) {
+        url.searchParams.append(key, params[key]);
+      }
+    });
+
+    const options = {
+      url: url.toString(),
+      method: method,
+      headers: {
+        'Authorization': authHeader,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    };
+
+    if (data && (method === 'POST' || method === 'PUT')) {
+      options.data = data;
+    }
+
+    const response = await CapacitorHttp.request(options);
+
+    // Parse JSON string if needed
+    let responseData = response.data;
+    if (typeof responseData === 'string') {
+      try {
+        responseData = JSON.parse(responseData);
+      } catch (e) {
+        // Keep original if parsing fails
+      }
+    }
+
+    return { data: responseData };
+  }
+
+  // Unified request method - uses native HTTP on mobile, axios on web
+  async request(method, endpoint, params = {}, data = null) {
+    if (isNative) {
+      return this.nativeRequest(method, endpoint, params, data);
+    }
+
+    // Web platform uses axios
+    if (method === 'GET') {
+      return this.api.get(endpoint, { params });
+    } else if (method === 'POST') {
+      return this.api.post(endpoint, data);
+    } else if (method === 'PUT') {
+      return this.api.put(endpoint, data);
+    }
+  }
+
   async syncCartToCheckout(cartItems) {
     const checkoutUrl = `${WORDPRESS_URL}/checkout/`;
     return checkoutUrl;
@@ -49,11 +110,9 @@ class WooCommerceService {
 
   async getCategories() {
     try {
-      const response = await this.api.get('/products/categories', {
-        params: {
-          per_page: 100,
-          hide_empty: true
-        }
+      const response = await this.request('GET', '/products/categories', {
+        per_page: 100,
+        hide_empty: true
       });
       return response.data;
     } catch (error) {
@@ -64,11 +123,9 @@ class WooCommerceService {
 
   async getOrders(params = {}) {
     try {
-      const response = await this.api.get('/orders', {
-        params: {
-          per_page: 50,
-          ...params
-        }
+      const response = await this.request('GET', '/orders', {
+        per_page: 50,
+        ...params
       });
       return response.data;
     } catch (error) {
@@ -79,7 +136,7 @@ class WooCommerceService {
 
   async updateOrderStatus(orderId, status) {
     try {
-      const response = await this.api.put(`/orders/${orderId}`, { status });
+      const response = await this.request('PUT', `/orders/${orderId}`, {}, { status });
       return response.data;
     } catch (error) {
       console.error('Error updating order status:', error);
@@ -89,7 +146,7 @@ class WooCommerceService {
 
   async getOrder(orderId) {
     try {
-      const response = await this.api.get(`/orders/${orderId}`);
+      const response = await this.request('GET', `/orders/${orderId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching order:', error);
@@ -99,7 +156,7 @@ class WooCommerceService {
 
   async getCoupons() {
     try {
-      const response = await this.api.get('/coupons');
+      const response = await this.request('GET', '/coupons');
       return response.data;
     } catch (error) {
       console.error('Error fetching coupons:', error);
@@ -119,13 +176,11 @@ class WooCommerceService {
       const MAX_PRODUCTS_PER_PAGE = 100;
 
       while (hasMore && page <= MAX_PAGES) {
-        const response = await this.api.get('/products', {
-          params: {
-            per_page: MAX_PRODUCTS_PER_PAGE,
-            page: page,
-            status: 'publish',
-            stock_status: 'instock'
-          }
+        const response = await this.request('GET', '/products', {
+          per_page: MAX_PRODUCTS_PER_PAGE,
+          page: page,
+          status: 'publish',
+          stock_status: 'instock'
         });
 
         let products = response.data;
@@ -166,7 +221,7 @@ class WooCommerceService {
 
   async getProductVariations(productId) {
     try {
-      const response = await this.api.get(`/products/${productId}/variations`);
+      const response = await this.request('GET', `/products/${productId}/variations`);
       return response.data;
     } catch (error) {
       console.error('Error fetching product variations:', error);
@@ -176,43 +231,41 @@ class WooCommerceService {
 
   async getOrdersStats() {
     try {
-      const response = await this.api.get('/reports/orders/totals');
+      const response = await this.request('GET', '/reports/orders/totals');
       return response.data;
     } catch (error) {
       console.error('Error fetching orders stats:', error);
       throw error;
     }
   }
-  
+
   async getProductsStats() {
     try {
-      const response = await this.api.get('/reports/products/totals');
+      const response = await this.request('GET', '/reports/products/totals');
       return response.data;
     } catch (error) {
       console.error('Error fetching products stats:', error);
       throw error;
     }
   }
-  
+
   async getCustomersStats() {
     try {
-      const response = await this.api.get('/reports/customers/totals');
+      const response = await this.request('GET', '/reports/customers/totals');
       return response.data;
     } catch (error) {
       console.error('Error fetching customers stats:', error);
       throw error;
     }
   }
-  
+
   async getAllOrders(params = {}) {
     try {
-      const response = await this.api.get('/orders', {
-        params: {
-          per_page: 10,
-          orderby: 'date',
-          order: 'desc',
-          ...params
-        }
+      const response = await this.request('GET', '/orders', {
+        per_page: 10,
+        orderby: 'date',
+        order: 'desc',
+        ...params
       });
       return response.data;
     } catch (error) {
@@ -223,13 +276,11 @@ class WooCommerceService {
 
   async getOrdersByEmail(email) {
     try {
-      const response = await this.api.get('/orders', {
-        params: {
-          search: email,
-          per_page: 50,
-          orderby: 'date',
-          order: 'desc'
-        }
+      const response = await this.request('GET', '/orders', {
+        search: email,
+        per_page: 50,
+        orderby: 'date',
+        order: 'desc'
       });
       return response.data;
     } catch (error) {
@@ -350,7 +401,7 @@ class WooCommerceService {
         }];
       }
 
-      const response = await this.api.post('/orders', order);
+      const response = await this.request('POST', '/orders', {}, order);
       return response.data;
     } catch (error) {
       console.error('Error creating order:', error);
