@@ -1,6 +1,18 @@
 // src/config/firebase.js
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import {
+  initializeAuth,
+  getAuth,
+  browserLocalPersistence,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  updateProfile,
+  deleteUser
+} from 'firebase/auth';
+import { Capacitor } from '@capacitor/core';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -31,4 +43,27 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   }
 }
 
-export { app, messaging, getToken, onMessage };
+// Initialize Firebase Auth with appropriate persistence for platform
+// On iOS/Android, use browserLocalPersistence to avoid IndexedDB issues in WKWebView
+let auth;
+if (Capacitor.isNativePlatform()) {
+  auth = initializeAuth(app, {
+    persistence: browserLocalPersistence
+  });
+} else {
+  auth = getAuth(app);
+}
+
+export {
+  app,
+  auth,
+  messaging,
+  getToken,
+  onMessage,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  firebaseSignOut,
+  onAuthStateChanged,
+  updateProfile,
+  deleteUser
+};

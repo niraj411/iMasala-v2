@@ -33,7 +33,6 @@ export default function Login() {
     firstName: '',
     lastName: '',
     email: '',
-    username: '',
     phone: '',
     password: '',
     confirmPassword: ''
@@ -74,9 +73,6 @@ export default function Login() {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registerForm.email)) {
       newErrors.email = 'Please enter a valid email';
-    }
-    if (!registerForm.username.trim()) {
-      newErrors.username = 'Username is required';
     }
     if (!registerForm.password) {
       newErrors.password = 'Password is required';
@@ -143,7 +139,6 @@ export default function Login() {
       
       const result = await register({
         email: registerForm.email,
-        username: registerForm.username,
         password: registerForm.password,
         firstName: registerForm.firstName,
         lastName: registerForm.lastName,
@@ -386,30 +381,6 @@ export default function Login() {
                       className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/20 transition-all font-medium"
                     />
                   </div>
-                </div>
-
-                {/* Username */}
-                <div>
-                  <label className="block text-sm font-medium text-white/60 mb-2">
-                    Username *
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" strokeWidth={1.5} />
-                    <input
-                      type="text"
-                      value={registerForm.username}
-                      onChange={(e) => setRegisterForm(prev => ({ ...prev, username: e.target.value }))}
-                      placeholder="johndoe123"
-                      className={`w-full pl-12 pr-4 py-3.5 bg-white/5 border rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-all font-medium ${
-                        errors.username 
-                          ? 'border-red-500/50 focus:ring-red-500/20' 
-                          : 'border-white/10 focus:ring-white/20 focus:border-white/20'
-                      }`}
-                    />
-                  </div>
-                  {errors.username && (
-                    <p className="mt-1.5 text-xs text-red-400 font-medium">{errors.username}</p>
-                  )}
                 </div>
 
                 {/* Email */}
