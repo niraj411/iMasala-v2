@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Package, ShieldCheck, Tag, MapPin, RotateCcw, 
+import {
+  Package, ShieldCheck, Tag, MapPin, RotateCcw,
   Clock, ChefHat, CheckCircle2, Truck, AlertCircle,
-  Plus, Trash2, Edit2, Star, Calendar, TrendingUp
+  Plus, Trash2, Edit2, Star, Calendar, TrendingUp,
+  User, LogOut, AlertTriangle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import OrderCard from '../components/orders/OrderCard';
@@ -24,7 +25,7 @@ const STATUS_CONFIG = {
 };
 
 export default function CustomerDashboard() {
-  const { user } = useAuth();
+  const { user, logout, deleteAccount } = useAuth();
   const { addToCart, clearCart } = useCart();
   const navigate = useNavigate();
   
@@ -33,6 +34,10 @@ export default function CustomerDashboard() {
   const [activeTab, setActiveTab] = useState('orders');
   const [reordering, setReordering] = useState(false);
   
+  // Delete account state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
   // Saved addresses state
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -181,8 +186,31 @@ export default function CustomerDashboard() {
     { id: 'orders', label: 'My Orders', icon: Package },
     { id: 'addresses', label: 'Saved Addresses', icon: MapPin },
     { id: 'tax', label: 'Tax Exemption', icon: ShieldCheck },
-    { id: 'offers', label: 'Special Offers', icon: Tag }
+    { id: 'offers', label: 'Special Offers', icon: Tag },
+    { id: 'account', label: 'Account', icon: User }
   ];
+
+  // Handle logout
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+    toast.success('Logged out successfully');
+  };
+
+  // Handle delete account
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    const result = await deleteAccount();
+    setDeleting(false);
+
+    if (result.success) {
+      toast.success('Account deleted successfully');
+      navigate('/');
+    } else {
+      toast.error(result.error);
+    }
+    setShowDeleteConfirm(false);
+  };
 
   return (
     <div className="min-h-screen bg-black">
@@ -593,7 +621,7 @@ export default function CustomerDashboard() {
                 <h2 className="text-sm font-semibold text-white/70 mb-4 uppercase tracking-wider">
                   Special Offers & Rewards
                 </h2>
-                
+
                 {/* Placeholder for future loyalty/offers */}
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/20 rounded-xl p-5">
@@ -608,7 +636,7 @@ export default function CustomerDashboard() {
                     </div>
                     <p className="text-orange-300 font-medium">10% off your next catering order</p>
                   </div>
-                  
+
                   <div className="bg-white/5 border border-white/10 rounded-xl p-5">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
@@ -620,6 +648,95 @@ export default function CustomerDashboard() {
                       </div>
                     </div>
                     <p className="text-white/40 text-sm">We're working on exciting new offers for our loyal customers.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Account Tab */}
+            {activeTab === 'account' && (
+              <div>
+                <h2 className="text-sm font-semibold text-white/70 mb-4 uppercase tracking-wider">
+                  Account Settings
+                </h2>
+
+                {/* Account Info */}
+                <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-4">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-14 h-14 rounded-full bg-orange-500/20 flex items-center justify-center">
+                      <User className="w-7 h-7 text-orange-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white text-lg">
+                        {user?.first_name} {user?.last_name}
+                      </h3>
+                      <p className="text-white/50">{user?.email}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/15 text-white rounded-xl font-medium transition-all mb-4"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Log Out
+                </button>
+
+                {/* Delete Account Section */}
+                <div className="mt-8 pt-6 border-t border-white/10">
+                  <h3 className="text-sm font-semibold text-red-400/80 mb-3 uppercase tracking-wider">
+                    Danger Zone
+                  </h3>
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-5">
+                    <div className="flex items-start gap-3 mb-4">
+                      <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-semibold text-white mb-1">Delete Account</h4>
+                        <p className="text-white/50 text-sm">
+                          Permanently delete your account and all associated data. This action cannot be undone.
+                        </p>
+                      </div>
+                    </div>
+
+                    {!showDeleteConfirm ? (
+                      <button
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-medium transition-all text-sm"
+                      >
+                        Delete My Account
+                      </button>
+                    ) : (
+                      <div className="bg-red-500/20 rounded-lg p-4">
+                        <p className="text-white text-sm mb-4">
+                          Are you sure you want to delete your account? This will permanently remove all your data.
+                        </p>
+                        <div className="flex gap-3">
+                          <button
+                            onClick={handleDeleteAccount}
+                            disabled={deleting}
+                            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-all text-sm disabled:opacity-50 flex items-center gap-2"
+                          >
+                            {deleting ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                Deleting...
+                              </>
+                            ) : (
+                              'Yes, Delete My Account'
+                            )}
+                          </button>
+                          <button
+                            onClick={() => setShowDeleteConfirm(false)}
+                            disabled={deleting}
+                            className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white rounded-lg font-medium transition-all text-sm"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

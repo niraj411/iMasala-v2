@@ -26,7 +26,9 @@
   },
   "ios": {
     "contentInset": "automatic",
-    "backgroundColor": "#000000"
+    "backgroundColor": "#000000",
+    "scheme": "capacitor",
+    "hostname": "localhost"
   },
   "android": {
     "backgroundColor": "#000000",
