@@ -5,7 +5,8 @@ import { Capacitor } from '@capacitor/core';
 import { CapacitorHttp } from '@capacitor/core';
 
 const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
-const isNative = Capacitor.isNativePlatform();
+// Platform detection at call time (not module load time) for reliable iOS detection
+const isNativePlatform = () => Capacitor.isNativePlatform();
 
 // Stripe mode toggle: 'test' or 'live'
 const STRIPE_MODE = import.meta.env.VITE_STRIPE_MODE || 'test';
@@ -70,7 +71,7 @@ export const stripeService = {
 
       let responseData;
 
-      if (isNative) {
+      if (isNativePlatform()) {
         // Use CapacitorHttp for native iOS/Android
         const response = await CapacitorHttp.request({
           url: `${WORDPRESS_URL}/wp-json/imasala/v1/create-checkout`,

@@ -4,8 +4,9 @@ import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 
 class StorageService {
-  constructor() {
-    this.isNative = Capacitor.isNativePlatform();
+  // Check platform at call time (not constructor time) for reliable iOS detection
+  get isNative() {
+    return Capacitor.isNativePlatform();
   }
 
   async get(key) {

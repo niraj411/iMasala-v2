@@ -7,8 +7,8 @@ const API_BASE_URL = `${WORDPRESS_URL}/wp-json/wc/v3`;
 const CONSUMER_KEY = import.meta.env.VITE_WC_CONSUMER_KEY;
 const CONSUMER_SECRET = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
-// Platform detection for native apps
-const isNative = Capacitor.isNativePlatform();
+// Platform detection at call time (not module load time) for reliable iOS detection
+const isNativePlatform = () => Capacitor.isNativePlatform();
 
 // Base64 encode for Basic Auth
 const authHeader = 'Basic ' + btoa(`${CONSUMER_KEY}:${CONSUMER_SECRET}`);
@@ -89,7 +89,7 @@ class WooCommerceService {
 
   // Unified request method - uses native HTTP on mobile, axios on web
   async request(method, endpoint, params = {}, data = null) {
-    if (isNative) {
+    if (isNativePlatform()) {
       return this.nativeRequest(method, endpoint, params, data);
     }
 
