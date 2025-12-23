@@ -274,6 +274,30 @@ class WooCommerceService {
     }
   }
 
+  // Check for new orders - lightweight call that only fetches the latest order
+  async checkForNewOrders(lastKnownOrderId = 0) {
+    try {
+      const response = await this.request('GET', '/orders', {
+        per_page: 1,
+        orderby: 'id',
+        order: 'desc'
+      });
+      const orders = response.data;
+      if (orders && orders.length > 0) {
+        const latestOrderId = orders[0].id;
+        return {
+          hasNewOrders: latestOrderId > lastKnownOrderId,
+          latestOrderId,
+          latestOrder: orders[0]
+        };
+      }
+      return { hasNewOrders: false, latestOrderId: lastKnownOrderId };
+    } catch (error) {
+      console.error('Error checking for new orders:', error);
+      return { hasNewOrders: false, latestOrderId: lastKnownOrderId };
+    }
+  }
+
   async getOrdersByEmail(email) {
     try {
       const response = await this.request('GET', '/orders', {

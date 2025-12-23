@@ -2,6 +2,7 @@
 // Unified push notification service for web and native platforms
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications } from '@capacitor/push-notifications';
+import { FCM } from '@capacitor-community/fcm';
 import { initializeApp, getApps } from 'firebase/app';
 import { getMessaging, getToken } from 'firebase/messaging';
 
@@ -86,14 +87,32 @@ class PushNotificationService {
 
       // Handle registration success
       PushNotifications.addListener('registration', async (token) => {
-        console.log('Push registration success, token: ' + token.value);
-        this.token = token.value;
+        console.log('Push registration success, APNs/Device token: ' + token.value);
 
-        // Store token locally
-        localStorage.setItem('push_token', token.value);
-        localStorage.setItem('push_platform', this.platform);
+        // For iOS/Android, get the FCM token instead of raw device token
+        try {
+          // Small delay to allow Firebase SDK to process the APNs token
+          await new Promise(r => setTimeout(r, 500));
 
-        resolve(token.value);
+          const fcmResult = await FCM.getToken();
+          const fcmToken = fcmResult.token;
+          console.log('FCM token obtained: ' + fcmToken);
+
+          this.token = fcmToken;
+
+          // Store FCM token locally
+          localStorage.setItem('push_token', fcmToken);
+          localStorage.setItem('push_platform', this.platform);
+
+          resolve(fcmToken);
+        } catch (fcmError) {
+          console.error('Error getting FCM token, falling back to device token:', fcmError);
+          // Fallback to device token if FCM fails
+          this.token = token.value;
+          localStorage.setItem('push_token', token.value);
+          localStorage.setItem('push_platform', this.platform);
+          resolve(token.value);
+        }
       });
 
       // Handle registration errors

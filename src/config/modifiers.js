@@ -54,12 +54,12 @@ export const modifierGroups = {
     type: 'single',
     required: true,
     options: [
-      { id: 'chicken', name: 'Chicken', price: 0 },
+      { id: 'chicken', name: 'Chicken', price: 1.00 },
       { id: 'lamb', name: 'Lamb', price: 3.00 },
-      { id: 'goat', name: 'Goat', price: 4.00 },
       { id: 'shrimp', name: 'Shrimp', price: 3.00 },
       { id: 'vegetable', name: 'Vegetable', price: 0 },
-      { id: 'paneer', name: 'Paneer', price: 1.00 },
+      { id: 'paneer', name: 'Paneer', price: 1.50 },
+      { id: 'tofu', name: 'Tofu', price: 1.00 },
     ]
   },
   
@@ -83,11 +83,9 @@ export const modifierGroups = {
     type: 'single',
     required: false,
     options: [
-      { id: 'no_change', name: 'No change', price: 0 },
+      { id: 'no_change', name: 'Basmati Rice', price: 0 },
       { id: 'no_rice', name: 'No rice', price: 0 },
       { id: 'brown_rice', name: 'Organic Brown Rice', price: 1.00 },
-      { id: 'naan', name: 'Naan', price: 2.00 },
-      { id: 'garlic_naan', name: 'Garlic Naan', price: 2.50 },
     ]
   },
   
