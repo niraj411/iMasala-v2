@@ -515,6 +515,142 @@ export default function Shop() {
         </div>
       </div>
 
+      {/* Quick Category Cards - Visual Navigation */}
+      {!searchQuery && activeCategory === 'all' && !isCateringOrder && (
+        <div className="bg-black py-8 border-b border-white/5">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-white">Browse by Category</h2>
+              <span className="text-sm text-white/40">{displayCategories.length} categories</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              {displayCategories.slice(0, 6).map((category, index) => {
+                const categoryProducts = menuItems.filter(item =>
+                  item.categories?.some(cat => cat.id === category.id) &&
+                  !item.categories?.some(cat => cat.slug?.includes('catering'))
+                );
+                const firstProductImage = categoryProducts[0]?.images?.[0]?.src;
+
+                return (
+                  <motion.button
+                    key={category.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => scrollToCategory(category.id)}
+                    className="group relative overflow-hidden rounded-2xl aspect-square bg-white/5 border border-white/10 hover:border-orange-500/50 transition-all"
+                  >
+                    {firstProductImage && (
+                      <img
+                        src={firstProductImage}
+                        alt={category.name}
+                        className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 group-hover:scale-110 transition-all duration-500"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-end p-3 text-center">
+                      <span className="font-bold text-white text-sm leading-tight mb-1">{category.name}</span>
+                      <span className="text-xs text-white/60">{categoryItemCounts[category.id] || 0} items</span>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popular Items Section */}
+      {!searchQuery && activeCategory === 'all' && !isCateringOrder && (
+        <div className="bg-gradient-to-b from-black to-zinc-950 py-10 border-b border-white/5">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-orange-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Most Popular</h2>
+                <p className="text-sm text-white/40">Customer favorites</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {menuItems
+                .filter(item => item.isPopular && !item.categories?.some(cat => cat.slug?.includes('catering')))
+                .slice(0, 4)
+                .map((item, index) => {
+                  const quantity = getItemQuantity(item.id);
+                  return (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      onClick={() => setQuickViewItem(item)}
+                      className="group cursor-pointer bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-orange-500/30 transition-all"
+                    >
+                      <div className="relative aspect-[4/3] overflow-hidden">
+                        {item.images?.[0]?.src ? (
+                          <img
+                            src={item.images[0].src}
+                            alt={item.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-white/5 flex items-center justify-center">
+                            <ShoppingBag className="w-8 h-8 text-white/10" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                        <div className="absolute top-2 left-2">
+                          <span className="px-2 py-1 bg-orange-500/90 text-white text-xs font-bold rounded-lg flex items-center gap-1">
+                            <Star className="w-3 h-3 fill-current" />
+                            Popular
+                          </span>
+                        </div>
+                        <div className="absolute bottom-2 right-2">
+                          {quantity === 0 ? (
+                            <button
+                              onClick={(e) => handleQuickAdd(item, e)}
+                              className="w-10 h-10 bg-orange-500 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-orange-600 transition-colors"
+                            >
+                              <Plus className="w-5 h-5" />
+                            </button>
+                          ) : (
+                            <div className="flex items-center gap-1 bg-white/20 backdrop-blur-xl rounded-full p-1">
+                              <button
+                                onClick={(e) => handleQuantityChange(item, quantity - 1, e)}
+                                className="w-8 h-8 flex items-center justify-center text-white hover:bg-white/10 rounded-full"
+                              >
+                                <Minus className="w-4 h-4" />
+                              </button>
+                              <span className="w-6 text-center font-bold text-white text-sm">{quantity}</span>
+                              <button
+                                onClick={(e) => handleQuantityChange(item, quantity + 1, e)}
+                                className="w-8 h-8 flex items-center justify-center text-white hover:bg-white/10 rounded-full"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="p-3">
+                        <h3 className="font-semibold text-white text-sm line-clamp-1">{item.name}</h3>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="font-bold text-white">${parseFloat(item.price).toFixed(2)}</span>
+                          {productHasModifiers(item) && (
+                            <span className="text-xs text-orange-400">Customize</span>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Order Type Toggle - Glass Design */}
       <div className="sticky top-16 z-40 border-b border-white/5 bg-black/80 backdrop-blur-2xl">
         <div className="max-w-7xl mx-auto px-4 py-6">

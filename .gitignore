@@ -18,7 +18,20 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
 .env*.local
+
+# Firebase config backup files
+firebase-config.txt
+
+# iOS sensitive files
+ios/App/App/GoogleService-Info.plist
+*.p8
+*.p12
+*.mobileprovision
+
+# Android sensitive files
+android/app/google-services.json
 
 # Logs
 npm-debug.log*

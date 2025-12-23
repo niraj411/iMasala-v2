@@ -1,14 +1,16 @@
 // src/components/admin/KitchenDisplay.jsx
 // Kitchen Display for restaurant staff with swipe-to-ready functionality
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import {
   Clock, CheckCircle, ChefHat, Utensils, Phone, User,
   AlertCircle, Volume2, VolumeX, RefreshCw, Eye, X,
-  ChevronRight, Flame, Package, Timer, Bell
+  ChevronRight, Flame, Package, Timer, Bell, Wifi, WifiOff
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { Capacitor } from '@capacitor/core';
+import { PushNotifications } from '@capacitor/push-notifications';
 
 // Swipeable Order Card Component
 const SwipeableOrderCard = ({ order, onStatusUpdate, onViewDetails, nextStatus }) => {
@@ -230,38 +232,101 @@ const QuickActionButton = ({ order, status, label, color, icon: Icon, onStatusUp
 };
 
 // Main Kitchen Display Component
-export default function KitchenDisplay({ orders, onStatusUpdate, onViewDetails, onRefresh, refreshing }) {
+export default function KitchenDisplay({ orders, onStatusUpdate, onViewDetails, onRefresh, refreshing, smartRefresh, lastRefresh, isChecking }) {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const [viewMode, setViewMode] = useState('columns'); // 'columns' or 'list'
-  const prevOrderCountRef = useRef(orders.length);
+  const [connectionStatus, setConnectionStatus] = useState('connected');
+  const prevOrderIdsRef = useRef(new Set());
+  const audioRef = useRef(null);
 
-  // Auto-refresh every 30 seconds
+  // Initialize audio element
   useEffect(() => {
-    if (!autoRefresh) return;
-    const interval = setInterval(() => {
-      onRefresh();
-    }, 30000);
-    return () => clearInterval(interval);
-  }, [autoRefresh, onRefresh]);
+    audioRef.current = new Audio('/notification.mp3');
+    audioRef.current.volume = 0.5;
+  }, []);
 
-  // Play sound on new order
-  useEffect(() => {
-    if (soundEnabled && orders.length > prevOrderCountRef.current) {
-      // Play notification sound
-      try {
-        const audio = new Audio('/notification.mp3');
-        audio.volume = 0.5;
-        audio.play().catch(() => {});
-      } catch (e) {}
-      toast('New order received!', {
-        icon: '🔔',
-        duration: 5000,
-        style: { background: '#1f2937', color: '#fff' }
-      });
+  // Play notification sound
+  const playNotificationSound = useCallback(() => {
+    if (soundEnabled && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
     }
-    prevOrderCountRef.current = orders.length;
-  }, [orders.length, soundEnabled]);
+  }, [soundEnabled]);
+
+  // Smart auto-refresh - checks for new orders every 15 seconds
+  useEffect(() => {
+    if (!autoRefresh || !smartRefresh) return;
+
+    const checkForNewOrders = async () => {
+      try {
+        setConnectionStatus('checking');
+        const result = await smartRefresh();
+        setConnectionStatus('connected');
+
+        if (result.hasNewOrders) {
+          playNotificationSound();
+          toast('New order received!', {
+            icon: '🔔',
+            duration: 5000,
+            style: { background: '#22c55e', color: '#fff', fontWeight: 600 }
+          });
+        }
+      } catch (error) {
+        setConnectionStatus('error');
+      }
+    };
+
+    const interval = setInterval(checkForNewOrders, 15000);
+    return () => clearInterval(interval);
+  }, [autoRefresh, smartRefresh, playNotificationSound]);
+
+  // Listen for push notifications (triggers immediate refresh)
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    const handlePushNotification = () => {
+      playNotificationSound();
+      onRefresh();
+      toast('New order notification received!', {
+        icon: '🔔',
+        duration: 3000,
+        style: { background: '#22c55e', color: '#fff', fontWeight: 600 }
+      });
+    };
+
+    // Listen for push notifications received while app is open
+    const listener = PushNotifications.addListener('pushNotificationReceived', handlePushNotification);
+
+    return () => {
+      listener.then(l => l.remove());
+    };
+  }, [onRefresh, playNotificationSound]);
+
+  // Detect new orders by comparing order IDs
+  useEffect(() => {
+    const currentIds = new Set(orders.map(o => o.id));
+    const prevIds = prevOrderIdsRef.current;
+
+    // Find new orders (IDs in current but not in previous)
+    const newOrderIds = [...currentIds].filter(id => !prevIds.has(id));
+
+    if (prevIds.size > 0 && newOrderIds.length > 0) {
+      playNotificationSound();
+    }
+
+    prevOrderIdsRef.current = currentIds;
+  }, [orders, playNotificationSound]);
+
+  // Format last refresh time
+  const formatLastRefresh = () => {
+    if (!lastRefresh) return 'Never';
+    const now = new Date();
+    const diff = Math.floor((now - lastRefresh) / 1000);
+    if (diff < 5) return 'Just now';
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    return lastRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   // Filter orders by status
   const pendingOrders = orders.filter(o => o.status === 'pending');
@@ -278,6 +343,15 @@ export default function KitchenDisplay({ orders, onStatusUpdate, onViewDetails, 
     return flow[currentStatus];
   };
 
+  // Connection status indicator
+  const statusConfig = {
+    connected: { icon: Wifi, color: 'text-green-400', bg: 'bg-green-500/20', label: 'Live' },
+    checking: { icon: RefreshCw, color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Checking' },
+    error: { icon: WifiOff, color: 'text-red-400', bg: 'bg-red-500/20', label: 'Offline' }
+  };
+  const status = statusConfig[connectionStatus];
+  const StatusIcon = status.icon;
+
   return (
     <div className="space-y-6">
       {/* Kitchen Header */}
@@ -289,42 +363,54 @@ export default function KitchenDisplay({ orders, onStatusUpdate, onViewDetails, 
             </div>
             Kitchen Display
           </h2>
-          <p className="text-white/40 text-sm mt-1">Swipe right to complete orders</p>
+          <div className="flex items-center gap-3 mt-2">
+            {/* Connection Status */}
+            <div className={`flex items-center gap-1.5 px-2 py-1 rounded-lg ${status.bg}`}>
+              <StatusIcon className={`w-3.5 h-3.5 ${status.color} ${connectionStatus === 'checking' ? 'animate-spin' : ''}`} />
+              <span className={`text-xs font-medium ${status.color}`}>{status.label}</span>
+            </div>
+            {/* Last Refresh */}
+            <span className="text-white/40 text-xs">
+              Updated {formatLastRefresh()}
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Sound Toggle */}
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`p-3 rounded-xl border transition-all ${
+            className={`p-2.5 rounded-xl border transition-all ${
               soundEnabled
                 ? 'bg-green-500/20 border-green-500/30 text-green-400'
                 : 'bg-white/5 border-white/10 text-white/40'
             }`}
+            title={soundEnabled ? 'Sound on' : 'Sound off'}
           >
-            {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </button>
 
           {/* Auto Refresh Toggle */}
           <button
             onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`p-3 rounded-xl border transition-all flex items-center gap-2 ${
+            className={`p-2.5 rounded-xl border transition-all ${
               autoRefresh
                 ? 'bg-blue-500/20 border-blue-500/30 text-blue-400'
                 : 'bg-white/5 border-white/10 text-white/40'
             }`}
+            title={autoRefresh ? 'Auto-refresh on' : 'Auto-refresh off'}
           >
-            <RefreshCw className={`w-5 h-5 ${autoRefresh ? 'animate-spin-slow' : ''}`} />
+            <Bell className={`w-4 h-4`} />
           </button>
 
           {/* Manual Refresh */}
           <button
             onClick={onRefresh}
-            disabled={refreshing}
-            className="px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 transition-all flex items-center gap-2 disabled:opacity-50"
+            disabled={refreshing || isChecking}
+            className="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 transition-all flex items-center gap-2 disabled:opacity-50"
           >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
+            <RefreshCw className={`w-4 h-4 ${refreshing || isChecking ? 'animate-spin' : ''}`} />
+            {refreshing ? 'Refreshing' : 'Refresh'}
           </button>
         </div>
       </div>

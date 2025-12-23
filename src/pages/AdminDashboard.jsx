@@ -408,7 +408,7 @@ const ServerStatus = () => {
 
 // Main Component
 export default function AdminDashboard() {
-  const { orders, loading, refreshOrders } = useOrders();
+  const { orders, loading, refreshOrders, smartRefresh, lastRefresh, isChecking } = useOrders();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('kitchen');
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -606,6 +606,9 @@ export default function AdminDashboard() {
                   onViewDetails={setSelectedOrder}
                   onRefresh={handleRefresh}
                   refreshing={refreshing}
+                  smartRefresh={smartRefresh}
+                  lastRefresh={lastRefresh}
+                  isChecking={isChecking}
                 />
               )}
 

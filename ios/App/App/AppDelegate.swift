@@ -1,7 +1,5 @@
 import UIKit
 import Capacitor
-import FirebaseCore
-import FirebaseMessaging
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -9,21 +7,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Initialize Firebase
-        FirebaseApp.configure()
-
-        // Set messaging delegate
-        Messaging.messaging().delegate = self
-
-        // Register for push notifications
+        // Register for push notifications - Firebase is initialized by @capacitor-community/fcm plugin
         UNUserNotificationCenter.current().delegate = self
         return true
     }
 
     // Handle successful push notification registration
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        // Set APNs token for Firebase
-        Messaging.messaging().apnsToken = deviceToken
+        // Post notification for Capacitor - the FCM plugin listens for this
         NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
     }
 
