@@ -1,8 +1,11 @@
 // src/services/stripeService.js
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
+import { Capacitor } from '@capacitor/core';
+import { CapacitorHttp } from '@capacitor/core';
 
 const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
+const isNative = Capacitor.isNativePlatform();
 
 // Stripe mode toggle: 'test' or 'live'
 const STRIPE_MODE = import.meta.env.VITE_STRIPE_MODE || 'test';
@@ -39,50 +42,72 @@ const formatModifiersForDisplay = (modifiers) => {
 export const stripeService = {
   async createCheckoutSession(cartItems, orderMetadata, tipAmount = 0) {
     try {
-      const response = await axios.post(
-        `${WORDPRESS_URL}/wp-json/imasala/v1/create-checkout`,
-        {
-          items: cartItems.map(item => {
-            const modifierString = formatModifiersForDisplay(item.modifiers);
-            
-            return {
-              id: item.id,
-              name: item.name,
-              price: parseFloat(item.price),
-              quantity: item.quantity,
-              image: item.image,
-              // Include modifiers as formatted string for line item description
-              description: modifierString || undefined,
-              // Include raw modifiers for order meta
-              modifiers: item.modifiers || {},
-              // Include modifier breakdown for order details
-              modifier_details: item.modifiers ? Object.entries(item.modifiers).map(([key, value]) => ({
-                group: key,
-                selection: value?.name || (Array.isArray(value) ? value.map(v => v.name).join(', ') : ''),
-                price: value?.price || 0
-              })) : []
-            };
-          }),
-          metadata: orderMetadata,
-          tip_amount: tipAmount,
-        },
-        {
+      const requestData = {
+        items: cartItems.map(item => {
+          const modifierString = formatModifiersForDisplay(item.modifiers);
+
+          return {
+            id: item.id,
+            name: item.name,
+            price: parseFloat(item.price),
+            quantity: item.quantity,
+            image: item.image,
+            // Include modifiers as formatted string for line item description
+            description: modifierString || undefined,
+            // Include raw modifiers for order meta
+            modifiers: item.modifiers || {},
+            // Include modifier breakdown for order details
+            modifier_details: item.modifiers ? Object.entries(item.modifiers).map(([key, value]) => ({
+              group: key,
+              selection: value?.name || (Array.isArray(value) ? value.map(v => v.name).join(', ') : ''),
+              price: value?.price || 0
+            })) : []
+          };
+        }),
+        metadata: orderMetadata,
+        tip_amount: tipAmount,
+      };
+
+      let responseData;
+
+      if (isNative) {
+        // Use CapacitorHttp for native iOS/Android
+        const response = await CapacitorHttp.request({
+          url: `${WORDPRESS_URL}/wp-json/imasala/v1/create-checkout`,
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          data: requestData
+        });
+
+        // Parse response data if it's a string
+        responseData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+      } else {
+        // Use axios for web
+        const response = await axios.post(
+          `${WORDPRESS_URL}/wp-json/imasala/v1/create-checkout`,
+          requestData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            }
           }
-        }
-      );
+        );
+        responseData = response.data;
+      }
 
       // Validate response
-      if (!response.data) {
+      if (!responseData) {
         throw new Error('No response data from checkout endpoint');
       }
 
-      if (!response.data.url && !response.data.sessionId) {
+      if (!responseData.url && !responseData.sessionId) {
         throw new Error('Invalid response: missing url and sessionId');
       }
 
-      return response.data;
+      return responseData;
     } catch (error) {
       throw error;
     }
