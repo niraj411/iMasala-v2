@@ -7,7 +7,8 @@ const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikit
 const WORDPRESS_API = `${WORDPRESS_URL}/wp-json/wp/v2`;
 const JWT_AUTH = `${WORDPRESS_URL}/wp-json/jwt-auth/v1`;
 
-const isNative = Capacitor.isNativePlatform();
+// Check platform at call time (not module load time) for reliable iOS detection
+const isNativePlatform = () => Capacitor.isNativePlatform();
 
 // Native HTTP request helper
 async function nativePost(url, data) {
@@ -65,7 +66,7 @@ export const authService = {
     try {
       let response;
 
-      if (isNative) {
+      if (isNativePlatform()) {
         response = await nativePost(`${JWT_AUTH}/token`, { username, password });
       } else {
         response = await axios.post(`${JWT_AUTH}/token`, { username, password });
@@ -76,7 +77,7 @@ export const authService = {
         let userResponse;
         const userUrl = `${WORDPRESS_API}/users/me?context=edit`;
 
-        if (isNative) {
+        if (isNativePlatform()) {
           userResponse = await nativeGet(userUrl, {
             Authorization: `Bearer ${response.data.token}`
           });
@@ -109,7 +110,7 @@ export const authService = {
     let response;
     const userUrl = `${WORDPRESS_API}/users/me?context=edit`;
 
-    if (isNative) {
+    if (isNativePlatform()) {
       response = await nativeGet(userUrl, {
         Authorization: `Bearer ${token}`
       });

@@ -1,5 +1,6 @@
 // src/contexts/CartContext.jsx (Fixed to preserve modifiers)
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { storageService } from '../services/storageService';
 
 const CartContext = createContext();
 
@@ -8,35 +9,41 @@ export function CartProvider({ children }) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [orderType, setOrderType] = useState('regular'); // 'regular' or 'catering'
 
-  // Load cart from localStorage on mount
+  // Load cart from storage on mount (supports iOS native via storageService)
   useEffect(() => {
-    try {
-      const savedCart = localStorage.getItem('imasala_cart');
-      const savedOrderType = localStorage.getItem('imasala_order_type');
-      if (savedCart) {
-        const parsedCart = JSON.parse(savedCart);
-        setCartItems(Array.isArray(parsedCart) ? parsedCart : []);
+    const loadCart = async () => {
+      try {
+        const savedCart = await storageService.get('imasala_cart');
+        const savedOrderType = await storageService.get('imasala_order_type');
+        if (savedCart) {
+          const parsedCart = JSON.parse(savedCart);
+          setCartItems(Array.isArray(parsedCart) ? parsedCart : []);
+        }
+        if (savedOrderType) {
+          setOrderType(savedOrderType);
+        }
+      } catch (error) {
+        console.error('Error loading cart from storage:', error);
+        setCartItems([]);
+      } finally {
+        setIsInitialized(true);
       }
-      if (savedOrderType) {
-        setOrderType(savedOrderType);
-      }
-    } catch (error) {
-      console.error('Error loading cart from localStorage:', error);
-      setCartItems([]);
-    } finally {
-      setIsInitialized(true);
-    }
+    };
+    loadCart();
   }, []);
 
-  // Save cart to localStorage whenever it changes
+  // Save cart to storage whenever it changes (supports iOS native via storageService)
   useEffect(() => {
     if (isInitialized) {
-      try {
-        localStorage.setItem('imasala_cart', JSON.stringify(cartItems));
-        localStorage.setItem('imasala_order_type', orderType);
-      } catch (error) {
-        console.error('Error saving cart to localStorage:', error);
-      }
+      const saveCart = async () => {
+        try {
+          await storageService.set('imasala_cart', JSON.stringify(cartItems));
+          await storageService.set('imasala_order_type', orderType);
+        } catch (error) {
+          console.error('Error saving cart to storage:', error);
+        }
+      };
+      saveCart();
     }
   }, [cartItems, orderType, isInitialized]);
 

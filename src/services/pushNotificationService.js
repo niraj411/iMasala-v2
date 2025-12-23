@@ -25,10 +25,17 @@ const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikit
 
 class PushNotificationService {
   constructor() {
-    this.platform = Capacitor.getPlatform(); // 'web', 'ios', 'android'
-    this.isNative = Capacitor.isNativePlatform();
     this.token = null;
     this.listeners = [];
+  }
+
+  // Check platform at call time (not constructor time) for reliable iOS detection
+  get platform() {
+    return Capacitor.getPlatform(); // 'web', 'ios', 'android'
+  }
+
+  get isNative() {
+    return Capacitor.isNativePlatform();
   }
 
   // Check if push notifications are supported
