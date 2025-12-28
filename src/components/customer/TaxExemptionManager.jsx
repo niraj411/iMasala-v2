@@ -41,16 +41,16 @@ export default function TaxExemptionManager() {
     loadExemptionData();
   }, [user]);
 
-  const loadExemptionData = () => {
+  const loadExemptionData = async () => {
     if (!user?.id && !user?.email) {
       setLoading(false);
       return;
     }
-    
+
     const userId = user.id || user.email;
-    const data = taxExemptionService.getTaxExemption(userId);
+    const data = await taxExemptionService.getTaxExemption(userId);
     setExemptionData(data);
-    
+
     if (data) {
       setFormData({
         licenseNumber: data.licenseNumber || '',
@@ -59,7 +59,7 @@ export default function TaxExemptionManager() {
         organizationName: data.organizationName || ''
       });
     }
-    
+
     setLoading(false);
   };
 
@@ -90,13 +90,13 @@ export default function TaxExemptionManager() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setSaving(true);
     try {
       const userId = user.id || user.email;
-      const savedData = taxExemptionService.saveTaxExemption(userId, formData);
+      const savedData = await taxExemptionService.saveTaxExemption(userId, formData);
       setExemptionData(savedData);
       setShowForm(false);
       toast.success('Tax exemption saved successfully!');
@@ -108,11 +108,11 @@ export default function TaxExemptionManager() {
     }
   };
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
     if (!confirm('Are you sure you want to remove your tax exemption?')) return;
-    
+
     const userId = user.id || user.email;
-    taxExemptionService.removeTaxExemption(userId);
+    await taxExemptionService.removeTaxExemption(userId);
     setExemptionData(null);
     setFormData({
       licenseNumber: '',
