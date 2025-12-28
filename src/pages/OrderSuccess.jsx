@@ -2,13 +2,16 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle, ShoppingBag, User, ArrowRight, Clock, MapPin, Phone } from 'lucide-react';
+import { CheckCircle, ShoppingBag, User, ArrowRight, Clock, MapPin, Phone, Search } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
+import { storageService } from '../services/storageService';
 
 export default function OrderSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { clearCart } = useCart();
+  const { user } = useAuth();
   const [orderDetails, setOrderDetails] = useState(null);
 
   useEffect(() => {
@@ -21,11 +24,41 @@ export default function OrderSuccess() {
 
     if (orderId) {
       setOrderDetails({ orderId });
+
+      // Save to localStorage for guest order tracking
+      if (!user) {
+        saveGuestOrder(orderId);
+      }
     } else if (sessionId) {
       // Generate a temporary reference if no order ID
       setOrderDetails({ orderId: sessionId.slice(-8).toUpperCase() });
     }
-  }, [clearCart, searchParams]);
+  }, [clearCart, searchParams, user]);
+
+  const saveGuestOrder = async (orderId) => {
+    try {
+      // Get email from localStorage (saved during checkout)
+      const guestEmail = await storageService.get('guest_checkout_email');
+
+      // Get existing guest orders
+      const existingOrders = await storageService.get('guest_orders');
+      let orders = existingOrders ? JSON.parse(existingOrders) : [];
+
+      // Add new order
+      orders.unshift({
+        orderId: orderId,
+        email: guestEmail || '',
+        timestamp: Date.now()
+      });
+
+      // Keep only last 10 orders
+      orders = orders.slice(0, 10);
+
+      await storageService.set('guest_orders', JSON.stringify(orders));
+    } catch (e) {
+      console.error('Error saving guest order:', e);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-4 py-16">
@@ -145,13 +178,23 @@ export default function OrderSuccess() {
             transition={{ delay: 0.8 }}
             className="space-y-3"
           >
-            <button
-              onClick={() => navigate('/my-account')}
-              className="w-full px-6 py-4 backdrop-blur-xl bg-white hover:bg-white/90 text-black rounded-2xl font-bold transition-all flex items-center justify-center gap-2"
-            >
-              <User className="w-5 h-5" strokeWidth={2} />
-              View My Orders
-            </button>
+            {user ? (
+              <button
+                onClick={() => navigate('/my-account')}
+                className="w-full px-6 py-4 backdrop-blur-xl bg-white hover:bg-white/90 text-black rounded-2xl font-bold transition-all flex items-center justify-center gap-2"
+              >
+                <User className="w-5 h-5" strokeWidth={2} />
+                View My Orders
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate(orderDetails?.orderId ? `/order/${orderDetails.orderId}` : '/track-order')}
+                className="w-full px-6 py-4 backdrop-blur-xl bg-white hover:bg-white/90 text-black rounded-2xl font-bold transition-all flex items-center justify-center gap-2"
+              >
+                <Search className="w-5 h-5" strokeWidth={2} />
+                Track My Order
+              </button>
+            )}
             <button
               onClick={() => navigate('/shop')}
               className="w-full px-6 py-3 border border-white/10 text-white/70 hover:text-white hover:bg-white/5 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2"

@@ -42,7 +42,7 @@ function AppRoutes() {
     );
   }
 
-  const publicPaths = ['/order-success', '/order-cancelled', '/', '/catering', '/shop', '/cart', '/checkout', '/login', '/lunch-buffet'];
+  const publicPaths = ['/order-success', '/order-cancelled', '/', '/catering', '/shop', '/cart', '/checkout', '/login', '/lunch-buffet', '/track-order'];
   const currentPath = window.location.pathname;
   
   if (!isAuthenticated && !publicPaths.includes(currentPath) && !currentPath.startsWith('/order/')) {
@@ -116,6 +116,7 @@ function AppRoutes() {
           } 
         />
         <Route path="/order/:orderId" element={<OrderTracking />} />
+        <Route path="/track-order" element={<OrderTracking />} />
         <Route 
           path="*" 
           element={
