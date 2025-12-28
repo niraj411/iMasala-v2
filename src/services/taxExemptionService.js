@@ -1,5 +1,7 @@
 // src/services/taxExemptionService.js
-// Tax Exemption Service - Uses localStorage with optional WooCommerce sync
+// Tax Exemption Service - Uses storageService for cross-platform compatibility
+
+import { storageService } from './storageService';
 
 const STORAGE_KEY = 'tax_exemption_data';
 
@@ -9,15 +11,16 @@ export const taxExemptionService = {
    * @param {string} userId - User ID or email
    * @returns {Object|null} Tax exemption data
    */
-  getTaxExemption(userId) {
+  async getTaxExemption(userId) {
     try {
       if (!userId) return null;
-      
-      const allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+      const stored = await storageService.get(STORAGE_KEY);
+      const allData = stored ? JSON.parse(stored) : {};
       const userData = allData[userId];
-      
+
       if (!userData) return null;
-      
+
       // Check if exemption has expired
       if (userData.expiryDate) {
         const expiry = new Date(userData.expiryDate);
@@ -31,7 +34,7 @@ export const taxExemptionService = {
           };
         }
       }
-      
+
       return userData;
     } catch (error) {
       console.error('Error getting tax exemption:', error);
@@ -45,12 +48,13 @@ export const taxExemptionService = {
    * @param {Object} exemptionData - Tax exemption details
    * @returns {Object} Updated exemption data
    */
-  saveTaxExemption(userId, exemptionData) {
+  async saveTaxExemption(userId, exemptionData) {
     try {
       if (!userId) throw new Error('User ID required');
-      
-      const allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      
+
+      const stored = await storageService.get(STORAGE_KEY);
+      const allData = stored ? JSON.parse(stored) : {};
+
       const dataToSave = {
         licenseNumber: exemptionData.licenseNumber?.trim() || '',
         state: exemptionData.state || 'CO',
@@ -60,10 +64,10 @@ export const taxExemptionService = {
         createdAt: allData[userId]?.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
-      
+
       allData[userId] = dataToSave;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
-      
+      await storageService.set(STORAGE_KEY, JSON.stringify(allData));
+
       return dataToSave;
     } catch (error) {
       console.error('Error saving tax exemption:', error);
@@ -75,13 +79,14 @@ export const taxExemptionService = {
    * Remove tax exemption for a user
    * @param {string} userId - User ID or email
    */
-  removeTaxExemption(userId) {
+  async removeTaxExemption(userId) {
     try {
       if (!userId) return;
-      
-      const allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+      const stored = await storageService.get(STORAGE_KEY);
+      const allData = stored ? JSON.parse(stored) : {};
       delete allData[userId];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+      await storageService.set(STORAGE_KEY, JSON.stringify(allData));
     } catch (error) {
       console.error('Error removing tax exemption:', error);
     }
@@ -97,7 +102,7 @@ export const taxExemptionService = {
     if (!licenseNumber || licenseNumber.trim().length < 5) {
       return false;
     }
-    
+
     // Basic validation - at least 5 characters, alphanumeric with dashes allowed
     const pattern = /^[A-Za-z0-9\-]{5,30}$/;
     return pattern.test(licenseNumber.trim());
@@ -108,8 +113,8 @@ export const taxExemptionService = {
    * @param {string} userId - User ID or email
    * @returns {boolean}
    */
-  isExempt(userId) {
-    const data = this.getTaxExemption(userId);
+  async isExempt(userId) {
+    const data = await this.getTaxExemption(userId);
     return data?.verified === true && !data?.expired;
   },
 

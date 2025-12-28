@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import OrderCard from '../components/orders/OrderCard';
 import TaxExemptionManager from '../components/customer/TaxExemptionManager';
 import { woocommerceService } from '../services/woocommerceService';
+import { storageService } from '../services/storageService';
 import toast from 'react-hot-toast';
 
 // Order status config
@@ -74,21 +75,29 @@ export default function CustomerDashboard() {
     loadSavedAddresses();
   }, [user?.email]);
 
-  // Load saved addresses from localStorage
-  const loadSavedAddresses = () => {
+  // Load saved addresses from storage
+  const loadSavedAddresses = async () => {
     if (user?.id) {
-      const saved = localStorage.getItem(`addresses_${user.id}`);
-      if (saved) {
-        setSavedAddresses(JSON.parse(saved));
+      try {
+        const saved = await storageService.get(`addresses_${user.id}`);
+        if (saved) {
+          setSavedAddresses(JSON.parse(saved));
+        }
+      } catch (e) {
+        console.error('Error loading saved addresses:', e);
       }
     }
   };
 
-  // Save addresses to localStorage
-  const saveAddresses = (addresses) => {
+  // Save addresses to storage
+  const saveAddresses = async (addresses) => {
     if (user?.id) {
-      localStorage.setItem(`addresses_${user.id}`, JSON.stringify(addresses));
-      setSavedAddresses(addresses);
+      try {
+        await storageService.set(`addresses_${user.id}`, JSON.stringify(addresses));
+        setSavedAddresses(addresses);
+      } catch (e) {
+        console.error('Error saving addresses:', e);
+      }
     }
   };
 
