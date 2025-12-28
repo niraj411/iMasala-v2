@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Clock, Users, Utensils, Flame, Star, ChevronRight,
   Calendar, MapPin, Phone, Sparkles, Check, ArrowRight,
-  Timer, Heart, Award, Leaf, Coffee
+  Timer, Heart, Award, Leaf
 } from 'lucide-react';
 
 // Buffet menu items with icons
@@ -35,7 +35,7 @@ const features = [
   { icon: Utensils, title: 'Unlimited Servings', desc: 'Eat as much as you want' },
   { icon: Flame, title: 'Fresh & Hot', desc: 'Continuously replenished' },
   { icon: Leaf, title: 'Veg Options', desc: 'Plenty of vegetarian choices' },
-  { icon: Coffee, title: 'Drinks Included', desc: 'Chai, lassi & more' },
+  { icon: Star, title: 'Dessert Included', desc: 'Kheer & gulab jamun' },
 ];
 
 export default function LunchBuffet() {

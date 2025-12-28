@@ -515,7 +515,7 @@ export default function Shop() {
         </div>
       </div>
 
-      {/* Quick Category Cards - Visual Navigation */}
+      {/* Bento Box Category Cards - Visual Navigation */}
       {!searchQuery && activeCategory === 'all' && !isCateringOrder && (
         <div className="bg-black py-8 border-b border-white/5">
           <div className="max-w-7xl mx-auto px-4">
@@ -523,13 +523,25 @@ export default function Shop() {
               <h2 className="text-xl font-bold text-white">Browse by Category</h2>
               <span className="text-sm text-white/40">{displayCategories.length} categories</span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+
+            {/* Bento Box Grid Layout */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 auto-rows-[140px] md:auto-rows-[160px]">
               {displayCategories.slice(0, 6).map((category, index) => {
                 const categoryProducts = menuItems.filter(item =>
                   item.categories?.some(cat => cat.id === category.id) &&
                   !item.categories?.some(cat => cat.slug?.includes('catering'))
                 );
                 const firstProductImage = categoryProducts[0]?.images?.[0]?.src;
+
+                // Bento box sizing: first item spans 2x2, others vary
+                const isLarge = index === 0;
+                const isMedium = index === 1 || index === 2;
+
+                const sizeClasses = isLarge
+                  ? 'col-span-2 row-span-2'
+                  : isMedium
+                    ? 'col-span-1 row-span-2 md:col-span-2 md:row-span-1'
+                    : 'col-span-1 row-span-1';
 
                 return (
                   <motion.button
@@ -538,7 +550,7 @@ export default function Shop() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                     onClick={() => scrollToCategory(category.id)}
-                    className="group relative overflow-hidden rounded-2xl aspect-square bg-white/5 border border-white/10 hover:border-orange-500/50 transition-all"
+                    className={`group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 hover:border-orange-500/50 transition-all ${sizeClasses}`}
                   >
                     {firstProductImage && (
                       <img
@@ -548,10 +560,24 @@ export default function Shop() {
                       />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                    <div className="absolute inset-0 flex flex-col items-center justify-end p-3 text-center">
-                      <span className="font-bold text-white text-sm leading-tight mb-1">{category.name}</span>
-                      <span className="text-xs text-white/60">{categoryItemCounts[category.id] || 0} items</span>
+                    <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center">
+                      <span className={`font-bold text-white leading-tight mb-1 ${isLarge ? 'text-xl md:text-2xl' : 'text-sm md:text-base'}`}>
+                        {category.name}
+                      </span>
+                      <span className={`text-white/60 ${isLarge ? 'text-sm' : 'text-xs'}`}>
+                        {categoryItemCounts[category.id] || 0} items
+                      </span>
                     </div>
+
+                    {/* Featured badge for first category */}
+                    {isLarge && (
+                      <div className="absolute top-3 left-3">
+                        <span className="px-2.5 py-1 bg-orange-500/90 backdrop-blur-sm text-white text-xs font-bold rounded-lg flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" />
+                          Featured
+                        </span>
+                      </div>
+                    )}
                   </motion.button>
                 );
               })}

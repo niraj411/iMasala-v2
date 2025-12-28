@@ -15,6 +15,7 @@ import { taxExemptionService } from '../services/taxExemptionService';
 import CateringOrderForm from '../components/catering/CateringOrderForm';
 import { woocommerceService } from '../services/woocommerceService';
 import { stripeService } from '../services/stripeService';
+import { storageService } from '../services/storageService';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -378,7 +379,12 @@ export default function Checkout() {
           orderMetadata.delivery_address = cateringDetails.deliveryAddress;
         }
       }
-      
+
+      // Save guest email for order tracking
+      if (!user && guestInfo.email) {
+        await storageService.set('guest_checkout_email', guestInfo.email);
+      }
+
       const sessionData = await stripeService.createCheckoutSession(
         cartItems, 
         orderMetadata,
