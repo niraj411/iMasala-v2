@@ -6,6 +6,7 @@ import {
   UtensilsCrossed, Box
 } from 'lucide-react';
 import { useCatering, CATERING_PRICING } from '../../contexts/CateringContext';
+import { getDeliveryZoneInfo, DELIVERY_FEES } from '../../config/delivery';
 
 // Catering hours - more flexible than regular pickup
 const CATERING_HOURS = {
@@ -397,12 +398,38 @@ export default function CateringOrderForm() {
                 </div>
               </div>
 
-              <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                <p className="text-xs text-blue-300 font-medium flex items-center gap-2">
-                  <Truck className="w-4 h-4" />
-                  Delivery available within 25 miles of Lafayette, CO
-                </p>
-              </div>
+              {/* Dynamic zone-based delivery fee indicator */}
+              {zipCode.length === 5 ? (
+                (() => {
+                  const zoneInfo = getDeliveryZoneInfo(zipCode);
+                  if (zoneInfo.isValid) {
+                    return (
+                      <div className={`p-3 rounded-xl ${zoneInfo.zone === 1 ? 'bg-green-500/10 border border-green-500/20' : 'bg-blue-500/10 border border-blue-500/20'}`}>
+                        <p className={`text-xs font-medium flex items-center gap-2 ${zoneInfo.zone === 1 ? 'text-green-300' : 'text-blue-300'}`}>
+                          <Truck className="w-4 h-4" />
+                          {zoneInfo.description} - Delivery fee: ${zoneInfo.fee.toFixed(2)}
+                        </p>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                        <p className="text-xs text-red-300 font-medium flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4" />
+                          Sorry, we don't deliver to this zip code. Please choose pickup instead.
+                        </p>
+                      </div>
+                    );
+                  }
+                })()
+              ) : (
+                <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
+                  <p className="text-xs text-white/50 font-medium flex items-center gap-2">
+                    <Truck className="w-4 h-4" />
+                    Enter zip code to see delivery fee (${DELIVERY_FEES.ZONE_1} local / ${DELIVERY_FEES.ZONE_2} extended)
+                  </p>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
@@ -535,9 +562,11 @@ export default function CateringOrderForm() {
                 <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
                 4 hours advance notice required
               </li>
-              <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
-                Delivery fee: ${CATERING_PRICING.DELIVERY_FEE.toFixed(0)} (within 25 miles)
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 bg-amber-400 rounded-full mt-1.5"></span>
+                <span>
+                  Delivery fees: ${DELIVERY_FEES.ZONE_1} (local) / ${DELIVERY_FEES.ZONE_2} (extended area)
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
