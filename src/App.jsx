@@ -1,14 +1,16 @@
 // src/App.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { OrderProvider } from './contexts/OrderContext';
 import { MenuProvider } from './contexts/MenuContext';
 import { CartProvider } from './contexts/CartContext';
-import { CateringProvider } from './contexts/CateringContext'; 
+import { CateringProvider } from './contexts/CateringContext';
 import { Toaster } from 'react-hot-toast';
 import { useNotifications } from './hooks/useNotifications';
 import NotificationPermission, { useNotificationPrompt } from './components/NotificationPermission';
+import { Capacitor } from '@capacitor/core';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 // Layout
 import MainLayout from './components/layout/MainLayout';
@@ -152,7 +154,14 @@ function NotificationHandler() {
   );
 }
 
-function App() {  
+function App() {
+  // Hide splash screen when app is ready
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      SplashScreen.hide();
+    }
+  }, []);
+
   return (
     <Router>
       <AuthProvider>

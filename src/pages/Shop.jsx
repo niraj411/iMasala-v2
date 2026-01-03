@@ -681,12 +681,18 @@ export default function Shop() {
                             src={item.images[0].src}
                             alt={item.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
                           />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                            <span className="text-5xl">{getEmojiForProduct(item)}</span>
-                          </div>
-                        )}
+                        ) : null}
+                        <div
+                          className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 items-center justify-center"
+                          style={{ display: item.images?.[0]?.src ? 'none' : 'flex' }}
+                        >
+                          <span className="text-5xl">{getEmojiForProduct(item)}</span>
+                        </div>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                         <div className="absolute top-2 left-2">
                           <span className="px-2 py-1 bg-orange-500/90 text-white text-xs font-bold rounded-lg flex items-center gap-1">
@@ -1096,12 +1102,18 @@ export default function Shop() {
                                   alt={item.name}
                                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                   loading="lazy"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.nextSibling.style.display = 'flex';
+                                  }}
                                 />
-                              ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                                  <span className="text-6xl">{getEmojiForProduct(item)}</span>
-                                </div>
-                              )}
+                              ) : null}
+                              <div
+                                className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 items-center justify-center absolute inset-0"
+                                style={{ display: item.images?.[0]?.src ? 'none' : 'flex' }}
+                              >
+                                <span className="text-6xl">{getEmojiForProduct(item)}</span>
+                              </div>
                               
                               {/* Gradient Overlay */}
                               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
@@ -1386,12 +1398,18 @@ export default function Shop() {
                         src={quickViewItem.images[0].src}
                         alt={quickViewItem.name}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
                       />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                        <span className="text-7xl">{getEmojiForProduct(quickViewItem)}</span>
-                      </div>
-                    )}
+                    ) : null}
+                    <div
+                      className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 items-center justify-center absolute inset-0"
+                      style={{ display: quickViewItem.images?.[0]?.src ? 'none' : 'flex' }}
+                    >
+                      <span className="text-7xl">{getEmojiForProduct(quickViewItem)}</span>
+                    </div>
                     
                     {/* Close Button */}
                     <button
