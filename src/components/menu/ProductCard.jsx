@@ -2,11 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Minus, ChefHat, Flame, Leaf, Star, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { getEmojiForProduct } from '../../config/categoryImages';
 
 export default function ProductCard({ product, onAddToCart, index }) {
   const [quantity, setQuantity] = useState(1);
   const [selectedVariation, setSelectedVariation] = useState(null);
   const [selectedAttributes, setSelectedAttributes] = useState({});
+  const [imageError, setImageError] = useState(false);
 
   // Check if product has variations
   const hasVariations = product.type === 'variable' && product.variations && product.variations.length > 0;
@@ -123,11 +125,18 @@ export default function ProductCard({ product, onAddToCart, index }) {
     >
       {/* Product Image */}
       <div className="relative h-48 overflow-hidden">
-        <img
-          src={product.images?.[0]?.src || '/api/placeholder/400/300'}
-          alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+        {imageError || !product.images?.[0]?.src ? (
+          <div className="w-full h-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+            <span className="text-6xl">{getEmojiForProduct(product)}</span>
+          </div>
+        ) : (
+          <img
+            src={product.images[0].src}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={() => setImageError(true)}
+          />
+        )}
         
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1">

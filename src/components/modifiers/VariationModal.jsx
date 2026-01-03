@@ -179,18 +179,24 @@ export default function VariationModal({
 
                 {/* Header */}
                 <div className="flex items-start gap-4 p-5 md:p-6 border-b border-white/10 flex-shrink-0">
-                  <div className="relative">
+                  <div className="relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
                     {product.images && product.images[0]?.src ? (
                       <img
                         src={product.images[0].src}
                         alt={product.name}
-                        className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl flex-shrink-0"
+                        className="w-full h-full object-cover rounded-2xl"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
                       />
-                    ) : (
-                      <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-2xl flex items-center justify-center flex-shrink-0">
-                        <span className="text-4xl">{getEmojiForProduct(product)}</span>
-                      </div>
-                    )}
+                    ) : null}
+                    <div
+                      className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-2xl items-center justify-center absolute inset-0"
+                      style={{ display: product.images?.[0]?.src ? 'none' : 'flex' }}
+                    >
+                      <span className="text-4xl">{getEmojiForProduct(product)}</span>
+                    </div>
                     <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10"></div>
                   </div>
                   <div className="flex-1 min-w-0 pr-8">
