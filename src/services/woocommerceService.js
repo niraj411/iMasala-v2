@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Capacitor } from '@capacitor/core';
 import { CapacitorHttp } from '@capacitor/core';
+import { isValidDeliveryZipCode } from '../config/delivery';
 
 const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
 const API_BASE_URL = `${WORDPRESS_URL}/wp-json/wc/v3`;
@@ -176,11 +177,14 @@ class WooCommerceService {
       const MAX_PRODUCTS_PER_PAGE = 100;
 
       while (hasMore && page <= MAX_PAGES) {
+        // Note: Don't filter by stock_status here because variable products
+        // have stock managed at the variation level, not parent level.
+        // The parent variable product may show as 'outofstock' even when
+        // variations are available.
         const response = await this.request('GET', '/products', {
           per_page: MAX_PRODUCTS_PER_PAGE,
           page: page,
-          status: 'publish',
-          stock_status: 'instock'
+          status: 'publish'
         });
 
         let products = response.data;
@@ -221,8 +225,15 @@ class WooCommerceService {
 
   async getProductVariations(productId) {
     try {
-      const response = await this.request('GET', `/products/${productId}/variations`);
-      return response.data;
+      const response = await this.request('GET', `/products/${productId}/variations`, {
+        per_page: 100,
+        status: 'publish'
+      });
+      // Filter to only include in-stock variations
+      const variations = response.data;
+      return Array.isArray(variations)
+        ? variations.filter(v => v.stock_status === 'instock' || !v.manage_stock)
+        : variations;
     } catch (error) {
       console.error('Error fetching product variations:', error);
       throw error;
@@ -315,40 +326,30 @@ class WooCommerceService {
 
   async getProductsWithVariations() {
     try {
-      // This now uses the paginated getProducts()
+      // Fetch all products (without variations - they'll be fetched on-demand)
       const products = await this.getProducts();
-      
-      const productsWithVariations = await Promise.all(
-        products.map(async (product) => {
-          // Ensure images are properly formatted
-          const formattedProduct = {
-            ...product,
-            images: product.images?.map(img => ({
-              ...img,
-              src: img.src?.replace('http://', 'https://')
-            }))
-          };
-          
-          if (product.type === 'variable') {
-            try {
-              const variations = await this.getProductVariations(product.id);
-              return {
-                ...formattedProduct,
-                variations: variations.map(v => ({
-                  ...v,
-                  image: v.image?.src?.replace('http://', 'https://') || formattedProduct.images?.[0]?.src
-                }))
-              };
-            } catch (error) {
-              console.error(`Error fetching variations for product ${product.id}:`, error);
-              return formattedProduct;
-            }
-          }
-          return formattedProduct;
-        })
-      );
-      
-      return productsWithVariations;
+
+      // Just format products, don't fetch variations upfront for faster loading
+      const formattedProducts = products.map(product => ({
+        ...product,
+        images: product.images?.map(img => ({
+          ...img,
+          src: img.src?.replace('http://', 'https://')
+        })),
+        // For variable products, keep empty variations array - will be fetched on-demand
+        variations: product.type === 'variable' ? [] : undefined
+      }));
+
+      // Filter out simple products that are out of stock
+      // Keep all variable products (their stock is managed at variation level)
+      return formattedProducts.filter(product => {
+        if (product.type === 'variable') {
+          // Keep variable products - they have variations managed separately
+          return true;
+        }
+        // For simple products, check stock status
+        return product.stock_status === 'instock' || !product.manage_stock;
+      });
     } catch (error) {
       console.error('Error fetching products with variations:', error);
       throw error;
@@ -434,8 +435,7 @@ class WooCommerceService {
   }
 
   async validateDeliveryAddress(address) {
-    const validZipCodes = ['80229', '80233', '80234', '80235', '80303', '80026', '80027'];
-    return validZipCodes.includes(address.zipCode);
+    return isValidDeliveryZipCode(address.zipCode);
   }
 
   // Fetch all orders for a date range with pagination (for accounting reports)

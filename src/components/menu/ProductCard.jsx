@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Minus, ChefHat, Flame, Leaf, Star, ChevronDown } from 'lucide-react';
+import { Plus, Minus, ChefHat, Flame, Leaf, Star, Check } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function ProductCard({ product, onAddToCart, index }) {
   const [quantity, setQuantity] = useState(1);
@@ -9,9 +10,46 @@ export default function ProductCard({ product, onAddToCart, index }) {
 
   // Check if product has variations
   const hasVariations = product.type === 'variable' && product.variations && product.variations.length > 0;
-  
+
   // Get available attributes for variable products
-  const availableAttributes = product.attributes || [];
+  // If parent attributes don't have options, extract them from variations
+  const availableAttributes = useMemo(() => {
+    const parentAttrs = product.attributes || [];
+
+    // Check if parent attributes have options populated
+    const hasPopulatedOptions = parentAttrs.some(attr => attr.options && attr.options.length > 0);
+
+    if (hasPopulatedOptions) {
+      // Filter to only variation attributes
+      return parentAttrs.filter(attr => attr.variation);
+    }
+
+    // Fallback: Extract attributes from variations themselves
+    if (hasVariations && product.variations.length > 0) {
+      const attrMap = new Map();
+
+      product.variations.forEach(variation => {
+        (variation.attributes || []).forEach(attr => {
+          const name = attr.name || '';
+          const option = attr.option || '';
+          if (name && option) {
+            if (!attrMap.has(name)) {
+              attrMap.set(name, new Set());
+            }
+            attrMap.get(name).add(option);
+          }
+        });
+      });
+
+      return Array.from(attrMap.entries()).map(([name, options]) => ({
+        name,
+        options: Array.from(options),
+        variation: true
+      }));
+    }
+
+    return parentAttrs;
+  }, [product.attributes, product.variations, hasVariations]);
 
   const increment = () => setQuantity(prev => prev + 1);
   const decrement = () => setQuantity(prev => Math.max(1, prev - 1));
@@ -22,14 +60,24 @@ export default function ProductCard({ product, onAddToCart, index }) {
       [attributeName]: value
     };
     setSelectedAttributes(newAttributes);
-    
+
     // Find matching variation based on selected attributes
+    // WooCommerce variations use lowercase attribute names/slugs
     if (hasVariations) {
-      const variation = product.variations.find(v => 
-        Object.entries(newAttributes).every(([key, val]) => 
-          v.attributes.find(attr => attr.name === key && attr.option === val)
-        )
-      );
+      const variation = product.variations.find(v => {
+        return Object.entries(newAttributes).every(([key, val]) => {
+          // Try multiple matching strategies for WooCommerce attribute formats
+          const keyLower = key.toLowerCase();
+          const valLower = val.toLowerCase();
+          return v.attributes.some(attr => {
+            const attrName = (attr.name || '').toLowerCase();
+            const attrOption = (attr.option || '').toLowerCase();
+            // Match by name or slug (WooCommerce may use either)
+            return (attrName === keyLower || attrName === `pa_${keyLower}`) &&
+                   attrOption === valLower;
+          });
+        });
+      });
       setSelectedVariation(variation);
     }
   };

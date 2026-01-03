@@ -5,7 +5,7 @@ import {
   Check, AlertCircle, ChevronDown, Sparkles, MessageSquare,
   UtensilsCrossed, Box
 } from 'lucide-react';
-import { useCatering } from '../../contexts/CateringContext';
+import { useCatering, CATERING_PRICING } from '../../contexts/CateringContext';
 
 // Catering hours - more flexible than regular pickup
 const CATERING_HOURS = {
@@ -472,21 +472,31 @@ export default function CateringOrderForm() {
                 className="sr-only"
               />
               <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
-                needUtensils 
-                  ? 'bg-white border-white' 
+                needUtensils
+                  ? 'bg-white border-white'
                   : 'border-white/30 group-hover:border-white/50'
               }`}>
                 {needUtensils && <Check className="w-4 h-4 text-black" strokeWidth={3} />}
               </div>
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <UtensilsCrossed className="w-4 h-4 text-white/60" />
-                <span className="text-sm font-semibold text-white">Serving Supplies</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <UtensilsCrossed className="w-4 h-4 text-white/60" />
+                  <span className="text-sm font-semibold text-white">Serving Supplies</span>
+                </div>
+                <span className="text-xs text-white/40 font-medium">
+                  ${CATERING_PRICING.UTENSIL_PRICE.toFixed(2)}/guest
+                </span>
               </div>
               <p className="text-xs text-white/40 mt-1 font-medium">
                 Includes plates, napkins, utensils, and serving spoons
               </p>
+              {needUtensils && numberOfGuests > 0 && (
+                <p className="text-xs text-green-400 mt-2 font-semibold">
+                  {numberOfGuests} guests × ${CATERING_PRICING.UTENSIL_PRICE.toFixed(2)} = ${(numberOfGuests * CATERING_PRICING.UTENSIL_PRICE).toFixed(2)}
+                </p>
+              )}
             </div>
           </label>
         </div>
@@ -519,7 +529,7 @@ export default function CateringOrderForm() {
             <ul className="text-xs text-amber-300/80 space-y-1.5 font-medium">
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
-                Minimum order: $250
+                Minimum order: ${CATERING_PRICING.MINIMUM_ORDER.toFixed(0)}
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
@@ -527,7 +537,11 @@ export default function CateringOrderForm() {
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
-                Delivery fee: $20 (within 25 miles)
+                Delivery fee: ${CATERING_PRICING.DELIVERY_FEE.toFixed(0)} (within 25 miles)
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
+                Serving supplies: ${CATERING_PRICING.UTENSIL_PRICE.toFixed(2)} per guest
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>

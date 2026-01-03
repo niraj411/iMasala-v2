@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Check, AlertCircle, ShoppingBag } from 'lucide-react';
-import { 
-  getProductModifiers, 
-  calculateModifierPrice, 
-  modifierGroups 
+import {
+  getProductModifiers,
+  calculateModifierPrice,
+  modifierGroups
 } from '../../config/modifiers';
+import { getEmojiForProduct } from '../../config/categoryImages';
 
 export default function ModifierModal({ 
   product, 
@@ -155,16 +156,20 @@ export default function ModifierModal({
 
                 {/* Header */}
                 <div className="flex items-start gap-4 p-5 md:p-6 border-b border-white/10 flex-shrink-0">
-                  {product.images && product.images[0]?.src && (
-                    <div className="relative">
+                  <div className="relative">
+                    {product.images && product.images[0]?.src ? (
                       <img
                         src={product.images[0].src}
                         alt={product.name}
                         className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl flex-shrink-0"
                       />
-                      <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10"></div>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <span className="text-4xl">{getEmojiForProduct(product)}</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10"></div>
+                  </div>
                   <div className="flex-1 min-w-0 pr-8">
                     <h2 className="text-lg md:text-xl font-bold text-white line-clamp-2 leading-tight">
                       {product.name}

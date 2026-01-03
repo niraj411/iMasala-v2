@@ -36,6 +36,7 @@
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.0.0",
     "@vitejs/plugin-react": "^4.0.0",
+    "baseline-browser-mapping": "^2.9.11",
     "vite": "^7.2.2"
   }
 }
