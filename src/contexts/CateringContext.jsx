@@ -1,6 +1,14 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useMemo } from 'react';
+import { CATERING_DELIVERY_FEE, CATERING_MINIMUM_ORDER } from '../config/delivery';
 
 const CateringContext = createContext();
+
+// Catering pricing constants
+export const CATERING_PRICING = {
+  UTENSIL_PRICE: 0.49,                    // Per guest
+  DELIVERY_FEE: CATERING_DELIVERY_FEE,    // From delivery config
+  MINIMUM_ORDER: CATERING_MINIMUM_ORDER   // From delivery config
+};
 
 export function CateringProvider({ children }) {
   const [isCateringOrder, setIsCateringOrder] = useState(false);
@@ -84,13 +92,32 @@ export function CateringProvider({ children }) {
     setIsCateringOrder(false);
   };
 
+  // Computed catering fees
+  const cateringFees = useMemo(() => {
+    const utensilsCost = cateringDetails.needUtensils && cateringDetails.numberOfGuests > 0
+      ? cateringDetails.numberOfGuests * CATERING_PRICING.UTENSIL_PRICE
+      : 0;
+
+    const deliveryFee = cateringDetails.deliveryMethod === 'delivery'
+      ? CATERING_PRICING.DELIVERY_FEE
+      : 0;
+
+    return {
+      utensilsCost,
+      deliveryFee,
+      totalFees: utensilsCost + deliveryFee
+    };
+  }, [cateringDetails.needUtensils, cateringDetails.numberOfGuests, cateringDetails.deliveryMethod]);
+
   const value = {
     isCateringOrder,
     setIsCateringOrder,
     cateringDetails,
     updateCateringDetails,
     validateCateringOrder,
-    resetCateringDetails
+    resetCateringDetails,
+    cateringFees,
+    CATERING_PRICING
   };
 
   return (

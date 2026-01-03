@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useCatering } from '../contexts/CateringContext';
+import { useCatering, CATERING_PRICING } from '../contexts/CateringContext';
 import { cartSyncService } from '../services/cartSyncService';
 import { taxExemptionService } from '../services/taxExemptionService';
 import CateringOrderForm from '../components/catering/CateringOrderForm';
@@ -41,11 +41,12 @@ const TIP_PRESETS = [
 export default function Checkout() {
   const { cartItems, getCartTotal, orderType, setOrderType } = useCart();
   const { user } = useAuth();
-  const { 
-    cateringDetails, 
-    validateCateringOrder, 
+  const {
+    cateringDetails,
+    validateCateringOrder,
     isCateringOrder,
-    setIsCateringOrder 
+    setIsCateringOrder,
+    cateringFees
   } = useCatering();
   const navigate = useNavigate();
   
@@ -87,10 +88,11 @@ export default function Checkout() {
     return cartTotal * selectedTipPreset;
   }, [tipType, selectedTipPreset, customTipAmount, cartTotal]);
   
-  const deliveryFee = (selectedOrderType === 'catering' && cateringDetails?.deliveryMethod === 'delivery') ? 20 : 0;
+  const deliveryFee = (selectedOrderType === 'catering' && cateringDetails?.deliveryMethod === 'delivery') ? CATERING_PRICING.DELIVERY_FEE : 0;
+  const utensilsFee = (selectedOrderType === 'catering' && cateringFees?.utensilsCost) ? cateringFees.utensilsCost : 0;
   const taxRate = (taxExemptStatus?.verified && applyTaxExempt) ? 0 : 0.0825;
   const taxAmount = cartTotal * taxRate;
-  const finalTotal = cartTotal + deliveryFee + taxAmount + tipAmount;
+  const finalTotal = cartTotal + deliveryFee + utensilsFee + taxAmount + tipAmount;
 
   // Helper functions for time management
   const timeToMinutes = (timeStr) => {
@@ -373,6 +375,7 @@ export default function Checkout() {
         orderMetadata.number_of_guests = cateringDetails.numberOfGuests;
         orderMetadata.need_setup = cateringDetails.needSetup ? 'yes' : 'no';
         orderMetadata.need_utensils = cateringDetails.needUtensils ? 'yes' : 'no';
+        orderMetadata.utensils_fee = utensilsFee.toFixed(2);
         orderMetadata.special_instructions = cateringDetails.specialInstructions || '';
 
         if (cateringDetails.deliveryMethod === 'delivery' && cateringDetails.deliveryAddress) {
@@ -932,6 +935,14 @@ export default function Checkout() {
                   <div className="flex justify-between text-sm">
                     <span className="text-white/60 font-medium">Delivery Fee</span>
                     <span className="text-white font-semibold">${deliveryFee.toFixed(2)}</span>
+                  </div>
+                )}
+                {utensilsFee > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white/60 font-medium">
+                      Utensils ({cateringDetails?.numberOfGuests} × $0.49)
+                    </span>
+                    <span className="text-white font-semibold">${utensilsFee.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">

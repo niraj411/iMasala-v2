@@ -19,8 +19,17 @@ import { useCart } from '../contexts/CartContext';
 import { useMenu } from '../contexts/MenuContext';
 import { useCatering } from '../contexts/CateringContext';
 import ModifierModal from '../components/modifiers/ModifierModal';
+import VariationModal from '../components/modifiers/VariationModal';
 import { productHasModifiers } from '../config/modifiers';
+import { getDefaultImageForProduct, getEmojiForProduct } from '../config/categoryImages';
 import toast from 'react-hot-toast';
+
+// Helper to check if product is a WooCommerce variable product
+const isVariableProduct = (product) => {
+  return product.type === 'variable' &&
+         ((product.variations && product.variations.length > 0) ||
+          (product.attributes && product.attributes.some(attr => attr.variation)));
+};
 
 export default function Shop() {
   const { products: menuItems = [], categories = [], loading } = useMenu() || {};
@@ -39,6 +48,8 @@ export default function Shop() {
   
   const [modifierModalOpen, setModifierModalOpen] = useState(false);
   const [modifierProduct, setModifierProduct] = useState(null);
+  const [variationModalOpen, setVariationModalOpen] = useState(false);
+  const [variationProduct, setVariationProduct] = useState(null);
   const [quickViewItem, setQuickViewItem] = useState(null);
 
   // New UX state
@@ -91,6 +102,10 @@ export default function Shop() {
           setModifierModalOpen(false);
           setModifierProduct(null);
         }
+        if (variationModalOpen) {
+          setVariationModalOpen(false);
+          setVariationProduct(null);
+        }
         if (sortDropdownOpen) setSortDropdownOpen(false);
         if (categoryDropdownOpen) setCategoryDropdownOpen(false);
       }
@@ -98,7 +113,7 @@ export default function Shop() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [quickViewItem, filterOpen, modifierModalOpen, sortDropdownOpen, categoryDropdownOpen]);
+  }, [quickViewItem, filterOpen, modifierModalOpen, variationModalOpen, sortDropdownOpen, categoryDropdownOpen]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -119,15 +134,35 @@ export default function Shop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Reset active category when switching between pickup/catering modes
+  useEffect(() => {
+    setActiveCategory('all');
+  }, [isCateringOrder]);
+
   // ============================================
-  // NEW: Filter out Uncategorized from display
+  // Filter categories based on mode (catering vs pickup)
   // ============================================
   const displayCategories = useMemo(() => {
-    return categories.filter(cat =>
-      cat.slug !== 'uncategorized' &&
-      cat.name.toLowerCase() !== 'uncategorized'
-    );
-  }, [categories]);
+    return categories.filter(cat => {
+      // Always filter out uncategorized
+      if (cat.slug === 'uncategorized' || cat.name.toLowerCase() === 'uncategorized') {
+        return false;
+      }
+
+      // Check if category is a catering category
+      const isCateringCategory =
+        cat.slug?.includes('catering') ||
+        cat.name.toLowerCase().includes('catering');
+
+      // In catering mode: only show catering categories
+      if (isCateringOrder) {
+        return isCateringCategory;
+      }
+
+      // In pickup mode: exclude catering categories
+      return !isCateringCategory;
+    });
+  }, [categories, isCateringOrder]);
 
   // Calculate item counts per category (considering catering mode)
   const categoryItemCounts = useMemo(() => {
@@ -282,13 +317,21 @@ export default function Shop() {
 
   const handleQuickAdd = (item, e) => {
     e.stopPropagation();
-    
+
+    // Check for WooCommerce variable products first (catering items)
+    if (isVariableProduct(item)) {
+      setVariationProduct(item);
+      setVariationModalOpen(true);
+      return;
+    }
+
+    // Check for config-based modifiers (regular menu items)
     if (productHasModifiers(item)) {
       setModifierProduct(item);
       setModifierModalOpen(true);
       return;
     }
-    
+
     addToCart({
       id: item.id,
       name: item.name,
@@ -296,7 +339,7 @@ export default function Shop() {
       image: item.images && item.images[0]?.src,
       quantity: 1
     });
-    
+
     toast.success(item.name, {
       icon: '✓',
       duration: 2000,
@@ -313,6 +356,24 @@ export default function Shop() {
   const handleAddWithModifiers = (cartItem) => {
     addToCart(cartItem);
     toast.success('Added to cart', {
+      icon: '✓',
+      duration: 2000,
+      position: 'bottom-center',
+      style: {
+        background: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(20px)',
+        color: '#fff',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+      },
+    });
+  };
+
+  const handleAddWithVariation = (cartItem) => {
+    addToCart(cartItem);
+    const displayName = cartItem.variationName
+      ? `${cartItem.name} (${cartItem.variationName})`
+      : cartItem.name;
+    toast.success(displayName, {
       icon: '✓',
       duration: 2000,
       position: 'bottom-center',
@@ -622,8 +683,8 @@ export default function Shop() {
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
                         ) : (
-                          <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                            <ShoppingBag className="w-8 h-8 text-white/10" />
+                          <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
+                            <span className="text-5xl">{getEmojiForProduct(item)}</span>
                           </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
@@ -1037,8 +1098,8 @@ export default function Shop() {
                                   loading="lazy"
                                 />
                               ) : (
-                                <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                                  <ShoppingBag className="w-16 h-16 text-white/10" />
+                                <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
+                                  <span className="text-6xl">{getEmojiForProduct(item)}</span>
                                 </div>
                               )}
                               
@@ -1129,18 +1190,35 @@ export default function Shop() {
                               
                               <div className="flex items-center justify-between">
                                 <div className="flex flex-col">
-                                  <span className="text-2xl font-bold text-white">
-                                    ${parseFloat(item.price).toFixed(2)}
-                                  </span>
-                                  {item.prepTime && (
-                                    <span className="text-xs text-white/30 flex items-center gap-1 mt-1">
-                                      <Clock className="w-3 h-3" />
-                                      {item.prepTime} min
-                                    </span>
+                                  {isVariableProduct(item) ? (
+                                    <>
+                                      <span className="text-lg font-bold text-white">
+                                        {item.price ? `From $${parseFloat(item.price).toFixed(2)}` : 'Select Option'}
+                                      </span>
+                                      <span className="text-xs text-orange-400 mt-1">
+                                        Multiple sizes available
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span className="text-2xl font-bold text-white">
+                                        ${parseFloat(item.price).toFixed(2)}
+                                      </span>
+                                      {item.prepTime && (
+                                        <span className="text-xs text-white/30 flex items-center gap-1 mt-1">
+                                          <Clock className="w-3 h-3" />
+                                          {item.prepTime} min
+                                        </span>
+                                      )}
+                                    </>
                                   )}
                                 </div>
-                                
-                                {productHasModifiers(item) && (
+
+                                {isVariableProduct(item) ? (
+                                  <span className="text-xs text-orange-400 font-medium">
+                                    Select Size →
+                                  </span>
+                                ) : productHasModifiers(item) && (
                                   <span className="text-xs text-orange-400 font-medium">
                                     Customize →
                                   </span>
@@ -1311,7 +1389,7 @@ export default function Shop() {
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                        <span className="text-6xl">🍛</span>
+                        <span className="text-7xl">{getEmojiForProduct(quickViewItem)}</span>
                       </div>
                     )}
                     
@@ -1335,7 +1413,10 @@ export default function Shop() {
                         {quickViewItem.name}
                       </h2>
                       <span className="text-xl md:text-2xl font-bold text-orange-400 whitespace-nowrap">
-                        ${parseFloat(quickViewItem.price).toFixed(2)}
+                        {isVariableProduct(quickViewItem)
+                          ? (quickViewItem.price ? `From $${parseFloat(quickViewItem.price).toFixed(2)}` : 'Select Option')
+                          : `$${parseFloat(quickViewItem.price).toFixed(2)}`
+                        }
                       </span>
                     </div>
 
@@ -1355,7 +1436,16 @@ export default function Shop() {
                     <button
                       onClick={(e) => {
                         const item = quickViewItem;
-                        if (productHasModifiers(item)) {
+                        // Handle WooCommerce variable products
+                        if (isVariableProduct(item)) {
+                          setVariationProduct(item);
+                          setQuickViewItem(null);
+                          setTimeout(() => {
+                            setVariationModalOpen(true);
+                          }, 50);
+                        }
+                        // Handle config-based modifiers
+                        else if (productHasModifiers(item)) {
                           setModifierProduct(item);
                           setQuickViewItem(null);
                           setTimeout(() => {
@@ -1369,9 +1459,11 @@ export default function Shop() {
                       className="w-full py-4 md:py-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl font-bold text-base md:text-lg flex items-center justify-center gap-3 shadow-2xl shadow-orange-500/25 hover:shadow-orange-500/50 transition-all active:scale-[0.98]"
                     >
                       <ShoppingBag className="w-5 h-5 md:w-6 md:h-6" />
-                      {productHasModifiers(quickViewItem) 
-                        ? 'Customize & Add' 
-                        : `Add • $${parseFloat(quickViewItem.price).toFixed(2)}`
+                      {isVariableProduct(quickViewItem)
+                        ? 'Select Option & Add'
+                        : productHasModifiers(quickViewItem)
+                          ? 'Customize & Add'
+                          : `Add • $${parseFloat(quickViewItem.price).toFixed(2)}`
                       }
                     </button>
                   </div>
@@ -1392,6 +1484,17 @@ export default function Shop() {
           setModifierProduct(null);
         }}
         onAddToCart={handleAddWithModifiers}
+      />
+
+      {/* Variation Modal for Variable Products */}
+      <VariationModal
+        product={variationProduct}
+        isOpen={variationModalOpen}
+        onClose={() => {
+          setVariationModalOpen(false);
+          setVariationProduct(null);
+        }}
+        onAddToCart={handleAddWithVariation}
       />
 
       {/* Back to Top Button */}

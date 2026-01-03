@@ -1,0 +1,259 @@
+Type,SKU,Name,Published,Is featured?,Visibility in catalog,Short description,Description,Tax status,In stock?,Stock,Backorders allowed?,Sold individually?,Regular price,Categories,Tags,Attribute 1 name,Attribute 1 value(s),Attribute 1 visible,Attribute 1 global,Parent
+simple,CAT-FEAST,Tandoori Feast (Serves 20),1,1,visible,"Choice of 3 entrées + Basmati Rice + Butter Naan + Veg Pakora + Chutneys","Our signature catering package serving 20 guests. Includes choice of 3 entrées, Basmati Rice, Butter Naan, Vegetable Pakora, and Chutneys.",taxable,1,,0,0,399.00,Catering > Catering Packages,catering,,,,0,
+simple,CAT-BEV-MANGO,Mango Lassi (Case of 6),1,0,visible,"Refreshing yogurt drink blended with ripe mangoes","Refreshing yogurt drink blended with ripe mangoes. Case of 6 bottles.",taxable,1,,0,0,20.00,Catering > Catering Beverages,"catering, GF",,,,0,
+simple,CAT-BEV-SWEET,Sweet Lassi (Case of 6),1,0,visible,"Creamy chilled yogurt drink with cardamom & rose water","Creamy chilled yogurt drink with cardamom & rose water. Case of 6 bottles.",taxable,1,,0,0,20.00,Catering > Catering Beverages,"catering, GF",,,,0,
+simple,CAT-BEV-CHAI,Masala Chai (Case of 6),1,0,visible,"Aromatic spiced milk tea with cinnamon & cardamom","Aromatic spiced milk tea with cinnamon & cardamom. Case of 6 bottles.",taxable,1,,0,0,15.99,Catering > Catering Beverages,"catering, GF, VO",,,,0,
+simple,CAT-BEV-LEMON,Masala Lemon Lime Soda (Case of 6),1,0,visible,"Indian street-style lemonade with unique spice blend","Indian street-style lemonade with unique spice blend. Case of 6 bottles.",taxable,1,,0,0,18.00,Catering > Catering Beverages,"catering, GF, V",,,,0,
+simple,CAT-BEV-SODA,Assorted Sodas,1,0,visible,"Individual bottles","Individual bottles of assorted sodas.",taxable,1,,0,0,2.50,Catering > Catering Beverages,catering,,,,0,
+variable,CAT-APP-SAMOSA,Vegetable Samosas,1,0,visible,"Flaky pastries with spiced potatoes, peas & herbs","Flaky pastries with spiced potatoes, peas & herbs. Served with chutneys.",taxable,1,,0,0,,Catering > Catering Appetizers,catering,Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-SAMOSA-SM,Vegetable Samosas - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,29.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-SAMOSA
+variation,CAT-APP-SAMOSA-LG,Vegetable Samosas - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,50.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-SAMOSA
+variable,CAT-APP-VEGPAK,Vegetable Pakoras,1,0,visible,"Mixed vegetables in spiced chickpea batter, deep-fried","Mixed vegetables in spiced chickpea batter, deep-fried to golden perfection.",taxable,1,,0,0,,Catering > Catering Appetizers,"catering, GF, V",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-VEGPAK-SM,Vegetable Pakoras - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,29.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-VEGPAK
+variation,CAT-APP-VEGPAK-LG,Vegetable Pakoras - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,50.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-VEGPAK
+variable,CAT-APP-CHKPAK,Chicken Pakoras,1,0,visible,"Crispy chicken fritters","Crispy chicken fritters with aromatic spices.",taxable,1,,0,0,,Catering > Catering Appetizers,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-CHKPAK-SM,Chicken Pakoras - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,45.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-CHKPAK
+variation,CAT-APP-CHKPAK-LG,Chicken Pakoras - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-CHKPAK
+variable,CAT-APP-SHRPAK,Shrimp Pakoras,1,0,visible,"Crispy shrimp fritters","Crispy shrimp fritters with aromatic spices.",taxable,1,,0,0,,Catering > Catering Appetizers,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-SHRPAK-SM,Shrimp Pakoras - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,50.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-SHRPAK
+variation,CAT-APP-SHRPAK-LG,Shrimp Pakoras - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,110.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-SHRPAK
+variable,CAT-APP-VEGMOMO,Vegetable Momos,1,0,visible,"Steamed dumplings stuffed with vegetables","Steamed dumplings stuffed with seasoned vegetables.",taxable,1,,0,0,,Catering > Catering Appetizers,catering,Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-VEGMOMO-SM,Vegetable Momos - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,70.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-VEGMOMO
+variation,CAT-APP-VEGMOMO-LG,Vegetable Momos - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,140.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-VEGMOMO
+variable,CAT-APP-CHKMOMO,Chicken Momos,1,0,visible,"Steamed dumplings stuffed with chicken","Steamed dumplings stuffed with seasoned chicken.",taxable,1,,0,0,,Catering > Catering Appetizers,catering,Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-CHKMOMO-SM,Chicken Momos - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,70.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-CHKMOMO
+variation,CAT-APP-CHKMOMO-LG,Chicken Momos - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,140.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-CHKMOMO
+variable,CAT-APP-SAMCHAAT,Samosa Chaat,1,0,visible,"Samosas topped with yogurt, tamarind & mint chutney","Samosas topped with yogurt, tamarind & mint chutney.",taxable,1,,0,0,,Catering > Catering Appetizers,catering,Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-SAMCHAAT-SM,Samosa Chaat - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,50.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-SAMCHAAT
+variation,CAT-APP-SAMCHAAT-LG,Samosa Chaat - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-SAMCHAAT
+variable,CAT-APP-CAULI,Cauli Manchurian,1,0,visible,"Spiced cauliflower fritters in Indo-Chinese sauce","Spiced cauliflower fritters in Indo-Chinese sauce.",taxable,1,,0,0,,Catering > Catering Appetizers,"catering, GF, V",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-CAULI-SM,Cauli Manchurian - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,50.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-CAULI
+variation,CAT-APP-CAULI-LG,Cauli Manchurian - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-CAULI
+variable,CAT-APP-TANDWING,Tandoori Chicken Wings,1,0,visible,"Grilled in tandoor with yogurt, ginger & garam masala","Grilled in tandoor with yogurt, ginger & garam masala.",taxable,1,,0,0,,Catering > Catering Appetizers,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-TANDWING-SM,Tandoori Chicken Wings - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,55.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-TANDWING
+variation,CAT-APP-TANDWING-LG,Tandoori Chicken Wings - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,115.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-TANDWING
+variable,CAT-APP-SPICYWING,Spicy Tandoori Wings,1,0,visible,"Extra spicy tandoori wings","Extra spicy tandoori wings for heat lovers.",taxable,1,,0,0,,Catering > Catering Appetizers,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-SPICYWING-SM,Spicy Tandoori Wings - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,70.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-SPICYWING
+variation,CAT-APP-SPICYWING-LG,Spicy Tandoori Wings - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,115.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-SPICYWING
+variable,CAT-APP-GARLSHRIMP,Garlic Shrimp,1,0,visible,"Shrimp with garlic and green pepper glaze","Shrimp with garlic and green pepper glaze.",taxable,1,,0,0,,Catering > Catering Appetizers,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-GARLSHRIMP-SM,Garlic Shrimp - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,85.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-GARLSHRIMP
+variation,CAT-APP-GARLSHRIMP-LG,Garlic Shrimp - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,160.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-GARLSHRIMP
+variable,CAT-APP-CHKRASILA,Chicken Rasila,1,0,visible,"Pan-fried chicken with bell peppers, onions & black pepper","Pan-fried chicken with bell peppers, onions & black pepper.",taxable,1,,0,0,,Catering > Catering Appetizers,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-CHKRASILA-SM,Chicken Rasila - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,85.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-CHKRASILA
+variation,CAT-APP-CHKRASILA-LG,Chicken Rasila - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,160.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-CHKRASILA
+variable,CAT-APP-LAMBRASILA,Lamb Rasila,1,0,visible,"Pan-fried lamb with bell peppers, onions & black pepper","Pan-fried lamb with bell peppers, onions & black pepper.",taxable,1,,0,0,,Catering > Catering Appetizers,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-LAMBRASILA-SM,Lamb Rasila - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-LAMBRASILA
+variation,CAT-APP-LAMBRASILA-LG,Lamb Rasila - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-LAMBRASILA
+variable,CAT-APP-PAPADAM,Papadam,1,0,visible,"Crispy rice-flour wafers with cumin & cracked pepper","Crispy rice-flour wafers with cumin & cracked pepper.",taxable,1,,0,0,,Catering > Catering Appetizers,"catering, GF, V",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-PAPADAM-SM,Papadam - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,25.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-PAPADAM
+variation,CAT-APP-PAPADAM-LG,Papadam - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,50.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-PAPADAM
+variable,CAT-APP-SALAD,Indian Cucumber Salad,1,0,visible,"Refreshing cucumber, tomato & onion with zesty spices","Refreshing cucumber, tomato & onion with zesty spices.",taxable,1,,0,0,,Catering > Catering Appetizers,"catering, GF, V",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-APP-SALAD-SM,Indian Cucumber Salad - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,25.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-APP-SALAD
+variation,CAT-APP-SALAD-LG,Indian Cucumber Salad - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,45.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-APP-SALAD
+variable,CAT-KEB-TIKKA,Tikka Kebobs,1,0,visible,"Boneless chicken skewers with garlic & ginger","Boneless chicken skewers with garlic & ginger. Served with grilled vegetables.",taxable,1,,0,0,,Catering > Catering Kebobs,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-KEB-TIKKA-SM,Tikka Kebobs - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,89.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-KEB-TIKKA
+variation,CAT-KEB-TIKKA-LG,Tikka Kebobs - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,170.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-KEB-TIKKA
+variable,CAT-KEB-HONEY,Honey Tikka Kebobs,1,0,visible,"Sweet glazed chicken skewers with grilled vegetables","Sweet glazed chicken skewers with grilled vegetables.",taxable,1,,0,0,,Catering > Catering Kebobs,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-KEB-HONEY-SM,Honey Tikka Kebobs - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-KEB-HONEY
+variation,CAT-KEB-HONEY-LG,Honey Tikka Kebobs - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,185.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-KEB-HONEY
+variable,CAT-KEB-SHRIMP,Shrimp Kebobs,1,0,visible,"Shrimp skewers with garlic & ginger","Shrimp skewers with garlic & ginger. Served with grilled vegetables.",taxable,1,,0,0,,Catering > Catering Kebobs,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-KEB-SHRIMP-SM,Shrimp Kebobs - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,96.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-KEB-SHRIMP
+variation,CAT-KEB-SHRIMP-LG,Shrimp Kebobs - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,195.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-KEB-SHRIMP
+variable,CAT-KEB-LAMB,Lamb Kebobs,1,0,visible,"Lamb skewers with garlic & ginger","Lamb skewers with garlic & ginger. Served with grilled vegetables.",taxable,1,,0,0,,Catering > Catering Kebobs,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-KEB-LAMB-SM,Lamb Kebobs - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-KEB-LAMB
+variation,CAT-KEB-LAMB-LG,Lamb Kebobs - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,190.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-KEB-LAMB
+variable,CAT-KEB-MIXED,Mixed Grill Kebobs,1,0,visible,"Chicken, shrimp & lamb skewers with grilled vegetables","Chicken, shrimp & lamb skewers with grilled vegetables.",taxable,1,,0,0,,Catering > Catering Kebobs,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-KEB-MIXED-SM,Mixed Grill Kebobs - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-KEB-MIXED
+variation,CAT-KEB-MIXED-LG,Mixed Grill Kebobs - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-KEB-MIXED
+variable,CAT-CHK-TIKKA,Chicken Tikka Masala,1,1,visible,"Chicken in creamy tomato-butter sauce with fenugreek","Chicken in creamy tomato-butter sauce with fenugreek.",taxable,1,,0,0,,Catering > Catering Chicken,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-CHK-TIKKA-SM,Chicken Tikka Masala - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-CHK-TIKKA
+variation,CAT-CHK-TIKKA-LG,Chicken Tikka Masala - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,170.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-CHK-TIKKA
+variable,CAT-CHK-BUTTER,Butter Chicken,1,1,visible,"Tandoori chicken in rich onion-tomato cream sauce","Tandoori chicken in rich onion-tomato cream sauce.",taxable,1,,0,0,,Catering > Catering Chicken,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-CHK-BUTTER-SM,Butter Chicken - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-CHK-BUTTER
+variation,CAT-CHK-BUTTER-LG,Butter Chicken - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,175.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-CHK-BUTTER
+variable,CAT-CHK-KORMA,Chicken Korma,1,0,visible,"Chicken with nuts, raisins & spices in creamy gravy","Chicken with nuts, raisins & spices in creamy gravy.",taxable,1,,0,0,,Catering > Catering Chicken,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-CHK-KORMA-SM,Chicken Korma - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-CHK-KORMA
+variation,CAT-CHK-KORMA-LG,Chicken Korma - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-CHK-KORMA
+variable,CAT-CHK-SAAG,Chicken Saag,1,0,visible,"Chicken in Punjabi-style spinach cream sauce","Chicken in Punjabi-style spinach cream sauce.",taxable,1,,0,0,,Catering > Catering Chicken,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-CHK-SAAG-SM,Chicken Saag - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-CHK-SAAG
+variation,CAT-CHK-SAAG-LG,Chicken Saag - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-CHK-SAAG
+variable,CAT-CHK-KARAHI,Chicken Karahi,1,0,visible,"Chicken with bell peppers, tomatoes & onions in spicy curry","Chicken with bell peppers, tomatoes & onions in spicy curry.",taxable,1,,0,0,,Catering > Catering Chicken,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-CHK-KARAHI-SM,Chicken Karahi - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-CHK-KARAHI
+variation,CAT-CHK-KARAHI-LG,Chicken Karahi - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-CHK-KARAHI
+variable,CAT-CHK-CURRY,Chicken Curry,1,0,visible,"Traditional curry with cumin, turmeric & aromatic spices","Traditional curry with cumin, turmeric & aromatic spices.",taxable,1,,0,0,,Catering > Catering Chicken,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-CHK-CURRY-SM,Chicken Curry - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,87.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-CHK-CURRY
+variation,CAT-CHK-CURRY-LG,Chicken Curry - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,170.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-CHK-CURRY
+variable,CAT-CHK-VINDALOO,Chicken Vindaloo,1,0,visible,"Fiery curry with potatoes, chilies & vinegar. Spicy!","Fiery curry with potatoes, chilies & vinegar. Spicy!",taxable,1,,0,0,,Catering > Catering Chicken,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-CHK-VINDALOO-SM,Chicken Vindaloo - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,87.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-CHK-VINDALOO
+variation,CAT-CHK-VINDALOO-LG,Chicken Vindaloo - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,170.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-CHK-VINDALOO
+variable,CAT-CHK-CHETTINAD,Chicken Chettinad,1,0,visible,"South Indian curry with curry leaves & turmeric","South Indian curry with curry leaves & turmeric.",taxable,1,,0,0,,Catering > Catering Chicken,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-CHK-CHETTINAD-SM,Chicken Chettinad - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-CHK-CHETTINAD
+variation,CAT-CHK-CHETTINAD-LG,Chicken Chettinad - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-CHK-CHETTINAD
+variable,CAT-CHK-MALABAR,Chicken Malabar,1,0,visible,"South Indian curry with roasted fennel & coconut","South Indian curry with roasted fennel & coconut.",taxable,1,,0,0,,Catering > Catering Chicken,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-CHK-MALABAR-SM,Chicken Malabar - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-CHK-MALABAR
+variation,CAT-CHK-MALABAR-LG,Chicken Malabar - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-CHK-MALABAR
+variable,CAT-CHK-ROGANJOSH,Chicken Rogan Josh,1,0,visible,"Braised chicken in yogurt gravy with browned onions","Braised chicken in yogurt gravy with browned onions.",taxable,1,,0,0,,Catering > Catering Chicken,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-CHK-ROGANJOSH-SM,Chicken Rogan Josh - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-CHK-ROGANJOSH
+variation,CAT-CHK-ROGANJOSH-LG,Chicken Rogan Josh - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,175.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-CHK-ROGANJOSH
+variable,CAT-LAMB-TIKKA,Lamb Tikka Masala,1,1,visible,"Lamb in creamy tomato-onion curry","Lamb in creamy tomato-onion curry.",taxable,1,,0,0,,Catering > Catering Lamb,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-LAMB-TIKKA-SM,Lamb Tikka Masala - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-LAMB-TIKKA
+variation,CAT-LAMB-TIKKA-LG,Lamb Tikka Masala - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,195.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-LAMB-TIKKA
+variable,CAT-LAMB-KORMA,Lamb Korma,1,0,visible,"Lamb with nuts, raisins & spices in creamy gravy","Lamb with nuts, raisins & spices in creamy gravy.",taxable,1,,0,0,,Catering > Catering Lamb,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-LAMB-KORMA-SM,Lamb Korma - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-LAMB-KORMA
+variation,CAT-LAMB-KORMA-LG,Lamb Korma - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,195.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-LAMB-KORMA
+variable,CAT-LAMB-SAAG,Lamb Saag,1,0,visible,"Lamb in Punjabi-style spinach cream sauce","Lamb in Punjabi-style spinach cream sauce.",taxable,1,,0,0,,Catering > Catering Lamb,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-LAMB-SAAG-SM,Lamb Saag - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-LAMB-SAAG
+variation,CAT-LAMB-SAAG-LG,Lamb Saag - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,195.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-LAMB-SAAG
+variable,CAT-LAMB-KARAHI,Lamb Karahi,1,0,visible,"Lamb with bell peppers, tomatoes & onions in spicy curry","Lamb with bell peppers, tomatoes & onions in spicy curry.",taxable,1,,0,0,,Catering > Catering Lamb,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-LAMB-KARAHI-SM,Lamb Karahi - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-LAMB-KARAHI
+variation,CAT-LAMB-KARAHI-LG,Lamb Karahi - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,190.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-LAMB-KARAHI
+variable,CAT-LAMB-CURRY,Lamb Curry,1,0,visible,"Traditional curry with cumin, turmeric & aromatic spices","Traditional curry with cumin, turmeric & aromatic spices.",taxable,1,,0,0,,Catering > Catering Lamb,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-LAMB-CURRY-SM,Lamb Curry - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-LAMB-CURRY
+variation,CAT-LAMB-CURRY-LG,Lamb Curry - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-LAMB-CURRY
+variable,CAT-LAMB-VINDALOO,Lamb Vindaloo,1,0,visible,"Fiery curry with potatoes, chilies & vinegar. Spicy!","Fiery curry with potatoes, chilies & vinegar. Spicy!",taxable,1,,0,0,,Catering > Catering Lamb,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-LAMB-VINDALOO-SM,Lamb Vindaloo - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-LAMB-VINDALOO
+variation,CAT-LAMB-VINDALOO-LG,Lamb Vindaloo - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-LAMB-VINDALOO
+variable,CAT-LAMB-CHETTINAD,Lamb Chettinad,1,0,visible,"South Indian coconut curry with curry leaves","South Indian coconut curry with curry leaves.",taxable,1,,0,0,,Catering > Catering Lamb,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-LAMB-CHETTINAD-SM,Lamb Chettinad - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-LAMB-CHETTINAD
+variation,CAT-LAMB-CHETTINAD-LG,Lamb Chettinad - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,195.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-LAMB-CHETTINAD
+variable,CAT-LAMB-MALABAR,Lamb Malabar,1,0,visible,"South Indian coconut curry with roasted fennel","South Indian coconut curry with roasted fennel.",taxable,1,,0,0,,Catering > Catering Lamb,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-LAMB-MALABAR-SM,Lamb Malabar - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-LAMB-MALABAR
+variation,CAT-LAMB-MALABAR-LG,Lamb Malabar - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,195.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-LAMB-MALABAR
+variable,CAT-SEA-TIKKA,Shrimp Tikka Masala,1,1,visible,"Shrimp in creamy tomato-onion curry","Shrimp in creamy tomato-onion curry.",taxable,1,,0,0,,Catering > Catering Seafood,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-SEA-TIKKA-SM,Shrimp Tikka Masala - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-SEA-TIKKA
+variation,CAT-SEA-TIKKA-LG,Shrimp Tikka Masala - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,195.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-SEA-TIKKA
+variable,CAT-SEA-KORMA,Shrimp Korma,1,0,visible,"Shrimp with nuts, raisins & spices in creamy gravy","Shrimp with nuts, raisins & spices in creamy gravy.",taxable,1,,0,0,,Catering > Catering Seafood,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-SEA-KORMA-SM,Shrimp Korma - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-SEA-KORMA
+variation,CAT-SEA-KORMA-LG,Shrimp Korma - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,195.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-SEA-KORMA
+variable,CAT-SEA-SAAG,Shrimp Saag,1,0,visible,"Shrimp in Punjabi-style spinach cream sauce","Shrimp in Punjabi-style spinach cream sauce.",taxable,1,,0,0,,Catering > Catering Seafood,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-SEA-SAAG-SM,Shrimp Saag - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-SEA-SAAG
+variation,CAT-SEA-SAAG-LG,Shrimp Saag - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,195.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-SEA-SAAG
+variable,CAT-SEA-KARAHI,Shrimp Karahi,1,0,visible,"Shrimp with bell peppers, tomatoes & onions in spicy curry","Shrimp with bell peppers, tomatoes & onions in spicy curry.",taxable,1,,0,0,,Catering > Catering Seafood,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-SEA-KARAHI-SM,Shrimp Karahi - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,100.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-SEA-KARAHI
+variation,CAT-SEA-KARAHI-LG,Shrimp Karahi - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,195.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-SEA-KARAHI
+variable,CAT-SEA-CURRY,Shrimp Curry,1,0,visible,"Traditional curry with cumin, turmeric & aromatic spices","Traditional curry with cumin, turmeric & aromatic spices.",taxable,1,,0,0,,Catering > Catering Seafood,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-SEA-CURRY-SM,Shrimp Curry - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-SEA-CURRY
+variation,CAT-SEA-CURRY-LG,Shrimp Curry - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,190.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-SEA-CURRY
+variable,CAT-SEA-VINDALOO,Shrimp Vindaloo,1,0,visible,"Fiery curry with potatoes, chilies & vinegar. Spicy!","Fiery curry with potatoes, chilies & vinegar. Spicy!",taxable,1,,0,0,,Catering > Catering Seafood,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-SEA-VINDALOO-SM,Shrimp Vindaloo - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-SEA-VINDALOO
+variation,CAT-SEA-VINDALOO-LG,Shrimp Vindaloo - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,190.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-SEA-VINDALOO
+variable,CAT-SEA-CHETTINAD,Shrimp Chettinad,1,0,visible,"South Indian curry with curry leaves & turmeric","South Indian curry with curry leaves & turmeric.",taxable,1,,0,0,,Catering > Catering Seafood,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-SEA-CHETTINAD-SM,Shrimp Chettinad - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-SEA-CHETTINAD
+variation,CAT-SEA-CHETTINAD-LG,Shrimp Chettinad - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,195.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-SEA-CHETTINAD
+variable,CAT-VEG-PTIKKA,Paneer Tikka Masala,1,1,visible,"Paneer in creamy tomato-butter sauce","Paneer in creamy tomato-butter sauce.",taxable,1,,0,0,,Catering > Catering Vegetarian,"catering, GF, VO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEG-PTIKKA-SM,Paneer Tikka Masala - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEG-PTIKKA
+variation,CAT-VEG-PTIKKA-LG,Paneer Tikka Masala - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEG-PTIKKA
+variable,CAT-VEG-PKORMA,Paneer Korma,1,0,visible,"Paneer with nuts, raisins & spices in creamy gravy","Paneer with nuts, raisins & spices in creamy gravy.",taxable,1,,0,0,,Catering > Catering Vegetarian,"catering, GF, VO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEG-PKORMA-SM,Paneer Korma - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEG-PKORMA
+variation,CAT-VEG-PKORMA-LG,Paneer Korma - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEG-PKORMA
+variable,CAT-VEG-PKARAHI,Paneer Karahi,1,0,visible,"Paneer with bell peppers, tomatoes in spicy curry","Paneer with bell peppers, tomatoes in spicy curry.",taxable,1,,0,0,,Catering > Catering Vegetarian,"catering, GF, VO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEG-PKARAHI-SM,Paneer Karahi - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEG-PKARAHI
+variation,CAT-VEG-PKARAHI-LG,Paneer Karahi - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEG-PKARAHI
+variable,CAT-VEG-PCURRY,Paneer Curry,1,0,visible,"Paneer in classic curry with cumin & turmeric","Paneer in classic curry with cumin & turmeric.",taxable,1,,0,0,,Catering > Catering Vegetarian,"catering, GF, VO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEG-PCURRY-SM,Paneer Curry - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEG-PCURRY
+variation,CAT-VEG-PCURRY-LG,Paneer Curry - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEG-PCURRY
+variable,CAT-VEG-PCHETTINAD,Paneer Chettinad,1,0,visible,"Paneer in South Indian curry with curry leaves","Paneer in South Indian curry with curry leaves.",taxable,1,,0,0,,Catering > Catering Vegetarian,"catering, GF, VO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEG-PCHETTINAD-SM,Paneer Chettinad - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEG-PCHETTINAD
+variation,CAT-VEG-PCHETTINAD-LG,Paneer Chettinad - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEG-PCHETTINAD
+variable,CAT-VEG-SAAGP,Saag Paneer,1,0,visible,"Paneer in rich, creamy spinach sauce","Paneer in rich, creamy spinach sauce.",taxable,1,,0,0,,Catering > Catering Vegetarian,"catering, GF, VO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEG-SAAGP-SM,Saag Paneer - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEG-SAAGP
+variation,CAT-VEG-SAAGP-LG,Saag Paneer - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEG-SAAGP
+variable,CAT-VEG-MATARP,Matar Paneer,1,0,visible,"Paneer & peas in tomato sauce with garam masala","Paneer & peas in tomato sauce with garam masala.",taxable,1,,0,0,,Catering > Catering Vegetarian,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEG-MATARP-SM,Matar Paneer - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,95.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEG-MATARP
+variation,CAT-VEG-MATARP-LG,Matar Paneer - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEG-MATARP
+variable,CAT-VEG-MALAIKOFTA,Malai Kofta,1,0,visible,"Vegetable dumplings in coconut-cashew sauce","Vegetable dumplings in coconut-cashew sauce.",taxable,1,,0,0,,Catering > Catering Vegetarian,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEG-MALAIKOFTA-SM,Malai Kofta - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEG-MALAIKOFTA
+variation,CAT-VEG-MALAIKOFTA-LG,Malai Kofta - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,160.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEG-MALAIKOFTA
+variable,CAT-VEG-KOFTAKESHARI,Kofta Keshari,1,0,visible,"Homemade vegetable cutlets in creamy Keshari sauce","Homemade vegetable cutlets in creamy Keshari sauce.",taxable,1,,0,0,,Catering > Catering Vegetarian,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEG-KOFTAKESHARI-SM,Kofta Keshari - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEG-KOFTAKESHARI
+variation,CAT-VEG-KOFTAKESHARI-LG,Kofta Keshari - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,160.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEG-KOFTAKESHARI
+variable,CAT-VEGAN-CHANA,Chana Masala,1,1,visible,"Chickpeas in tangy tomato sauce with garam masala","Chickpeas in tangy tomato sauce with garam masala.",taxable,1,,0,0,,Catering > Catering Vegan,"catering, GF, V",Size,"Small Tray (Serves 7), Large Tray (Serves 15)",1,1,
+variation,CAT-VEGAN-CHANA-SM,Chana Masala - Small Tray (Serves 7),1,0,visible,,,taxable,1,,0,0,70.00,,,Size,Small Tray (Serves 7),0,1,id:CAT-VEGAN-CHANA
+variation,CAT-VEGAN-CHANA-LG,Chana Masala - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,140.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEGAN-CHANA
+variable,CAT-VEGAN-VEGCURRY,Vegetable Curry,1,0,visible,"Mixed vegetables in traditional curry","Mixed vegetables in traditional curry.",taxable,1,,0,0,,Catering > Catering Vegan,"catering, GF, V",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEGAN-VEGCURRY-SM,Vegetable Curry - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,78.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEGAN-VEGCURRY
+variation,CAT-VEGAN-VEGCURRY-LG,Vegetable Curry - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,160.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEGAN-VEGCURRY
+variable,CAT-VEGAN-TOFUSAAG,Tofu Saag,1,0,visible,"Tofu in Punjabi-style spinach sauce","Tofu in Punjabi-style spinach sauce.",taxable,1,,0,0,,Catering > Catering Vegan,"catering, GF, V",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEGAN-TOFUSAAG-SM,Tofu Saag - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,75.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEGAN-TOFUSAAG
+variation,CAT-VEGAN-TOFUSAAG-LG,Tofu Saag - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,150.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEGAN-TOFUSAAG
+variable,CAT-VEGAN-DALMAKHANI,Dal Makhani,1,0,visible,"Black lentils slow-cooked with butter & cream","Black lentils slow-cooked with butter & cream.",taxable,1,,0,0,,Catering > Catering Vegan,"catering, GF, VO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEGAN-DALMAKHANI-SM,Dal Makhani - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,80.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEGAN-DALMAKHANI
+variation,CAT-VEGAN-DALMAKHANI-LG,Dal Makhani - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,160.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEGAN-DALMAKHANI
+variable,CAT-VEGAN-DALTADKA,Dal Tadka,1,0,visible,"Yellow lentils tempered with ghee & spices","Yellow lentils tempered with ghee & spices.",taxable,1,,0,0,,Catering > Catering Vegan,"catering, GF, VO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEGAN-DALTADKA-SM,Dal Tadka - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,70.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEGAN-DALTADKA
+variation,CAT-VEGAN-DALTADKA-LG,Dal Tadka - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,140.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEGAN-DALTADKA
+variable,CAT-VEGAN-ALOOGOBI,Aloo Gobi,1,0,visible,"Cauliflower & potatoes with onions & spices","Cauliflower & potatoes with onions & spices.",taxable,1,,0,0,,Catering > Catering Vegan,"catering, GF, V",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEGAN-ALOOGOBI-SM,Aloo Gobi - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,75.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEGAN-ALOOGOBI
+variation,CAT-VEGAN-ALOOGOBI-LG,Aloo Gobi - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,150.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEGAN-ALOOGOBI
+variable,CAT-VEGAN-ALOOMATAR,Aloo Matar,1,0,visible,"Potatoes & green peas in aromatic curry","Potatoes & green peas in aromatic curry.",taxable,1,,0,0,,Catering > Catering Vegan,"catering, GF, V",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEGAN-ALOOMATAR-SM,Aloo Matar - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,70.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEGAN-ALOOMATAR
+variation,CAT-VEGAN-ALOOMATAR-LG,Aloo Matar - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,140.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEGAN-ALOOMATAR
+variable,CAT-VEGAN-BAIGAN,Baigan Bharta,1,0,visible,"Roasted eggplant mashed with tomatoes & peas. Smoky!","Roasted eggplant mashed with tomatoes & peas. Smoky!",taxable,1,,0,0,,Catering > Catering Vegan,"catering, GF, VO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-VEGAN-BAIGAN-SM,Baigan Bharta - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,80.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-VEGAN-BAIGAN
+variation,CAT-VEGAN-BAIGAN-LG,Baigan Bharta - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,160.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-VEGAN-BAIGAN
+variable,CAT-BIR-VEG,Vegetable Biryani,1,0,visible,"Basmati rice with vegetables, saffron & spices","Basmati rice with vegetables, saffron & spices. Includes Raita.",taxable,1,,0,0,,Catering > Catering Biryani,"catering, GF, VO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-BIR-VEG-SM,Vegetable Biryani - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,78.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-BIR-VEG
+variation,CAT-BIR-VEG-LG,Vegetable Biryani - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,130.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-BIR-VEG
+variable,CAT-BIR-CHK,Chicken Biryani,1,1,visible,"Basmati rice with chicken, saffron & spices","Basmati rice with chicken, saffron & spices. Includes Raita.",taxable,1,,0,0,,Catering > Catering Biryani,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-BIR-CHK-SM,Chicken Biryani - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,80.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-BIR-CHK
+variation,CAT-BIR-CHK-LG,Chicken Biryani - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,160.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-BIR-CHK
+variable,CAT-BIR-PANEER,Paneer Biryani,1,0,visible,"Basmati rice with paneer, saffron & spices","Basmati rice with paneer, saffron & spices. Includes Raita.",taxable,1,,0,0,,Catering > Catering Biryani,"catering, GF, VO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-BIR-PANEER-SM,Paneer Biryani - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-BIR-PANEER
+variation,CAT-BIR-PANEER-LG,Paneer Biryani - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-BIR-PANEER
+variable,CAT-BIR-LAMB,Lamb Biryani,1,0,visible,"Basmati rice with lamb, saffron & spices","Basmati rice with lamb, saffron & spices. Includes Raita.",taxable,1,,0,0,,Catering > Catering Biryani,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-BIR-LAMB-SM,Lamb Biryani - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-BIR-LAMB
+variation,CAT-BIR-LAMB-LG,Lamb Biryani - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-BIR-LAMB
+variable,CAT-BIR-SHRIMP,Shrimp Biryani,1,0,visible,"Basmati rice with shrimp, saffron & spices","Basmati rice with shrimp, saffron & spices. Includes Raita.",taxable,1,,0,0,,Catering > Catering Biryani,"catering, GF, DFO",Size,"Small Tray (Serves 6), Large Tray (Serves 15)",1,1,
+variation,CAT-BIR-SHRIMP-SM,Shrimp Biryani - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-BIR-SHRIMP
+variation,CAT-BIR-SHRIMP-LG,Shrimp Biryani - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,175.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-BIR-SHRIMP
+variable,CAT-RICE-BASMATI,Basmati Rice,1,0,visible,"Steamed aromatic basmati rice","Steamed aromatic basmati rice.",taxable,1,,0,0,,Catering > Catering Rice & Noodles,"catering, GF, V",Size,"Small Tray (Serves 7), Large Tray (Serves 15)",1,1,
+variation,CAT-RICE-BASMATI-SM,Basmati Rice - Small Tray (Serves 7),1,0,visible,,,taxable,1,,0,0,20.00,,,Size,Small Tray (Serves 7),0,1,id:CAT-RICE-BASMATI
+variation,CAT-RICE-BASMATI-LG,Basmati Rice - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,40.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-RICE-BASMATI
+variable,CAT-RICE-BROWN,Brown Rice,1,0,visible,"Steamed brown rice","Steamed brown rice.",taxable,1,,0,0,,Catering > Catering Rice & Noodles,"catering, GF, V",Size,"Small Tray (Serves 7), Large Tray (Serves 15)",1,1,
+variation,CAT-RICE-BROWN-SM,Brown Rice - Small Tray (Serves 7),1,0,visible,,,taxable,1,,0,0,20.00,,,Size,Small Tray (Serves 7),0,1,id:CAT-RICE-BROWN
+variation,CAT-RICE-BROWN-LG,Brown Rice - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,40.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-RICE-BROWN
+variable,CAT-RICE-FRIED,Fried Rice,1,0,visible,"Wok-fried rice with vegetables","Wok-fried rice with vegetables.",taxable,1,,0,0,,Catering > Catering Rice & Noodles,"catering, GF, V",Size,"Small Tray (Serves 7), Large Tray (Serves 15)",1,1,
+variation,CAT-RICE-FRIED-SM,Fried Rice - Small Tray (Serves 7),1,0,visible,,,taxable,1,,0,0,35.00,,,Size,Small Tray (Serves 7),0,1,id:CAT-RICE-FRIED
+variation,CAT-RICE-FRIED-LG,Fried Rice - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,60.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-RICE-FRIED
+variable,CAT-RICE-YELLOW,Yellow (Turmeric) Rice,1,0,visible,"Golden rice infused with turmeric","Golden rice infused with turmeric.",taxable,1,,0,0,,Catering > Catering Rice & Noodles,"catering, GF, VO",Size,"Small Tray (Serves 7), Large Tray (Serves 15)",1,1,
+variation,CAT-RICE-YELLOW-SM,Yellow (Turmeric) Rice - Small Tray (Serves 7),1,0,visible,,,taxable,1,,0,0,25.00,,,Size,Small Tray (Serves 7),0,1,id:CAT-RICE-YELLOW
+variation,CAT-RICE-YELLOW-LG,Yellow (Turmeric) Rice - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,45.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-RICE-YELLOW
+variable,CAT-NOODLE-VEG,Vegetable Chow Mein,1,0,visible,"Stir-fried noodles with vegetables","Stir-fried noodles with vegetables.",taxable,1,,0,0,,Catering > Catering Rice & Noodles,catering,Size,"Small Tray (Serves 7), Large Tray (Serves 15)",1,1,
+variation,CAT-NOODLE-VEG-SM,Vegetable Chow Mein - Small Tray (Serves 7),1,0,visible,,,taxable,1,,0,0,72.00,,,Size,Small Tray (Serves 7),0,1,id:CAT-NOODLE-VEG
+variation,CAT-NOODLE-VEG-LG,Vegetable Chow Mein - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,130.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-NOODLE-VEG
+variable,CAT-NOODLE-CHK,Chicken Chow Mein,1,0,visible,"Stir-fried noodles with chicken","Stir-fried noodles with chicken.",taxable,1,,0,0,,Catering > Catering Rice & Noodles,catering,Size,"Small Tray (Serves 7), Large Tray (Serves 15)",1,1,
+variation,CAT-NOODLE-CHK-SM,Chicken Chow Mein - Small Tray (Serves 7),1,0,visible,,,taxable,1,,0,0,80.00,,,Size,Small Tray (Serves 7),0,1,id:CAT-NOODLE-CHK
+variation,CAT-NOODLE-CHK-LG,Chicken Chow Mein - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,150.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-NOODLE-CHK
+variable,CAT-NOODLE-LAMB,Lamb Chow Mein,1,0,visible,"Stir-fried noodles with lamb","Stir-fried noodles with lamb.",taxable,1,,0,0,,Catering > Catering Rice & Noodles,catering,Size,"Small Tray (Serves 7), Large Tray (Serves 15)",1,1,
+variation,CAT-NOODLE-LAMB-SM,Lamb Chow Mein - Small Tray (Serves 7),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 7),0,1,id:CAT-NOODLE-LAMB
+variation,CAT-NOODLE-LAMB-LG,Lamb Chow Mein - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-NOODLE-LAMB
+variable,CAT-NOODLE-SHRIMP,Shrimp Chow Mein,1,0,visible,"Stir-fried noodles with shrimp","Stir-fried noodles with shrimp.",taxable,1,,0,0,,Catering > Catering Rice & Noodles,catering,Size,"Small Tray (Serves 7), Large Tray (Serves 15)",1,1,
+variation,CAT-NOODLE-SHRIMP-SM,Shrimp Chow Mein - Small Tray (Serves 7),1,0,visible,,,taxable,1,,0,0,90.00,,,Size,Small Tray (Serves 7),0,1,id:CAT-NOODLE-SHRIMP
+variation,CAT-NOODLE-SHRIMP-LG,Shrimp Chow Mein - Large Tray (Serves 15),1,0,visible,,,taxable,1,,0,0,180.00,,,Size,Large Tray (Serves 15),0,1,id:CAT-NOODLE-SHRIMP
+simple,CAT-BREAD-NAAN,Naan,1,0,visible,"Leavened flatbread baked in clay oven","Leavened flatbread baked in clay oven. Per piece.",taxable,1,,0,0,2.50,Catering > Catering Breads,catering,,,,0,
+simple,CAT-BREAD-GARLIC,Garlic Naan,1,0,visible,"Naan with fresh minced garlic & cilantro","Naan with fresh minced garlic & cilantro. Per piece.",taxable,1,,0,0,3.50,Catering > Catering Breads,catering,,,,0,
+simple,CAT-BREAD-CHEESE,Cheese Naan,1,0,visible,"Naan stuffed with cheese","Naan stuffed with cheese. Per piece.",taxable,1,,0,0,3.50,Catering > Catering Breads,catering,,,,0,
+simple,CAT-BREAD-GARLCHEESE,Garlic Cheese Naan,1,0,visible,"Naan with garlic and cheese","Naan with garlic and cheese. Per piece.",taxable,1,,0,0,3.99,Catering > Catering Breads,catering,,,,0,
+simple,CAT-BREAD-ALOO,Aloo Naan,1,0,visible,"Naan stuffed with spiced potatoes","Naan stuffed with spiced potatoes. Per piece.",taxable,1,,0,0,3.99,Catering > Catering Breads,catering,,,,0,
+simple,CAT-BREAD-KABULI,Kabuli Naan,1,0,visible,"Naan with nuts and dried fruits","Naan with nuts and dried fruits. Per piece.",taxable,1,,0,0,3.99,Catering > Catering Breads,catering,,,,0,
+simple,CAT-BREAD-PARATHA,Paratha,1,0,visible,"Flaky, buttery layered flatbread","Flaky, buttery layered flatbread. Per piece.",taxable,1,,0,0,3.99,Catering > Catering Breads,catering,,,,0,
+simple,CAT-BREAD-ROTI,Roti,1,0,visible,"Whole wheat unleavened flatbread","Whole wheat unleavened flatbread. Per piece.",taxable,1,,0,0,2.99,Catering > Catering Breads,"catering, VO",,,,0,
+simple,CAT-EXTRA-MINT,Mint Chutney,1,0,visible,"Cool, spicy & tangy green chutney","Cool, spicy & tangy green chutney.",taxable,1,,0,0,7.99,Catering > Catering Extras,"catering, GF, V",,,,0,
+simple,CAT-EXTRA-TAMARIND,Tamarind Chutney,1,0,visible,"Sweet & tangy sauce for samosas & pakoras","Sweet & tangy sauce for samosas & pakoras.",taxable,1,,0,0,9.99,Catering > Catering Extras,"catering, GF, V",,,,0,
+simple,CAT-EXTRA-RAITA,Raita (32 oz),1,0,visible,"Creamy yogurt sauce with fresh herbs","Creamy yogurt sauce with fresh herbs. 32 oz container.",taxable,1,,0,0,7.99,Catering > Catering Extras,"catering, GF",,,,0,
+simple,CAT-EXTRA-UTENSILS,Utensils Set,1,0,visible,"Plate, napkin, cutlery, salt & pepper","Complete utensils set including plate, napkin, cutlery, salt & pepper. Per person.",taxable,1,,0,0,0.55,Catering > Catering Extras,catering,,,,0,
+variable,CAT-DESSERT-GULAB,Gulab Jamun,1,0,visible,"Golden milk pastry globes in cardamom syrup","Golden milk pastry globes in cardamom syrup.",taxable,1,,0,0,,Catering > Catering Desserts,catering,Size,"Small Tray (Serves 6), Large Tray (Serves 12)",1,1,
+variation,CAT-DESSERT-GULAB-SM,Gulab Jamun - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,25.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-DESSERT-GULAB
+variation,CAT-DESSERT-GULAB-LG,Gulab Jamun - Large Tray (Serves 12),1,0,visible,,,taxable,1,,0,0,45.00,,,Size,Large Tray (Serves 12),0,1,id:CAT-DESSERT-GULAB
+variable,CAT-DESSERT-RASMALAI,Ras Malai,1,0,visible,"Cottage cheese balls in aromatic milk syrup","Cottage cheese balls in aromatic milk syrup.",taxable,1,,0,0,,Catering > Catering Desserts,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 12)",1,1,
+variation,CAT-DESSERT-RASMALAI-SM,Ras Malai - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,35.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-DESSERT-RASMALAI
+variation,CAT-DESSERT-RASMALAI-LG,Ras Malai - Large Tray (Serves 12),1,0,visible,,,taxable,1,,0,0,65.00,,,Size,Large Tray (Serves 12),0,1,id:CAT-DESSERT-RASMALAI
+variable,CAT-DESSERT-KHEER,Rice Pudding (Kheer),1,0,visible,"Creamy rice pudding with cinnamon & raisins","Creamy rice pudding with cinnamon & raisins.",taxable,1,,0,0,,Catering > Catering Desserts,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 12)",1,1,
+variation,CAT-DESSERT-KHEER-SM,Rice Pudding (Kheer) - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,30.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-DESSERT-KHEER
+variation,CAT-DESSERT-KHEER-LG,Rice Pudding (Kheer) - Large Tray (Serves 12),1,0,visible,,,taxable,1,,0,0,55.00,,,Size,Large Tray (Serves 12),0,1,id:CAT-DESSERT-KHEER
+variable,CAT-DESSERT-GAJAR,Carrot Pudding (Gajar Halwa),1,0,visible,"Carrots slow-cooked with milk, sugar & nuts","Carrots slow-cooked with milk, sugar & nuts.",taxable,1,,0,0,,Catering > Catering Desserts,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 12)",1,1,
+variation,CAT-DESSERT-GAJAR-SM,Carrot Pudding (Gajar Halwa) - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,45.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-DESSERT-GAJAR
+variation,CAT-DESSERT-GAJAR-LG,Carrot Pudding (Gajar Halwa) - Large Tray (Serves 12),1,0,visible,,,taxable,1,,0,0,85.00,,,Size,Large Tray (Serves 12),0,1,id:CAT-DESSERT-GAJAR
+variable,CAT-DESSERT-SHRIKHAND,Shrikhand,1,0,visible,"Homemade yogurt with cinnamon & sliced bananas","Homemade yogurt with cinnamon & sliced bananas.",taxable,1,,0,0,,Catering > Catering Desserts,"catering, GF",Size,"Small Tray (Serves 6), Large Tray (Serves 12)",1,1,
+variation,CAT-DESSERT-SHRIKHAND-SM,Shrikhand - Small Tray (Serves 6),1,0,visible,,,taxable,1,,0,0,30.00,,,Size,Small Tray (Serves 6),0,1,id:CAT-DESSERT-SHRIKHAND
+variation,CAT-DESSERT-SHRIKHAND-LG,Shrikhand - Large Tray (Serves 12),1,0,visible,,,taxable,1,,0,0,55.00,,,Size,Large Tray (Serves 12),0,1,id:CAT-DESSERT-SHRIKHAND

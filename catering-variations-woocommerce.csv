@@ -1,0 +1,161 @@
+Type,SKU,Name,Published,Is featured?,Visibility in catalog,Short description,Description,Tax status,In stock?,Regular price,Categories,Tags,Attribute 1 name,Attribute 1 value(s),Attribute 1 visible,Attribute 1 global,Parent
+variation,CAT-APP-SAMOSA-SM,Vegetable Samosas - Small Tray,1,0,visible,,,taxable,1,29.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-SAMOSA
+variation,CAT-APP-SAMOSA-LG,Vegetable Samosas - Large Tray,1,0,visible,,,taxable,1,50.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-SAMOSA
+variation,CAT-APP-VEGPAK-SM,Vegetable Pakoras - Small Tray,1,0,visible,,,taxable,1,29.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-VEGPAK
+variation,CAT-APP-VEGPAK-LG,Vegetable Pakoras - Large Tray,1,0,visible,,,taxable,1,50.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-VEGPAK
+variation,CAT-APP-CHKPAK-SM,Chicken Pakoras - Small Tray,1,0,visible,,,taxable,1,45.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-CHKPAK
+variation,CAT-APP-CHKPAK-LG,Chicken Pakoras - Large Tray,1,0,visible,,,taxable,1,90.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-CHKPAK
+variation,CAT-APP-SHRPAK-SM,Shrimp Pakoras - Small Tray,1,0,visible,,,taxable,1,50.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-SHRPAK
+variation,CAT-APP-SHRPAK-LG,Shrimp Pakoras - Large Tray,1,0,visible,,,taxable,1,110.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-SHRPAK
+variation,CAT-APP-VEGMOMO-SM,Vegetable Momos - Small Tray,1,0,visible,,,taxable,1,70.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-VEGMOMO
+variation,CAT-APP-VEGMOMO-LG,Vegetable Momos - Large Tray,1,0,visible,,,taxable,1,140.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-VEGMOMO
+variation,CAT-APP-CHKMOMO-SM,Chicken Momos - Small Tray,1,0,visible,,,taxable,1,70.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-CHKMOMO
+variation,CAT-APP-CHKMOMO-LG,Chicken Momos - Large Tray,1,0,visible,,,taxable,1,140.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-CHKMOMO
+variation,CAT-APP-SAMCHAAT-SM,Samosa Chaat - Small Tray,1,0,visible,,,taxable,1,50.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-SAMCHAAT
+variation,CAT-APP-SAMCHAAT-LG,Samosa Chaat - Large Tray,1,0,visible,,,taxable,1,90.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-SAMCHAAT
+variation,CAT-APP-CAULI-SM,Cauli Manchurian - Small Tray,1,0,visible,,,taxable,1,50.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-CAULI
+variation,CAT-APP-CAULI-LG,Cauli Manchurian - Large Tray,1,0,visible,,,taxable,1,90.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-CAULI
+variation,CAT-APP-TANDWING-SM,Tandoori Chicken Wings - Small Tray,1,0,visible,,,taxable,1,55.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-TANDWING
+variation,CAT-APP-TANDWING-LG,Tandoori Chicken Wings - Large Tray,1,0,visible,,,taxable,1,115.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-TANDWING
+variation,CAT-APP-SPICYWING-SM,Spicy Tandoori Wings - Small Tray,1,0,visible,,,taxable,1,70.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-SPICYWING
+variation,CAT-APP-SPICYWING-LG,Spicy Tandoori Wings - Large Tray,1,0,visible,,,taxable,1,115.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-SPICYWING
+variation,CAT-APP-GARLSHRIMP-SM,Garlic Shrimp - Small Tray,1,0,visible,,,taxable,1,85.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-GARLSHRIMP
+variation,CAT-APP-GARLSHRIMP-LG,Garlic Shrimp - Large Tray,1,0,visible,,,taxable,1,160.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-GARLSHRIMP
+variation,CAT-APP-CHKRASILA-SM,Chicken Rasila - Small Tray,1,0,visible,,,taxable,1,85.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-CHKRASILA
+variation,CAT-APP-CHKRASILA-LG,Chicken Rasila - Large Tray,1,0,visible,,,taxable,1,160.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-CHKRASILA
+variation,CAT-APP-LAMBRASILA-SM,Lamb Rasila - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-LAMBRASILA
+variation,CAT-APP-LAMBRASILA-LG,Lamb Rasila - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-LAMBRASILA
+variation,CAT-APP-PAPADAM-SM,Papadam - Small Tray,1,0,visible,,,taxable,1,25.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-PAPADAM
+variation,CAT-APP-PAPADAM-LG,Papadam - Large Tray,1,0,visible,,,taxable,1,50.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-PAPADAM
+variation,CAT-APP-SALAD-SM,Indian Cucumber Salad - Small Tray,1,0,visible,,,taxable,1,25.00,,,Size,Small Tray (Serves 6),0,1,CAT-APP-SALAD
+variation,CAT-APP-SALAD-LG,Indian Cucumber Salad - Large Tray,1,0,visible,,,taxable,1,45.00,,,Size,Large Tray (Serves 15),0,1,CAT-APP-SALAD
+variation,CAT-KEB-TIKKA-SM,Tikka Kebobs - Small Tray,1,0,visible,,,taxable,1,89.00,,,Size,Small Tray (Serves 6),0,1,CAT-KEB-TIKKA
+variation,CAT-KEB-TIKKA-LG,Tikka Kebobs - Large Tray,1,0,visible,,,taxable,1,170.00,,,Size,Large Tray (Serves 15),0,1,CAT-KEB-TIKKA
+variation,CAT-KEB-HONEY-SM,Honey Tikka Kebobs - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-KEB-HONEY
+variation,CAT-KEB-HONEY-LG,Honey Tikka Kebobs - Large Tray,1,0,visible,,,taxable,1,185.00,,,Size,Large Tray (Serves 15),0,1,CAT-KEB-HONEY
+variation,CAT-KEB-SHRIMP-SM,Shrimp Kebobs - Small Tray,1,0,visible,,,taxable,1,96.00,,,Size,Small Tray (Serves 6),0,1,CAT-KEB-SHRIMP
+variation,CAT-KEB-SHRIMP-LG,Shrimp Kebobs - Large Tray,1,0,visible,,,taxable,1,195.00,,,Size,Large Tray (Serves 15),0,1,CAT-KEB-SHRIMP
+variation,CAT-KEB-LAMB-SM,Lamb Kebobs - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-KEB-LAMB
+variation,CAT-KEB-LAMB-LG,Lamb Kebobs - Large Tray,1,0,visible,,,taxable,1,190.00,,,Size,Large Tray (Serves 15),0,1,CAT-KEB-LAMB
+variation,CAT-KEB-MIXED-SM,Mixed Grill Kebobs - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-KEB-MIXED
+variation,CAT-KEB-MIXED-LG,Mixed Grill Kebobs - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-KEB-MIXED
+variation,CAT-CHK-TIKKA-SM,Chicken Tikka Masala - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-CHK-TIKKA
+variation,CAT-CHK-TIKKA-LG,Chicken Tikka Masala - Large Tray,1,0,visible,,,taxable,1,170.00,,,Size,Large Tray (Serves 15),0,1,CAT-CHK-TIKKA
+variation,CAT-CHK-BUTTER-SM,Butter Chicken - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-CHK-BUTTER
+variation,CAT-CHK-BUTTER-LG,Butter Chicken - Large Tray,1,0,visible,,,taxable,1,175.00,,,Size,Large Tray (Serves 15),0,1,CAT-CHK-BUTTER
+variation,CAT-CHK-KORMA-SM,Chicken Korma - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-CHK-KORMA
+variation,CAT-CHK-KORMA-LG,Chicken Korma - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-CHK-KORMA
+variation,CAT-CHK-SAAG-SM,Chicken Saag - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-CHK-SAAG
+variation,CAT-CHK-SAAG-LG,Chicken Saag - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-CHK-SAAG
+variation,CAT-CHK-KARAHI-SM,Chicken Karahi - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-CHK-KARAHI
+variation,CAT-CHK-KARAHI-LG,Chicken Karahi - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-CHK-KARAHI
+variation,CAT-CHK-CURRY-SM,Chicken Curry - Small Tray,1,0,visible,,,taxable,1,87.00,,,Size,Small Tray (Serves 6),0,1,CAT-CHK-CURRY
+variation,CAT-CHK-CURRY-LG,Chicken Curry - Large Tray,1,0,visible,,,taxable,1,170.00,,,Size,Large Tray (Serves 15),0,1,CAT-CHK-CURRY
+variation,CAT-CHK-VINDALOO-SM,Chicken Vindaloo - Small Tray,1,0,visible,,,taxable,1,87.00,,,Size,Small Tray (Serves 6),0,1,CAT-CHK-VINDALOO
+variation,CAT-CHK-VINDALOO-LG,Chicken Vindaloo - Large Tray,1,0,visible,,,taxable,1,170.00,,,Size,Large Tray (Serves 15),0,1,CAT-CHK-VINDALOO
+variation,CAT-CHK-CHETTINAD-SM,Chicken Chettinad - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-CHK-CHETTINAD
+variation,CAT-CHK-CHETTINAD-LG,Chicken Chettinad - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-CHK-CHETTINAD
+variation,CAT-CHK-MALABAR-SM,Chicken Malabar - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-CHK-MALABAR
+variation,CAT-CHK-MALABAR-LG,Chicken Malabar - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-CHK-MALABAR
+variation,CAT-CHK-ROGANJOSH-SM,Chicken Rogan Josh - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-CHK-ROGANJOSH
+variation,CAT-CHK-ROGANJOSH-LG,Chicken Rogan Josh - Large Tray,1,0,visible,,,taxable,1,175.00,,,Size,Large Tray (Serves 15),0,1,CAT-CHK-ROGANJOSH
+variation,CAT-LAMB-TIKKA-SM,Lamb Tikka Masala - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-LAMB-TIKKA
+variation,CAT-LAMB-TIKKA-LG,Lamb Tikka Masala - Large Tray,1,0,visible,,,taxable,1,195.00,,,Size,Large Tray (Serves 15),0,1,CAT-LAMB-TIKKA
+variation,CAT-LAMB-KORMA-SM,Lamb Korma - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-LAMB-KORMA
+variation,CAT-LAMB-KORMA-LG,Lamb Korma - Large Tray,1,0,visible,,,taxable,1,195.00,,,Size,Large Tray (Serves 15),0,1,CAT-LAMB-KORMA
+variation,CAT-LAMB-SAAG-SM,Lamb Saag - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-LAMB-SAAG
+variation,CAT-LAMB-SAAG-LG,Lamb Saag - Large Tray,1,0,visible,,,taxable,1,195.00,,,Size,Large Tray (Serves 15),0,1,CAT-LAMB-SAAG
+variation,CAT-LAMB-KARAHI-SM,Lamb Karahi - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-LAMB-KARAHI
+variation,CAT-LAMB-KARAHI-LG,Lamb Karahi - Large Tray,1,0,visible,,,taxable,1,190.00,,,Size,Large Tray (Serves 15),0,1,CAT-LAMB-KARAHI
+variation,CAT-LAMB-CURRY-SM,Lamb Curry - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-LAMB-CURRY
+variation,CAT-LAMB-CURRY-LG,Lamb Curry - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-LAMB-CURRY
+variation,CAT-LAMB-VINDALOO-SM,Lamb Vindaloo - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-LAMB-VINDALOO
+variation,CAT-LAMB-VINDALOO-LG,Lamb Vindaloo - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-LAMB-VINDALOO
+variation,CAT-LAMB-CHETTINAD-SM,Lamb Chettinad - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-LAMB-CHETTINAD
+variation,CAT-LAMB-CHETTINAD-LG,Lamb Chettinad - Large Tray,1,0,visible,,,taxable,1,195.00,,,Size,Large Tray (Serves 15),0,1,CAT-LAMB-CHETTINAD
+variation,CAT-LAMB-MALABAR-SM,Lamb Malabar - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-LAMB-MALABAR
+variation,CAT-LAMB-MALABAR-LG,Lamb Malabar - Large Tray,1,0,visible,,,taxable,1,195.00,,,Size,Large Tray (Serves 15),0,1,CAT-LAMB-MALABAR
+variation,CAT-SEA-TIKKA-SM,Shrimp Tikka Masala - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-SEA-TIKKA
+variation,CAT-SEA-TIKKA-LG,Shrimp Tikka Masala - Large Tray,1,0,visible,,,taxable,1,195.00,,,Size,Large Tray (Serves 15),0,1,CAT-SEA-TIKKA
+variation,CAT-SEA-KORMA-SM,Shrimp Korma - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-SEA-KORMA
+variation,CAT-SEA-KORMA-LG,Shrimp Korma - Large Tray,1,0,visible,,,taxable,1,195.00,,,Size,Large Tray (Serves 15),0,1,CAT-SEA-KORMA
+variation,CAT-SEA-SAAG-SM,Shrimp Saag - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-SEA-SAAG
+variation,CAT-SEA-SAAG-LG,Shrimp Saag - Large Tray,1,0,visible,,,taxable,1,195.00,,,Size,Large Tray (Serves 15),0,1,CAT-SEA-SAAG
+variation,CAT-SEA-KARAHI-SM,Shrimp Karahi - Small Tray,1,0,visible,,,taxable,1,100.00,,,Size,Small Tray (Serves 6),0,1,CAT-SEA-KARAHI
+variation,CAT-SEA-KARAHI-LG,Shrimp Karahi - Large Tray,1,0,visible,,,taxable,1,195.00,,,Size,Large Tray (Serves 15),0,1,CAT-SEA-KARAHI
+variation,CAT-SEA-CURRY-SM,Shrimp Curry - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-SEA-CURRY
+variation,CAT-SEA-CURRY-LG,Shrimp Curry - Large Tray,1,0,visible,,,taxable,1,190.00,,,Size,Large Tray (Serves 15),0,1,CAT-SEA-CURRY
+variation,CAT-SEA-VINDALOO-SM,Shrimp Vindaloo - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-SEA-VINDALOO
+variation,CAT-SEA-VINDALOO-LG,Shrimp Vindaloo - Large Tray,1,0,visible,,,taxable,1,190.00,,,Size,Large Tray (Serves 15),0,1,CAT-SEA-VINDALOO
+variation,CAT-SEA-CHETTINAD-SM,Shrimp Chettinad - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-SEA-CHETTINAD
+variation,CAT-SEA-CHETTINAD-LG,Shrimp Chettinad - Large Tray,1,0,visible,,,taxable,1,195.00,,,Size,Large Tray (Serves 15),0,1,CAT-SEA-CHETTINAD
+variation,CAT-VEG-PTIKKA-SM,Paneer Tikka Masala - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEG-PTIKKA
+variation,CAT-VEG-PTIKKA-LG,Paneer Tikka Masala - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEG-PTIKKA
+variation,CAT-VEG-PKORMA-SM,Paneer Korma - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEG-PKORMA
+variation,CAT-VEG-PKORMA-LG,Paneer Korma - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEG-PKORMA
+variation,CAT-VEG-PKARAHI-SM,Paneer Karahi - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEG-PKARAHI
+variation,CAT-VEG-PKARAHI-LG,Paneer Karahi - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEG-PKARAHI
+variation,CAT-VEG-PCURRY-SM,Paneer Curry - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEG-PCURRY
+variation,CAT-VEG-PCURRY-LG,Paneer Curry - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEG-PCURRY
+variation,CAT-VEG-PCHETTINAD-SM,Paneer Chettinad - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEG-PCHETTINAD
+variation,CAT-VEG-PCHETTINAD-LG,Paneer Chettinad - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEG-PCHETTINAD
+variation,CAT-VEG-SAAGP-SM,Saag Paneer - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEG-SAAGP
+variation,CAT-VEG-SAAGP-LG,Saag Paneer - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEG-SAAGP
+variation,CAT-VEG-MATARP-SM,Matar Paneer - Small Tray,1,0,visible,,,taxable,1,95.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEG-MATARP
+variation,CAT-VEG-MATARP-LG,Matar Paneer - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEG-MATARP
+variation,CAT-VEG-MALAIKOFTA-SM,Malai Kofta - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEG-MALAIKOFTA
+variation,CAT-VEG-MALAIKOFTA-LG,Malai Kofta - Large Tray,1,0,visible,,,taxable,1,160.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEG-MALAIKOFTA
+variation,CAT-VEG-KOFTAKESHARI-SM,Kofta Keshari - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEG-KOFTAKESHARI
+variation,CAT-VEG-KOFTAKESHARI-LG,Kofta Keshari - Large Tray,1,0,visible,,,taxable,1,160.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEG-KOFTAKESHARI
+variation,CAT-VEGAN-CHANA-SM,Chana Masala - Small Tray,1,0,visible,,,taxable,1,70.00,,,Size,Small Tray (Serves 7),0,1,CAT-VEGAN-CHANA
+variation,CAT-VEGAN-CHANA-LG,Chana Masala - Large Tray,1,0,visible,,,taxable,1,140.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEGAN-CHANA
+variation,CAT-VEGAN-VEGCURRY-SM,Vegetable Curry - Small Tray,1,0,visible,,,taxable,1,78.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEGAN-VEGCURRY
+variation,CAT-VEGAN-VEGCURRY-LG,Vegetable Curry - Large Tray,1,0,visible,,,taxable,1,160.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEGAN-VEGCURRY
+variation,CAT-VEGAN-TOFUSAAG-SM,Tofu Saag - Small Tray,1,0,visible,,,taxable,1,75.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEGAN-TOFUSAAG
+variation,CAT-VEGAN-TOFUSAAG-LG,Tofu Saag - Large Tray,1,0,visible,,,taxable,1,150.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEGAN-TOFUSAAG
+variation,CAT-VEGAN-DALMAKHANI-SM,Dal Makhani - Small Tray,1,0,visible,,,taxable,1,80.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEGAN-DALMAKHANI
+variation,CAT-VEGAN-DALMAKHANI-LG,Dal Makhani - Large Tray,1,0,visible,,,taxable,1,160.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEGAN-DALMAKHANI
+variation,CAT-VEGAN-DALTADKA-SM,Dal Tadka - Small Tray,1,0,visible,,,taxable,1,70.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEGAN-DALTADKA
+variation,CAT-VEGAN-DALTADKA-LG,Dal Tadka - Large Tray,1,0,visible,,,taxable,1,140.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEGAN-DALTADKA
+variation,CAT-VEGAN-ALOOGOBI-SM,Aloo Gobi - Small Tray,1,0,visible,,,taxable,1,75.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEGAN-ALOOGOBI
+variation,CAT-VEGAN-ALOOGOBI-LG,Aloo Gobi - Large Tray,1,0,visible,,,taxable,1,150.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEGAN-ALOOGOBI
+variation,CAT-VEGAN-ALOOMATAR-SM,Aloo Matar - Small Tray,1,0,visible,,,taxable,1,70.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEGAN-ALOOMATAR
+variation,CAT-VEGAN-ALOOMATAR-LG,Aloo Matar - Large Tray,1,0,visible,,,taxable,1,140.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEGAN-ALOOMATAR
+variation,CAT-VEGAN-BAIGAN-SM,Baigan Bharta - Small Tray,1,0,visible,,,taxable,1,80.00,,,Size,Small Tray (Serves 6),0,1,CAT-VEGAN-BAIGAN
+variation,CAT-VEGAN-BAIGAN-LG,Baigan Bharta - Large Tray,1,0,visible,,,taxable,1,160.00,,,Size,Large Tray (Serves 15),0,1,CAT-VEGAN-BAIGAN
+variation,CAT-BIR-VEG-SM,Vegetable Biryani - Small Tray,1,0,visible,,,taxable,1,78.00,,,Size,Small Tray (Serves 6),0,1,CAT-BIR-VEG
+variation,CAT-BIR-VEG-LG,Vegetable Biryani - Large Tray,1,0,visible,,,taxable,1,130.00,,,Size,Large Tray (Serves 15),0,1,CAT-BIR-VEG
+variation,CAT-BIR-CHK-SM,Chicken Biryani - Small Tray,1,0,visible,,,taxable,1,80.00,,,Size,Small Tray (Serves 6),0,1,CAT-BIR-CHK
+variation,CAT-BIR-CHK-LG,Chicken Biryani - Large Tray,1,0,visible,,,taxable,1,160.00,,,Size,Large Tray (Serves 15),0,1,CAT-BIR-CHK
+variation,CAT-BIR-PANEER-SM,Paneer Biryani - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-BIR-PANEER
+variation,CAT-BIR-PANEER-LG,Paneer Biryani - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-BIR-PANEER
+variation,CAT-BIR-LAMB-SM,Lamb Biryani - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-BIR-LAMB
+variation,CAT-BIR-LAMB-LG,Lamb Biryani - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-BIR-LAMB
+variation,CAT-BIR-SHRIMP-SM,Shrimp Biryani - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 6),0,1,CAT-BIR-SHRIMP
+variation,CAT-BIR-SHRIMP-LG,Shrimp Biryani - Large Tray,1,0,visible,,,taxable,1,175.00,,,Size,Large Tray (Serves 15),0,1,CAT-BIR-SHRIMP
+variation,CAT-RICE-BASMATI-SM,Basmati Rice - Small Tray,1,0,visible,,,taxable,1,20.00,,,Size,Small Tray (Serves 7),0,1,CAT-RICE-BASMATI
+variation,CAT-RICE-BASMATI-LG,Basmati Rice - Large Tray,1,0,visible,,,taxable,1,40.00,,,Size,Large Tray (Serves 15),0,1,CAT-RICE-BASMATI
+variation,CAT-RICE-BROWN-SM,Brown Rice - Small Tray,1,0,visible,,,taxable,1,20.00,,,Size,Small Tray (Serves 7),0,1,CAT-RICE-BROWN
+variation,CAT-RICE-BROWN-LG,Brown Rice - Large Tray,1,0,visible,,,taxable,1,40.00,,,Size,Large Tray (Serves 15),0,1,CAT-RICE-BROWN
+variation,CAT-RICE-FRIED-SM,Fried Rice - Small Tray,1,0,visible,,,taxable,1,35.00,,,Size,Small Tray (Serves 7),0,1,CAT-RICE-FRIED
+variation,CAT-RICE-FRIED-LG,Fried Rice - Large Tray,1,0,visible,,,taxable,1,60.00,,,Size,Large Tray (Serves 15),0,1,CAT-RICE-FRIED
+variation,CAT-RICE-YELLOW-SM,Yellow (Turmeric) Rice - Small Tray,1,0,visible,,,taxable,1,25.00,,,Size,Small Tray (Serves 7),0,1,CAT-RICE-YELLOW
+variation,CAT-RICE-YELLOW-LG,Yellow (Turmeric) Rice - Large Tray,1,0,visible,,,taxable,1,45.00,,,Size,Large Tray (Serves 15),0,1,CAT-RICE-YELLOW
+variation,CAT-NOODLE-VEG-SM,Vegetable Chow Mein - Small Tray,1,0,visible,,,taxable,1,72.00,,,Size,Small Tray (Serves 7),0,1,CAT-NOODLE-VEG
+variation,CAT-NOODLE-VEG-LG,Vegetable Chow Mein - Large Tray,1,0,visible,,,taxable,1,130.00,,,Size,Large Tray (Serves 15),0,1,CAT-NOODLE-VEG
+variation,CAT-NOODLE-CHK-SM,Chicken Chow Mein - Small Tray,1,0,visible,,,taxable,1,80.00,,,Size,Small Tray (Serves 7),0,1,CAT-NOODLE-CHK
+variation,CAT-NOODLE-CHK-LG,Chicken Chow Mein - Large Tray,1,0,visible,,,taxable,1,150.00,,,Size,Large Tray (Serves 15),0,1,CAT-NOODLE-CHK
+variation,CAT-NOODLE-LAMB-SM,Lamb Chow Mein - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 7),0,1,CAT-NOODLE-LAMB
+variation,CAT-NOODLE-LAMB-LG,Lamb Chow Mein - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-NOODLE-LAMB
+variation,CAT-NOODLE-SHRIMP-SM,Shrimp Chow Mein - Small Tray,1,0,visible,,,taxable,1,90.00,,,Size,Small Tray (Serves 7),0,1,CAT-NOODLE-SHRIMP
+variation,CAT-NOODLE-SHRIMP-LG,Shrimp Chow Mein - Large Tray,1,0,visible,,,taxable,1,180.00,,,Size,Large Tray (Serves 15),0,1,CAT-NOODLE-SHRIMP
+variation,CAT-DESSERT-GULAB-SM,Gulab Jamun - Small Tray,1,0,visible,,,taxable,1,25.00,,,Size,Small Tray (Serves 6),0,1,CAT-DESSERT-GULAB
+variation,CAT-DESSERT-GULAB-LG,Gulab Jamun - Large Tray,1,0,visible,,,taxable,1,45.00,,,Size,Large Tray (Serves 12),0,1,CAT-DESSERT-GULAB
+variation,CAT-DESSERT-RASMALAI-SM,Ras Malai - Small Tray,1,0,visible,,,taxable,1,35.00,,,Size,Small Tray (Serves 6),0,1,CAT-DESSERT-RASMALAI
+variation,CAT-DESSERT-RASMALAI-LG,Ras Malai - Large Tray,1,0,visible,,,taxable,1,65.00,,,Size,Large Tray (Serves 12),0,1,CAT-DESSERT-RASMALAI
+variation,CAT-DESSERT-KHEER-SM,Rice Pudding (Kheer) - Small Tray,1,0,visible,,,taxable,1,30.00,,,Size,Small Tray (Serves 6),0,1,CAT-DESSERT-KHEER
+variation,CAT-DESSERT-KHEER-LG,Rice Pudding (Kheer) - Large Tray,1,0,visible,,,taxable,1,55.00,,,Size,Large Tray (Serves 12),0,1,CAT-DESSERT-KHEER
+variation,CAT-DESSERT-GAJAR-SM,Carrot Pudding (Gajar Halwa) - Small Tray,1,0,visible,,,taxable,1,45.00,,,Size,Small Tray (Serves 6),0,1,CAT-DESSERT-GAJAR
+variation,CAT-DESSERT-GAJAR-LG,Carrot Pudding (Gajar Halwa) - Large Tray,1,0,visible,,,taxable,1,85.00,,,Size,Large Tray (Serves 12),0,1,CAT-DESSERT-GAJAR
+variation,CAT-DESSERT-SHRIKHAND-SM,Shrikhand - Small Tray,1,0,visible,,,taxable,1,30.00,,,Size,Small Tray (Serves 6),0,1,CAT-DESSERT-SHRIKHAND
+variation,CAT-DESSERT-SHRIKHAND-LG,Shrikhand - Large Tray,1,0,visible,,,taxable,1,55.00,,,Size,Large Tray (Serves 12),0,1,CAT-DESSERT-SHRIKHAND

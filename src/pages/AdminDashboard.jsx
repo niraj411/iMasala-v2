@@ -9,13 +9,15 @@ import {
   ChevronDown, Eye, Printer,
   ShieldCheck, Calendar, MapPin,
   Phone, Mail, X, ExternalLink,
-  BarChart3, Utensils, ChevronRight, Settings, ChefHat, Flame, Calculator
+  BarChart3, Utensils, ChevronRight, Settings, ChefHat, Flame, Calculator,
+  UtensilsCrossed
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AdminNotificationSetup from '../components/admin/AdminNotificationSetup';
 import ModifierManager from '../components/admin/ModifierManager';
 import KitchenDisplay from '../components/admin/KitchenDisplay';
 import AccountingReport from '../components/admin/AccountingReport';
+import CateringOrderCard from '../components/admin/CateringOrderCard';
 
 
 // Stats Card Component
@@ -533,6 +535,7 @@ export default function AdminDashboard() {
     { id: 'kitchen', label: 'Kitchen', icon: ChefHat },
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'orders', label: 'All Orders', icon: Package },
+    { id: 'catering', label: 'Catering', icon: UtensilsCrossed },
     { id: 'accounting', label: 'Accounting', icon: Calculator },
     { id: 'modifiers', label: 'Modifiers', icon: Settings },
     { id: 'settings', label: 'Settings', icon: Server }
@@ -892,6 +895,157 @@ export default function AdminDashboard() {
               {/* Accounting Tab */}
               {activeTab === 'accounting' && (
                 <AccountingReport />
+              )}
+
+              {/* Catering Tab */}
+              {activeTab === 'catering' && (
+                <div className="space-y-6">
+                  {/* Catering Summary Stats */}
+                  {(() => {
+                    const cateringOrders = orders.filter(o =>
+                      o.meta_data?.find(m => m.key === 'order_type')?.value === 'catering'
+                    );
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const weekFromNow = new Date(today);
+                    weekFromNow.setDate(weekFromNow.getDate() + 7);
+
+                    const upcomingOrders = cateringOrders.filter(o => {
+                      const deliveryDate = o.meta_data?.find(m =>
+                        m.key === 'delivery_date' || m.key === 'catering_delivery_date'
+                      )?.value;
+                      if (!deliveryDate) return false;
+                      const orderDate = new Date(deliveryDate);
+                      return orderDate >= today && o.status !== 'completed' && o.status !== 'cancelled';
+                    });
+
+                    const todayOrders = upcomingOrders.filter(o => {
+                      const deliveryDate = o.meta_data?.find(m =>
+                        m.key === 'delivery_date' || m.key === 'catering_delivery_date'
+                      )?.value;
+                      if (!deliveryDate) return false;
+                      const orderDate = new Date(deliveryDate);
+                      orderDate.setHours(0, 0, 0, 0);
+                      return orderDate.getTime() === today.getTime();
+                    });
+
+                    const thisWeekOrders = upcomingOrders.filter(o => {
+                      const deliveryDate = o.meta_data?.find(m =>
+                        m.key === 'delivery_date' || m.key === 'catering_delivery_date'
+                      )?.value;
+                      if (!deliveryDate) return false;
+                      const orderDate = new Date(deliveryDate);
+                      return orderDate >= today && orderDate < weekFromNow;
+                    });
+
+                    const totalGuests = thisWeekOrders.reduce((sum, o) => {
+                      const guests = o.meta_data?.find(m =>
+                        m.key === 'number_of_guests' || m.key === 'catering_guests'
+                      )?.value;
+                      return sum + (parseInt(guests) || 0);
+                    }, 0);
+
+                    const monthRevenue = cateringOrders
+                      .filter(o => {
+                        const orderDate = new Date(o.date_created);
+                        return orderDate.getMonth() === today.getMonth() &&
+                               orderDate.getFullYear() === today.getFullYear() &&
+                               (o.status === 'completed' || o.status === 'processing');
+                      })
+                      .reduce((sum, o) => sum + parseFloat(o.total), 0);
+
+                    // Sort upcoming orders by delivery date
+                    const sortedUpcoming = [...upcomingOrders].sort((a, b) => {
+                      const dateA = a.meta_data?.find(m => m.key === 'delivery_date' || m.key === 'catering_delivery_date')?.value;
+                      const dateB = b.meta_data?.find(m => m.key === 'delivery_date' || m.key === 'catering_delivery_date')?.value;
+                      return new Date(dateA) - new Date(dateB);
+                    });
+
+                    return (
+                      <>
+                        {/* Summary Cards */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                          <div className="backdrop-blur-xl bg-purple-500/10 rounded-2xl p-5 border border-purple-500/20">
+                            <p className="text-3xl font-bold text-purple-400">{todayOrders.length}</p>
+                            <p className="text-sm text-white/50 mt-1">Today's Catering</p>
+                          </div>
+                          <div className="backdrop-blur-xl bg-blue-500/10 rounded-2xl p-5 border border-blue-500/20">
+                            <p className="text-3xl font-bold text-blue-400">{thisWeekOrders.length}</p>
+                            <p className="text-sm text-white/50 mt-1">This Week</p>
+                          </div>
+                          <div className="backdrop-blur-xl bg-green-500/10 rounded-2xl p-5 border border-green-500/20">
+                            <p className="text-3xl font-bold text-green-400">{totalGuests}</p>
+                            <p className="text-sm text-white/50 mt-1">Guests This Week</p>
+                          </div>
+                          <div className="backdrop-blur-xl bg-amber-500/10 rounded-2xl p-5 border border-amber-500/20">
+                            <p className="text-3xl font-bold text-amber-400">${monthRevenue.toFixed(0)}</p>
+                            <p className="text-sm text-white/50 mt-1">This Month</p>
+                          </div>
+                        </div>
+
+                        {/* Upcoming Catering Orders */}
+                        <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
+                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                            <Calendar className="w-5 h-5 text-purple-400" />
+                            Upcoming Catering Orders ({upcomingOrders.length})
+                          </h3>
+
+                          {sortedUpcoming.length > 0 ? (
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                              {sortedUpcoming.map((order) => (
+                                <CateringOrderCard
+                                  key={order.id}
+                                  order={order}
+                                  onStatusUpdate={handleStatusUpdate}
+                                  onViewDetails={setSelectedOrder}
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-12">
+                              <UtensilsCrossed className="w-12 h-12 text-white/20 mx-auto mb-3" />
+                              <p className="text-white/40">No upcoming catering orders</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* All Catering Orders (Past & Present) */}
+                        <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
+                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                            <Package className="w-5 h-5 text-white/60" />
+                            All Catering Orders ({cateringOrders.length})
+                          </h3>
+
+                          {cateringOrders.length > 0 ? (
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                              {cateringOrders.slice(0, 12).map((order) => (
+                                <CateringOrderCard
+                                  key={order.id}
+                                  order={order}
+                                  onStatusUpdate={handleStatusUpdate}
+                                  onViewDetails={setSelectedOrder}
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-12">
+                              <UtensilsCrossed className="w-12 h-12 text-white/20 mx-auto mb-3" />
+                              <p className="text-white/40">No catering orders yet</p>
+                            </div>
+                          )}
+
+                          {cateringOrders.length > 12 && (
+                            <div className="mt-4 text-center">
+                              <p className="text-sm text-white/40">
+                                Showing 12 of {cateringOrders.length} catering orders
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
               )}
 
               {/* Modifiers Tab */}
