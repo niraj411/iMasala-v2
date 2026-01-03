@@ -9,12 +9,13 @@ import {
   ChevronDown, Eye, Printer,
   ShieldCheck, Calendar, MapPin,
   Phone, Mail, X, ExternalLink,
-  BarChart3, Utensils, ChevronRight, Settings, ChefHat, Flame
+  BarChart3, Utensils, ChevronRight, Settings, ChefHat, Flame, Calculator
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AdminNotificationSetup from '../components/admin/AdminNotificationSetup';
 import ModifierManager from '../components/admin/ModifierManager';
 import KitchenDisplay from '../components/admin/KitchenDisplay';
+import AccountingReport from '../components/admin/AccountingReport';
 
 
 // Stats Card Component
@@ -532,6 +533,7 @@ export default function AdminDashboard() {
     { id: 'kitchen', label: 'Kitchen', icon: ChefHat },
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'orders', label: 'All Orders', icon: Package },
+    { id: 'accounting', label: 'Accounting', icon: Calculator },
     { id: 'modifiers', label: 'Modifiers', icon: Settings },
     { id: 'settings', label: 'Settings', icon: Server }
   ];
@@ -885,6 +887,11 @@ export default function AdminDashboard() {
                     </div>
                   )}
                 </div>
+              )}
+
+              {/* Accounting Tab */}
+              {activeTab === 'accounting' && (
+                <AccountingReport />
               )}
 
               {/* Modifiers Tab */}
