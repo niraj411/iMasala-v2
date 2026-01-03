@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useCatering, CATERING_PRICING } from '../contexts/CateringContext';
+import { useCatering } from '../contexts/CateringContext';
 import { cartSyncService } from '../services/cartSyncService';
 import { taxExemptionService } from '../services/taxExemptionService';
 import CateringOrderForm from '../components/catering/CateringOrderForm';
@@ -88,7 +88,10 @@ export default function Checkout() {
     return cartTotal * selectedTipPreset;
   }, [tipType, selectedTipPreset, customTipAmount, cartTotal]);
   
-  const deliveryFee = (selectedOrderType === 'catering' && cateringDetails?.deliveryMethod === 'delivery') ? CATERING_PRICING.DELIVERY_FEE : 0;
+  // Use zone-based delivery fee from cateringFees (calculated based on zip code)
+  const deliveryFee = (selectedOrderType === 'catering' && cateringDetails?.deliveryMethod === 'delivery')
+    ? (cateringFees?.deliveryFee || 0)
+    : 0;
   const utensilsFee = (selectedOrderType === 'catering' && cateringFees?.utensilsCost) ? cateringFees.utensilsCost : 0;
   const taxRate = (taxExemptStatus?.verified && applyTaxExempt) ? 0 : 0.0825;
   const taxAmount = cartTotal * taxRate;

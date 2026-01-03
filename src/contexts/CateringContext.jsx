@@ -1,13 +1,19 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
-import { CATERING_DELIVERY_FEE, CATERING_MINIMUM_ORDER } from '../config/delivery';
+import {
+  CATERING_MINIMUM_ORDER,
+  DELIVERY_FEES,
+  getDeliveryFee,
+  getDeliveryZoneInfo
+} from '../config/delivery';
 
 const CateringContext = createContext();
 
 // Catering pricing constants
 export const CATERING_PRICING = {
   UTENSIL_PRICE: 0.49,                    // Per guest
-  DELIVERY_FEE: CATERING_DELIVERY_FEE,    // From delivery config
-  MINIMUM_ORDER: CATERING_MINIMUM_ORDER   // From delivery config
+  DELIVERY_FEE_ZONE_1: DELIVERY_FEES.ZONE_1,  // Local area
+  DELIVERY_FEE_ZONE_2: DELIVERY_FEES.ZONE_2,  // Extended area
+  MINIMUM_ORDER: CATERING_MINIMUM_ORDER       // From delivery config
 };
 
 export function CateringProvider({ children }) {
@@ -92,22 +98,33 @@ export function CateringProvider({ children }) {
     setIsCateringOrder(false);
   };
 
-  // Computed catering fees
+  // Computed catering fees with zone-based delivery pricing
   const cateringFees = useMemo(() => {
     const utensilsCost = cateringDetails.needUtensils && cateringDetails.numberOfGuests > 0
       ? cateringDetails.numberOfGuests * CATERING_PRICING.UTENSIL_PRICE
       : 0;
 
-    const deliveryFee = cateringDetails.deliveryMethod === 'delivery'
-      ? CATERING_PRICING.DELIVERY_FEE
-      : 0;
+    // Get zone-based delivery fee from zip code
+    let deliveryFee = 0;
+    let deliveryZoneInfo = null;
+
+    if (cateringDetails.deliveryMethod === 'delivery' && cateringDetails.deliveryAddress?.zipCode) {
+      deliveryFee = getDeliveryFee(cateringDetails.deliveryAddress.zipCode);
+      deliveryZoneInfo = getDeliveryZoneInfo(cateringDetails.deliveryAddress.zipCode);
+    }
 
     return {
       utensilsCost,
       deliveryFee,
+      deliveryZoneInfo,
       totalFees: utensilsCost + deliveryFee
     };
-  }, [cateringDetails.needUtensils, cateringDetails.numberOfGuests, cateringDetails.deliveryMethod]);
+  }, [
+    cateringDetails.needUtensils,
+    cateringDetails.numberOfGuests,
+    cateringDetails.deliveryMethod,
+    cateringDetails.deliveryAddress?.zipCode
+  ]);
 
   const value = {
     isCateringOrder,
