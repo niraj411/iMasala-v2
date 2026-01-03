@@ -437,6 +437,88 @@ class WooCommerceService {
     const validZipCodes = ['80229', '80233', '80234', '80235', '80303', '80026', '80027'];
     return validZipCodes.includes(address.zipCode);
   }
+
+  // Fetch all orders for a date range with pagination (for accounting reports)
+  // Uses server-side date filtering to minimize data transfer
+  async getOrdersForDateRange(startDate, endDate, onProgress = null) {
+    try {
+      let allOrders = [];
+      let page = 1;
+      let hasMore = true;
+      const PER_PAGE = 100; // WooCommerce max is 100
+      const MAX_PAGES = 50; // Safety limit (5000 orders max)
+
+      // Format dates for WooCommerce API (ISO 8601)
+      // Add 1 day buffer to 'before' date to ensure we capture all orders on the end date
+      // (WooCommerce's 'before' is exclusive, so we need to go past the end date)
+      const afterDate = new Date(startDate).toISOString();
+      const endDateWithBuffer = new Date(endDate);
+      endDateWithBuffer.setDate(endDateWithBuffer.getDate() + 1);
+      const beforeDate = endDateWithBuffer.toISOString();
+
+      while (hasMore && page <= MAX_PAGES) {
+        const response = await this.request('GET', '/orders', {
+          per_page: PER_PAGE,
+          page: page,
+          after: afterDate,
+          before: beforeDate,
+          orderby: 'date',
+          order: 'desc'
+        });
+
+        let orders = response.data;
+
+        // Handle JSON string response
+        if (typeof orders === 'string') {
+          try {
+            orders = JSON.parse(orders);
+          } catch (e) {
+            break;
+          }
+        }
+
+        if (!Array.isArray(orders)) {
+          break;
+        }
+
+        if (orders.length > 0) {
+          allOrders = [...allOrders, ...orders];
+
+          // Report progress if callback provided
+          if (onProgress) {
+            onProgress({
+              loaded: allOrders.length,
+              page: page,
+              isComplete: false
+            });
+          }
+
+          hasMore = orders.length === PER_PAGE;
+          page++;
+
+          // Small delay between requests to avoid overwhelming the server
+          if (hasMore) {
+            await new Promise(resolve => setTimeout(resolve, 200));
+          }
+        } else {
+          hasMore = false;
+        }
+      }
+
+      if (onProgress) {
+        onProgress({
+          loaded: allOrders.length,
+          page: page - 1,
+          isComplete: true
+        });
+      }
+
+      return allOrders;
+    } catch (error) {
+      console.error('Error fetching orders for date range:', error);
+      throw error;
+    }
+  }
 }
 
 export const woocommerceService = new WooCommerceService();
