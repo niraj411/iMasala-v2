@@ -33,6 +33,14 @@ ios/App/App/GoogleService-Info.plist
 # Android sensitive files
 android/app/google-services.json
 
+# Android keystore/signing files (CRITICAL - Never commit these!)
+*.jks
+*.keystore
+android/keystore/
+android/signing/
+key.properties
+signing.properties
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
