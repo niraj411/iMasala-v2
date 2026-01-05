@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShoppingBag, User, Menu, X, Home, UtensilsCrossed,
   Clock, ChevronRight, Plus, Minus, Trash2, ArrowRight,
-  Phone, MapPin, Star, Sparkles, ChevronDown, LogOut, LogIn, Flame
+  Phone, MapPin, Star, Sparkles, ChevronDown, LogOut, LogIn, Flame, ChefHat
 } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -44,6 +44,7 @@ export default function MainLayout({ children }) {
   const navLinks = [
     { path: '/shop', label: 'Menu', icon: UtensilsCrossed },
     { path: '/lunch-buffet', label: 'Buffet', icon: Flame },
+    { path: '/catering', label: 'Catering', icon: ChefHat },
     ...(isAuthenticated ? [{ path: '/my-account', label: 'My Orders', icon: Clock }] : []),
     ...(isAdmin ? [{ path: '/admin', label: 'Dashboard', icon: Home }] : []),
   ];

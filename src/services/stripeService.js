@@ -41,7 +41,7 @@ const formatModifiersForDisplay = (modifiers) => {
 };
 
 export const stripeService = {
-  async createCheckoutSession(cartItems, orderMetadata, tipAmount = 0) {
+  async createCheckoutSession(cartItems, orderMetadata, tipAmount = 0, fees = {}) {
     try {
       const requestData = {
         items: cartItems.map(item => {
@@ -67,6 +67,9 @@ export const stripeService = {
         }),
         metadata: orderMetadata,
         tip_amount: tipAmount,
+        // Pass fees explicitly for Stripe line items
+        delivery_fee: fees.deliveryFee || 0,
+        utensils_fee: fees.utensilsFee || 0,
       };
 
       let responseData;
