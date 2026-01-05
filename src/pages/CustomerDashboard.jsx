@@ -385,7 +385,7 @@ export default function CustomerDashboard() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 py-4 px-6 text-center border-b-2 font-medium text-sm transition-all whitespace-nowrap ${
+                    className={`flex-shrink-0 flex items-center gap-2 py-4 px-6 text-center border-b-2 font-medium text-sm transition-all whitespace-nowrap ${
                       activeTab === tab.id
                         ? 'border-white text-white bg-white/5'
                         : 'border-transparent text-white/40 hover:text-white/60 hover:bg-white/[0.02]'

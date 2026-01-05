@@ -1420,7 +1420,7 @@ export default function Shop() {
                     </button>
                     
                     {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent pointer-events-none" />
                   </div>
 
                   {/* Content - Scrollable */}
