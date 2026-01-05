@@ -36,14 +36,57 @@ export default function CateringOrderCard({ order, onStatusUpdate, onViewDetails
   // Extract catering metadata
   const getMeta = (key) => order.meta_data?.find(m => m.key === key)?.value;
 
-  const deliveryMethod = getMeta('delivery_method') || getMeta('catering_delivery_method') || 'pickup';
+  // Parse customer_note for catering details as fallback
+  // Format: "CATERING ORDER\nMethod: Delivery\nDate: Thursday, January 15, 2026\nTime: 09:00\nGuests: 199"
+  const parseCustomerNote = (note) => {
+    if (!note || !note.includes('CATERING ORDER')) return {};
+
+    const parsed = {};
+    const lines = note.split('\n');
+
+    for (const line of lines) {
+      const methodMatch = line.match(/^Method:\s*(.+)/i);
+      if (methodMatch) parsed.method = methodMatch[1].trim().toLowerCase();
+
+      const dateMatch = line.match(/^Date:\s*(.+)/i);
+      if (dateMatch) {
+        // Parse the date string like "Thursday, January 15, 2026"
+        const dateStr = dateMatch[1].trim();
+        try {
+          const parsedDate = new Date(dateStr);
+          if (!isNaN(parsedDate)) {
+            parsed.date = parsedDate.toISOString().split('T')[0];
+          }
+        } catch (e) {
+          // Keep as string if parsing fails
+          parsed.dateDisplay = dateStr;
+        }
+      }
+
+      const timeMatch = line.match(/^Time:\s*(.+)/i);
+      if (timeMatch) parsed.time = timeMatch[1].trim();
+
+      const guestsMatch = line.match(/^Guests:\s*(\d+)/i);
+      if (guestsMatch) parsed.guests = guestsMatch[1];
+    }
+
+    return parsed;
+  };
+
+  const customerNoteParsed = parseCustomerNote(order.customer_note);
+
+  // Get values from meta_data first, then fall back to parsed customer_note
+  const deliveryMethod = getMeta('delivery_method') || getMeta('catering_delivery_method') || customerNoteParsed.method || 'pickup';
   const isDelivery = deliveryMethod === 'delivery';
-  const deliveryDate = getMeta('delivery_date') || getMeta('catering_delivery_date');
-  const deliveryTime = getMeta('delivery_time') || getMeta('catering_delivery_time');
-  const numberOfGuests = getMeta('number_of_guests') || getMeta('catering_guests') || '—';
+  const deliveryDate = getMeta('delivery_date') || getMeta('catering_delivery_date') || customerNoteParsed.date;
+  const deliveryTime = getMeta('delivery_time') || getMeta('catering_delivery_time') || customerNoteParsed.time;
+  const numberOfGuests = getMeta('number_of_guests') || getMeta('catering_guests') || customerNoteParsed.guests || '—';
   const needSetup = getMeta('need_setup') === 'yes' || getMeta('catering_need_setup') === 'yes';
   const needUtensils = getMeta('need_utensils') === 'yes' || getMeta('catering_need_utensils') === 'yes';
   const specialInstructions = getMeta('special_instructions') || getMeta('catering_instructions') || '';
+
+  // For display, use the original date string if we couldn't parse it
+  const dateForDisplay = customerNoteParsed.dateDisplay || deliveryDate;
 
   // Parse delivery address
   let deliveryAddress = null;
@@ -102,11 +145,15 @@ export default function CateringOrderCard({ order, onStatusUpdate, onViewDetails
             <Calendar className={`w-6 h-6 ${isDelivery ? 'text-purple-400' : 'text-blue-400'}`} />
           </div>
           <div>
-            <p className="text-xl font-bold text-white">{formatDate(deliveryDate)}</p>
-            <p className={`text-sm ${isDelivery ? 'text-purple-300' : 'text-blue-300'} flex items-center gap-1`}>
-              <Clock className="w-3.5 h-3.5" />
-              {formatTime(deliveryTime)}
+            <p className="text-xl font-bold text-white">
+              {customerNoteParsed.dateDisplay || formatDate(deliveryDate)}
             </p>
+            {deliveryTime && (
+              <p className={`text-sm ${isDelivery ? 'text-purple-300' : 'text-blue-300'} flex items-center gap-1`}>
+                <Clock className="w-3.5 h-3.5" />
+                {formatTime(deliveryTime)}
+              </p>
+            )}
           </div>
         </div>
       </div>
