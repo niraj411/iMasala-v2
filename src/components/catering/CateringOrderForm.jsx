@@ -56,13 +56,9 @@ export default function CateringOrderForm() {
     return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
-  // Get minimum date (today + at least 4 hours ahead)
+  // Get minimum date (today - allow same day if 4+ hours available)
   const minDate = useMemo(() => {
     const now = new Date();
-    // If it's past 5pm, minimum is tomorrow
-    if (now.getHours() >= 17) {
-      now.setDate(now.getDate() + 1);
-    }
     return now.toISOString().split('T')[0];
   }, []);
 

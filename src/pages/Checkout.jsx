@@ -118,7 +118,7 @@ export default function Checkout() {
 
   const getMinDateTime = () => {
     const now = new Date();
-    const minAdvanceMinutes = selectedOrderType === 'catering' ? 240 : 60;
+    const minAdvanceMinutes = selectedOrderType === 'catering' ? 240 : 60; // 4 hours for catering
     now.setMinutes(now.getMinutes() + minAdvanceMinutes);
     return now;
   };
@@ -314,7 +314,7 @@ export default function Checkout() {
         const cateringDateTime = new Date(cateringDetails.deliveryDate + 'T' + cateringDetails.deliveryTime);
         const minCateringTime = new Date();
         minCateringTime.setHours(minCateringTime.getHours() + 4);
-        
+
         if (cateringDateTime <= minCateringTime) {
           validationErrors.push('Catering orders require at least 4 hours advance notice');
         }
@@ -392,9 +392,13 @@ export default function Checkout() {
       }
 
       const sessionData = await stripeService.createCheckoutSession(
-        cartItems, 
+        cartItems,
         orderMetadata,
-        tipAmount
+        tipAmount,
+        {
+          deliveryFee: deliveryFee,
+          utensilsFee: utensilsFee
+        }
       );
       
       await stripeService.redirectToCheckout(sessionData);
@@ -954,7 +958,13 @@ export default function Checkout() {
                       <span className="text-green-400">(Exempt)</span>
                     )}
                   </span>
-                  <span className="text-white font-semibold">${taxAmount.toFixed(2)}</span>
+                  {(taxExemptStatus?.verified && applyTaxExempt) ? (
+                    <span className="text-green-400 font-semibold">
+                      $0.00 <span className="text-green-400/60 text-xs line-through">${(cartTotal * 0.0825).toFixed(2)}</span>
+                    </span>
+                  ) : (
+                    <span className="text-white font-semibold">${taxAmount.toFixed(2)}</span>
+                  )}
                 </div>
                 {tipAmount > 0 && (
                   <div className="flex justify-between text-sm">
