@@ -24,6 +24,8 @@ out/
 # Firebase config (contains API keys)
 src/config/firebase.js
 firebase-config.txt
+# Auto-generated service worker (contains Firebase config)
+public/firebase-messaging-sw.js
 
 # iOS sensitive files
 ios/App/App/GoogleService-Info.plist
@@ -39,6 +41,7 @@ android/app/google-services.json
 *.keystore
 android/keystore/
 android/signing/
+android/keystore.properties
 key.properties
 keystore.properties
 signing.properties

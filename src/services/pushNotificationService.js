@@ -5,20 +5,7 @@ import { PushNotifications } from '@capacitor/push-notifications';
 import { FCM } from '@capacitor-community/fcm';
 import { initializeApp, getApps } from 'firebase/app';
 import { getMessaging, getToken } from 'firebase/messaging';
-
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyByYH4FwC9R6hQGSuK52s5LaHFIAm2yqWU",
-  authDomain: "imasala-37b4d.firebaseapp.com",
-  projectId: "imasala-37b4d",
-  storageBucket: "imasala-37b4d.firebasestorage.app",
-  messagingSenderId: "483793848610",
-  appId: "1:483793848610:web:c0560b717161fc644c3d7b",
-  measurementId: "G-ZW43QH5VD5"
-};
-
-// VAPID key for web push
-const VAPID_KEY = 'BAYiphZs1LM-QbQZeCPmJMnD2iUyLQJICexnaOcHfgVccCM8TlcgEVPuk82ClqtcBjQoE7Xu4z6XS75AYqbpZG0';
+import { firebaseConfig, VAPID_KEY } from '../config/firebase';
 
 // API URL
 const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://tandoorikitchenco.com';
