@@ -15,6 +15,7 @@ import {
   Sparkles, TrendingUp, Award, Zap, Store, Truck, ArrowUp,
   SortAsc, Grid3X3, List, DollarSign
 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useMenu } from '../contexts/MenuContext';
 import { useCatering } from '../contexts/CateringContext';
@@ -35,6 +36,14 @@ export default function Shop() {
   const { products: menuItems = [], categories = [], loading } = useMenu() || {};
   const { addToCart, cartItems, updateQuantity } = useCart();
   const { isCateringOrder, setIsCateringOrder } = useCatering();
+  const [searchParams] = useSearchParams();
+
+  // Sync URL parameter to catering state on mount
+  useEffect(() => {
+    if (searchParams.get('mode') === 'catering') {
+      setIsCateringOrder(true);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
@@ -750,7 +759,11 @@ export default function Shop() {
           <div className="flex items-center justify-center gap-3">
             <div className="inline-flex gap-1 bg-white/5 backdrop-blur-xl border border-white/10 p-1.5 rounded-2xl">
               <button
-                onClick={() => setIsCateringOrder(false)}
+                onClick={() => {
+                  setIsCateringOrder(false);
+                  searchParams.delete('mode');
+                  window.history.replaceState({}, '', searchParams.toString() ? `/shop?${searchParams}` : '/shop');
+                }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
                   !isCateringOrder
                     ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25'
@@ -760,9 +773,12 @@ export default function Shop() {
                 <Store className="w-5 h-5" />
                 <span>Pickup</span>
               </button>
-              
+
               <button
-                onClick={() => setIsCateringOrder(true)}
+                onClick={() => {
+                  setIsCateringOrder(true);
+                  window.history.replaceState({}, '', '/shop?mode=catering');
+                }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
                   isCateringOrder
                     ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/25'
