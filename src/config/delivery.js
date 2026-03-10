@@ -55,8 +55,8 @@ export const DELIVERY_FEES = {
 // Legacy export for backwards compatibility
 export const CATERING_DELIVERY_FEE = DELIVERY_FEES.ZONE_1;
 
-// Minimum order for catering
-export const CATERING_MINIMUM_ORDER = 250.00;
+// Minimum order for catering (no minimum)
+export const CATERING_MINIMUM_ORDER = 0;
 
 // Maximum delivery radius in miles (for reference)
 export const MAX_DELIVERY_RADIUS_MILES = 25;

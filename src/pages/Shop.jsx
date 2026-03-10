@@ -787,9 +787,6 @@ export default function Shop() {
               >
                 <Truck className="w-5 h-5" />
                 <span>Catering</span>
-                <span className="text-xs px-2 py-0.5 bg-white/10 rounded-full">
-                  $250 min
-                </span>
               </button>
             </div>
           </div>

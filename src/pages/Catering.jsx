@@ -344,8 +344,8 @@ const Catering = () => {
             </div>
             <div className="w-px h-12 bg-white/10 hidden sm:block"></div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-white">$250</div>
-              <div className="text-white/40 text-sm">Min Order</div>
+              <div className="text-3xl font-bold text-white">25mi</div>
+              <div className="text-white/40 text-sm">Delivery Range</div>
             </div>
             <div className="w-px h-12 bg-white/10 hidden sm:block"></div>
             <div className="text-center">
@@ -617,7 +617,7 @@ const Catering = () => {
             <Info className="w-8 h-8 text-orange-400 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-white mb-4">Ordering Information</h3>
             <div className="text-white/50 space-y-2">
-              <p>Minimum order: $250 | 4 hours advance notice required</p>
+              <p>4 hours advance notice required</p>
               <p>Delivery available within 25 miles | $20-$30 delivery fee based on zone</p>
               <p>Prices subject to change | Gratuity not included</p>
               <p className="pt-4">

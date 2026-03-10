@@ -152,17 +152,6 @@ export default function CartSidebar({ isOpen, onClose }) {
                   </span>
                 </div>
                 
-                {/* Catering Warning */}
-                {orderType === 'catering' && getCartTotal() < 250 && (
-                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
-                    <p className="text-sm text-amber-300 font-medium">
-                      <strong className="text-amber-200">Catering Order:</strong> $250 minimum required
-                      <br />
-                      <span className="text-amber-400/80">Current total: ${getCartTotal().toFixed(2)}</span>
-                    </p>
-                  </div>
-                )}
-                
                 {/* Actions */}
                 <div className="space-y-2">
                   <button

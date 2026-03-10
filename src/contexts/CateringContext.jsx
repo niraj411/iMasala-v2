@@ -39,11 +39,6 @@ export function CateringProvider({ children }) {
   const validateCateringOrder = (cartTotal) => {
     const errors = [];
 
-    // Check minimum order amount
-    if (cartTotal < 250) {
-      errors.push('Catering orders require a minimum of $250');
-    }
-
     // Check required fields
     if (!cateringDetails.deliveryDate) {
       errors.push('Please select a delivery/pickup date');

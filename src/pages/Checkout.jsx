@@ -284,10 +284,6 @@ export default function Checkout() {
         }
       }
     } else if (selectedOrderType === 'catering') {
-      if (cartTotal < 250) {
-        validationErrors.push('Catering orders require a $250 minimum');
-      }
-
       if (!cateringDetails?.deliveryDate) {
         validationErrors.push('Please select a catering date');
       }
@@ -585,7 +581,7 @@ export default function Checkout() {
                     </span>
                   </div>
                   <p className="text-xs text-white/40 font-medium">
-                    $250 min • 4hr advance
+                    4hr advance notice
                   </p>
                 </button>
               </div>
