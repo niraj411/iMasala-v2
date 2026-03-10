@@ -841,7 +841,7 @@ const Home = () => {
               <p className="text-white/60 text-lg mb-2">199 W South Boulder Rd</p>
               <p className="text-white/60 text-lg mb-6">Lafayette, CO 80026</p>
               <a
-                href="https://maps.google.com/?q=400+W+South+Boulder+Rd+Lafayette+CO+80026"
+                href="https://maps.google.com/?q=199+W+South+Boulder+Rd+Lafayette+CO+80026"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 font-medium transition-colors"

@@ -31,6 +31,7 @@ import LunchBuffet from './pages/LunchBuffet';
 // Components
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
+import ErrorBoundary from './components/ErrorBoundary';
 import './styles/globals.css';
 
 function AppRoutes() {
@@ -163,6 +164,7 @@ function App() {
   }, []);
 
   return (
+    <ErrorBoundary>
     <Router>
       <AuthProvider>
         <MenuProvider>
@@ -201,6 +203,7 @@ function App() {
         </MenuProvider>
       </AuthProvider>
     </Router>
+    </ErrorBoundary>
   );
 }
 
