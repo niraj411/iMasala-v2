@@ -20,14 +20,13 @@ export function useNotifications() {
     // Set up foreground message listener
     listenerRef.current = notificationService.onForegroundMessage((payload) => {
       console.log('Notification received in foreground:', payload);
-      
-      // Show toast for foreground notifications
-      const title = payload.notification?.title || 'Tandoori Kitchen';
-      const body = payload.notification?.body || '';
-      
-      // Use regular toast instead of custom JSX
+
+      // Use rich title/body if available (built by notificationService)
+      const title = payload.richTitle || payload.notification?.title || 'Tandoori Kitchen';
+      const body = payload.richBody || payload.notification?.body || '';
+
       toast.success(title + (body ? '\n' + body : ''), {
-        duration: 5000,
+        duration: 6000,
         icon: '🔔',
       });
     });

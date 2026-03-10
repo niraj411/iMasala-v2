@@ -1,18 +1,4 @@
-// vite.config.js
-import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react'
-import fs from 'fs'
-import path from 'path'
-
-// Plugin to generate firebase-messaging-sw.js with env vars
-function firebaseServiceWorkerPlugin() {
-  return {
-    name: 'firebase-sw-plugin',
-    buildStart() {
-      // Load env vars
-      const env = loadEnv('', process.cwd(), 'VITE_')
-
-      const swContent = `// public/firebase-messaging-sw.js
+// public/firebase-messaging-sw.js
 // This service worker handles background push notifications
 // Auto-generated at build time from vite.config.js
 
@@ -21,12 +7,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-comp
 
 // Initialize Firebase in the service worker
 firebase.initializeApp({
-  apiKey: "${env.VITE_FIREBASE_API_KEY}",
-  authDomain: "${env.VITE_FIREBASE_AUTH_DOMAIN}",
-  projectId: "${env.VITE_FIREBASE_PROJECT_ID}",
-  storageBucket: "${env.VITE_FIREBASE_STORAGE_BUCKET}",
-  messagingSenderId: "${env.VITE_FIREBASE_MESSAGING_SENDER_ID}",
-  appId: "${env.VITE_FIREBASE_APP_ID}"
+  apiKey: "AIzaSyDwmhgXnerxhptPWz5iz-PBbR5ZwtzahTU",
+  authDomain: "imasala-37b4d.firebaseapp.com",
+  projectId: "imasala-37b4d",
+  storageBucket: "imasala-37b4d.firebasestorage.app",
+  messagingSenderId: "483793848610",
+  appId: "1:483793848610:web:c0560b717161fc644c3d7b"
 });
 
 const messaging = firebase.messaging();
@@ -109,22 +95,3 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
-`
-      // Write to public folder
-      fs.writeFileSync(path.resolve(process.cwd(), 'public/firebase-messaging-sw.js'), swContent)
-    }
-  }
-}
-
-export default defineConfig({
-  plugins: [react(), firebaseServiceWorkerPlugin()],
-  server: {
-    proxy: {
-      '/wp-json': {
-        target: 'https://tandoorikitchenco.com',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  }
-})

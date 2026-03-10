@@ -206,30 +206,48 @@ export const notificationService = {
 
     return onMessage(messaging, (payload) => {
       console.log('Foreground message:', payload);
-      
-      // Show notification for foreground
+
+      const data = payload.data || {};
+      const customerName = data.customerName || data.customer_name || '';
+      const orderTotal = data.orderTotal || data.order_total || '';
+      const orderId = data.orderId || data.order_id || '';
+      const orderStatus = data.orderStatus || data.status || '';
+
+      // Build rich notification content
+      let title = payload.notification?.title || 'Tandoori Kitchen';
+      let body = payload.notification?.body || '';
+
+      if (customerName && orderTotal) {
+        title = `New Order from ${customerName}`;
+        body = `$${orderTotal}` + (orderId ? ` — Order #${orderId}` : '');
+      } else if (customerName && orderStatus) {
+        title = `Order Update — ${customerName}`;
+        body = `Status: ${orderStatus}` + (orderId ? ` (Order #${orderId})` : '');
+      } else if (customerName) {
+        title = `Order from ${customerName}`;
+        if (orderId) body = `Order #${orderId}`;
+      }
+
+      // Show browser notification
       if (Notification.permission === 'granted') {
-        const notification = new Notification(
-          payload.notification?.title || 'Tandoori Kitchen',
-          {
-            body: payload.notification?.body,
-            icon: '/logo192.png',
-            data: payload.data
-          }
-        );
+        const notification = new Notification(title, {
+          body,
+          icon: '/logo192.png',
+          data: data
+        });
 
         notification.onclick = () => {
           window.focus();
-          if (payload.data?.url) {
-            window.location.href = payload.data.url;
-          } else if (payload.data?.orderId) {
-            window.location.href = `/account`;
+          if (data.url) {
+            window.location.href = data.url;
+          } else if (orderId) {
+            window.location.href = `/order/${orderId}`;
           }
           notification.close();
         };
       }
 
-      if (callback) callback(payload);
+      if (callback) callback({ ...payload, richTitle: title, richBody: body });
     });
   },
 
