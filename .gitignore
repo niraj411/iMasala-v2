@@ -21,11 +21,8 @@ out/
 .env.production
 .env*.local
 
-# Firebase config (contains API keys)
-src/config/firebase.js
+# Firebase config notes
 firebase-config.txt
-# Auto-generated service worker (contains Firebase config)
-public/firebase-messaging-sw.js
 
 # iOS sensitive files
 ios/App/App/GoogleService-Info.plist
